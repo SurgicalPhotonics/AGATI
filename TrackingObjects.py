@@ -22,12 +22,18 @@ class Line:
         first endpoint of the line. Endpoint with smaller x value if x1 \neq x2
     end2: point
         second endpoint of the line. Endpoint with greater x if x1 \neq x2
+    slope: float
+        slope of the line
+    yint: float
+        y intercept of line
     """
     def __init__(self, e1, e2):
         self.end1 = e1
         self.end2 = e2
         slope = (e2.x - e1.x)/(e2.y - e1.y)
+        self.slope = slope
         yint = e1.y + slope * e1.x
+        self.yint = yint
         self.eq = slope + 'x' + '+' + yint
 
 # Potential add parabolic approximation later.

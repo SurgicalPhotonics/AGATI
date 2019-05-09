@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3defcfed-29b8-4eb0-ba5a-f5ec06312a86" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/tracker.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Calculator.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataReader.py" beforeDir="false" afterPath="$PROJECT_DIR$/DataReader.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TrackingObjects.py" beforeDir="false" afterPath="$PROJECT_DIR$/TrackingObjects.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tracker.py" beforeDir="false" afterPath="$PROJECT_DIR$/tracker.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -25,20 +23,20 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tracker.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="456">
-              <caret line="24" column="33" lean-forward="true" selection-start-line="24" selection-start-column="33" selection-end-line="24" selection-end-column="33" />
+            <state relative-caret-position="326">
+              <caret line="57" column="56" selection-start-line="57" selection-start-column="56" selection-end-line="57" selection-end-column="56" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/TrackingObjects.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="627">
-              <caret line="33" selection-start-line="33" selection-end-line="33" />
+            <state relative-caret-position="665">
+              <caret line="35" column="24" lean-forward="true" selection-start-line="35" selection-start-column="24" selection-end-line="35" selection-end-column="24" />
             </state>
           </provider>
         </entry>
@@ -60,9 +58,9 @@
       <list>
         <option value="$PROJECT_DIR$/calculator.py" />
         <option value="$PROJECT_DIR$/DataReader.py" />
-        <option value="$PROJECT_DIR$/TrackingObjects.py" />
         <option value="$PROJECT_DIR$/Calculator.py" />
         <option value="$PROJECT_DIR$/VideoTrack.py" />
+        <option value="$PROJECT_DIR$/TrackingObjects.py" />
         <option value="$PROJECT_DIR$/tracker.py" />
       </list>
     </option>
@@ -161,17 +159,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/TrackingObjects.py">
+    <entry file="file://$PROJECT_DIR$/tracker.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="627">
-          <caret line="33" selection-start-line="33" selection-end-line="33" />
+        <state relative-caret-position="326">
+          <caret line="57" column="56" selection-start-line="57" selection-start-column="56" selection-end-line="57" selection-end-column="56" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tracker.py">
+    <entry file="file://$PROJECT_DIR$/TrackingObjects.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="456">
-          <caret line="24" column="33" lean-forward="true" selection-start-line="24" selection-start-column="33" selection-end-line="24" selection-end-column="33" />
+        <state relative-caret-position="665">
+          <caret line="35" column="24" lean-forward="true" selection-start-line="35" selection-start-column="24" selection-end-line="35" selection-end-column="24" />
         </state>
       </provider>
     </entry>
