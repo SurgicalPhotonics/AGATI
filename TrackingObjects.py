@@ -19,9 +19,9 @@ class Line:
         Equation of line. We compare points in LC and RC to their
         respective lines to check for deformation
     end1: point
-        first endpoint of the line. Endpoint with smaller x value if x1 \neq x2
+        first point to calc line Endpoint with smaller x value if x1 \neq x2
     end2: point
-        second endpoint of the line. Endpoint with greater x if x1 \neq x2
+        second point to calc line. Endpoint with greater x if x1 \neq x2
     slope: float
         slope of the line
     yint: float

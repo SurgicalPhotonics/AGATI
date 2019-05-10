@@ -2,7 +2,7 @@ import numpy as np
 from typing import List
 from TrackingObjects import Point
 from TrackingObjects import Line
-from math import sqrt, atan
+from math import sqrt, atan, asin
 
 """bp = List[Point]  # list of all marked parts presumably get with frame
 left_cord = Line(bp[0], bp[7])
@@ -23,25 +23,23 @@ def line_len(l: Line):
     return sqrt((l.end2.x - l.end1.x) ^ 2 + (l.end2.y - l.end1.y) ^ 2)
 
 
-def shortest_distance(x1, y1, a, b, c):
+def shortest_distance(p, l):
     """Returns shortest distance between line and point"""
-    return abs((a * x1 + b * y1 + c)) / (sqrt(a * a + b * b))
+    return abs((l.slope * p.x + -1 * p.y + l.yint)) / (sqrt(l.slope * l.slope
+                                                            + 1))
 
-
-def partially_paralyzed(frames: list):
-    """Checks to see if one of the patient's vocal cords is paralyzed"""
-    for frame in frames:
-        bp = List[Point]  # list of all marked parts presumably get with frame
-        left_cord = Line(bp[0], bp[7])
-        right_cord = Line(bp[13], bp[0])
-        ref_line = Line(bp[0], bp[1])
-        # line between anterior commissure and ref pt
-        left_angle = atan(line_len(left_cord) / line_len(ref_line))
-        right_angle = atan(line_len(right_cord) / line_len(ref_line))
-        if not 1 / par_const * left_angle < right_angle < par_const * \
-                left_angle:
-            return True
-    return False
+def angle_of_opening(ac1, ac2, left_cord, right_cord):
+    """Uses midline defined by points around anterior commissure to approximate
+    angle of opening on each side."""
+    midline = Line(ac1, ac2)
+    top_left = left_cord[len(left_cord)]
+    top_right = right_cord[len(right_cord)]
+    left_line = Line(ac1, top_left)
+    right_line = Line(ac1, top_right)
+    left_opp = shortest_distance(top_left, midline)
+    right_opp = shortest_distance(top_right, midline)
+    return [asin(left_opp / line_len(left_line)), asin(right_opp /
+                                                       line_len(right_line))]
 
 
 def cord_deformity(frames: list):
