@@ -2,7 +2,7 @@ import numpy as np
 from typing import List
 from TrackingObjects import Point
 from TrackingObjects import Line
-from math import sqrt, atan, asin
+from math import sqrt, asin
 
 """bp = List[Point]  # list of all marked parts presumably get with frame
 left_cord = Line(bp[0], bp[7])
