@@ -42,19 +42,6 @@ def angle_of_opening(ac1, ac2, left_cord, right_cord):
                                                        line_len(right_line))]
 
 
-def cord_deformity(frames: list):
-    """Checks that patient's vocal cords are approximately linear"""
-    for frame in frames:
-        bp = List[Point]  # list of all marked parts presumably get with frame
-        left_cord = Line(bp[0], bp[7])
-        right_cord = Line(bp[13], bp[0])
-        lc = bp[0]
-        lc.extend(bp[2:7])
-        rc = bp[0]
-        rc.extend(bp[8:13])
-        for point in lc:
-            # Check that distance is less than constant
-
 
 
 
