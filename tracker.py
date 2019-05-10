@@ -55,7 +55,7 @@ def cord_deformity(frames: list):
         rc = bp[0]
         rc.extend(bp[8:13])
         for point in lc:
-            #  Check that distance is less than constant
+            # Check that distance is less than constant
 
 
 
