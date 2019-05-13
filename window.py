@@ -1,8 +1,9 @@
-import pygame, thorpy
+import wxPython
 import os
 import DataReader
 import TrackingObjects
 import Tracker
 
 if __name__ == '__main__':
-    application = thorpy.Application((500, 500))
+    pass
+    # Gonna do this bit with wx now

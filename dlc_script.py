@@ -1,5 +1,6 @@
 import deeplabcut as dlc
 
+
 def run_dlc(path):
     project = input('Please input the name of the project (no spaces)')
     name = input('Enter your own name or that of the principal investigator (no spaces)')
@@ -10,6 +11,6 @@ def run_dlc(path):
     dlc.check_labels(path)
 
 
-
 if __name__ == '__main__':
     run_dlc('vocal0DeepCut_resnet50_vocal_strobeMay8shuffle1_200000.h5')
+    # All placeholder stuff, will add to created conda env eventually, but for now code runs on direct paths
