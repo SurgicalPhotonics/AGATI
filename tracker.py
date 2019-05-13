@@ -34,23 +34,15 @@ class Tracker:
         """Goes through lists and returns all data for each frame."""
         ac1 = self.data[0] # this looks ugly and longer to write but I believe will be much faster than acessing data
         ac2 = self.data[1] # each time through the for loop
-        LC = [self.data[7], self.data[6], self.data[5], self.data[4], self.data[3], self.data[2]]
-        RC = [self.data[13], self.data[12], self.data[11], self.data[10], self.data[9], self.data[8]]
+        LC = [self.data[2], self.data[3], self.data[4], self.data[5], self.data[6], self.data[7]]
+        RC = [self.data[8], self.data[9], self.data[10], self.data[11], self.data[12], self.data[13]]
         for i in range(len(self.data[1])):
-
-
-
-    def angle_of_opening(self, ac1, ac2, left_cord, right_cord):
-        """Uses midline defined by points around anterior commissure to
-        approximate angle of opening on each side."""
-        midline = Line(ac1, ac2)
-        top_left = left_cord[len(left_cord)]
-        top_right = right_cord[len(right_cord)]
-        left_line = Line(ac1, top_left)
-        right_line = Line(ac1, top_right)
-        left_opp = shortest_distance(top_left, midline)
-        right_opp = shortest_distance(top_right, midline)
-        return asin(left_opp / line_len(left_line)), asin(right_opp / line_len(right_line))
+            angle = ()
+            if not ac1[i][0] == 0 and not ac2[i] == 0:
+                ac1pt = Point(ac1[i][0], ac1[i][1])
+                ac2pt = Point(ac2[i][0], ac2[i][1])
+                angle = angle_of_opening(ac1pt, ac2pt, LC, RC)
+                print(angle)
 
 
 def line_len(l: Line):
@@ -63,6 +55,20 @@ def shortest_distance(p, l):
     return abs((l.slope * p.x + -1 * p.y + l.yint)) / (sqrt(l.slope * l.slope + 1))
 
 
+def angle_of_opening(ac1, ac2, left_cord, right_cord):
+    """Uses midline defined by points around anterior commissure to
+    approximate angle of opening on each side."""
+    midline = Line(ac1, ac2)
+    top_left = left_cord[len(left_cord)]
+    top_right = right_cord[len(right_cord)]
+    left_line = Line(ac1, top_left)
+    right_line = Line(ac1, top_right)
+    left_opp = shortest_distance(top_left, midline)
+    right_opp = shortest_distance(top_right, midline)
+    return asin(left_opp / line_len(left_line)), asin(right_opp / line_len(right_line))
+
+if __name__ == '__main__':
+    
 
 
 
