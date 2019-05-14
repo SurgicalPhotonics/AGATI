@@ -68,7 +68,7 @@ def angle_of_opening(ac1, ac2, left_cord, right_cord):
     return asin(left_opp / line_len(left_line)), asin(right_opp / line_len(right_line))
 
 if __name__ == '__main__':
-    
+
 
 
 
