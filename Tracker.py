@@ -62,20 +62,26 @@ class Tracker:
         lgraph = []
         rgraph = []
         for item in graph:
-            lgraph.append(item[0])
-            rgraph.append(item[1])
-        ind = [i for i in range(len(lgraph))]
+            lgraph.append(item[0] * 360 / (2 * pi))
+            rgraph.append(item[1] * 360 / (2 * pi))
+        dif = []
+        for i in range(len(lgraph)):
+            dif.append(lgraph[i] - rgraph[i])
         xlab = 'Frames (could be innacurate depending on quality of video and '\
                'training'
         ylab = 'Angle from midline'
         f = plt.figure(1)
-        plt.plot(ind, lgraph)
+        plt.plot(lgraph)
         plt.xlabel(xlab)
         plt.ylabel(ylab)
         g = plt.figure(2)
-        plt.plot(ind, rgraph)
+        plt.plot(rgraph)
         plt.xlabel(xlab)
         plt.ylabel(ylab)
+        h = plt.figure(3)
+        plt.plot(dif)
+        plt.xlabel('Frames')
+        plt.ylabel('Difference in angle')
         plt.show()
 
 
