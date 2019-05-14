@@ -114,14 +114,9 @@ def angle_of_opening(ac1, ac2, left_cord, right_cord):
         return pi, pi
     return asin(lsin), asin(rsin)
 
-<<<<<<< HEAD
-if __name__ == '__main__':
-
-=======
->>>>>>> 6723d015b73bb193fe2fef619a8216469e38cb74
 
 if __name__ == '__main__':
-    data = read_data('vocal1DeepCut_resnet50_vocal_strobeMay8shuffle1_200000.h5')
+    data = read_data('vocal1DeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
     t = Tracker(data)
     t.frame_by()
     print('something')

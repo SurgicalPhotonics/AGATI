@@ -5,13 +5,14 @@ window_x = 50
 window_y = 50
 # Compares x-y coords of points to prev frame and eliminates large differences.
 
-bps = ['AC1', 'AC2', 'LC1', 'LC2', 'LC3', 'LC4', 'LC5', 'LVP', 'RC1', 'RC2', 'RC3', 'RC4', 'RC5', 'RVP', 'LCART1',
-       'LCART2', 'RCART1', 'RCART2']
+bps = ['AC1', 'AC2', 'LC1', 'LC2', 'LC3', 'LC4', 'LC5', 'LVP', 'RC1', 'RC2',
+       'RC3', 'RC4', 'RC5', 'RVP']
 
 
 def read_data(path):
     placeholder = pd.read_hdf(path)
-    data = placeholder['DeepCut_resnet50_vocal_strobeMay8shuffle1_200000']
+    # fix next line to take all possible input -- exclude vocal and .h5
+    data = placeholder['DeepCut_resnet50_vocalMay13shuffle1_1030000']
     sorted_data = []
     for part in bps:
         plist = []
