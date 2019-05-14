@@ -15,9 +15,6 @@ class Point:
 class Line:
     """A line between two points. Used to measure scarring or other deformation
     in vocal cords.
-    eq: Str
-        Equation of line. We compare points in LC and RC to their
-        respective lines to check for deformation
     end1: point
         first point to calc line Endpoint with smaller x value if x1 \neq x2
     end2: point
@@ -34,6 +31,5 @@ class Line:
         self.slope = slope
         yint = e1.y + slope * e1.x
         self.yint = yint
-        self.eq = slope + 'x' + '+' + yint
 
 # Potential add parabolic approximation later.
