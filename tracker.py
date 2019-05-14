@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from typing import List, Tuple
 from TrackingObjects import Point
 from TrackingObjects import Line
@@ -38,7 +39,8 @@ class Tracker:
               self.data[6], self.data[7]]
         RC = [self.data[8], self.data[9], self.data[10], self.data[11],
               self.data[12], self.data[13]]
-        graph = np.empty(1)
+        graph = []
+        temp = []
         for i in range(len(self.data[1])):
             if not ac1[i][0] == 0 and not ac2[i] == 0:
                 ac1pt = Point(ac1[i][0], ac1[i][1])
@@ -54,8 +56,27 @@ class Tracker:
                 if cords_there:
                     angle = angle_of_opening(ac1pt, ac2pt, LC_now, RC_now)
                     if angle[0] < pi and angle[1] < pi:
-                        graph = np.append(graph, angle)
-        # Pyplot this 
+                        graph.append(angle)
+                    else:
+                        temp.append(angle)
+        lgraph = []
+        rgraph = []
+        for item in graph:
+            lgraph.append(item[0])
+            rgraph.append(item[1])
+        ind = [i for i in range(len(lgraph))]
+        xlab = 'Frames (could be innacurate depending on quality of video and '\
+               'training'
+        ylab = 'Angle from midline'
+        f = plt.figure(1)
+        plt.plot(ind, lgraph)
+        plt.xlabel(xlab)
+        plt.ylabel(ylab)
+        g = plt.figure(2)
+        plt.plot(ind, rgraph)
+        plt.xlabel(xlab)
+        plt.ylabel(ylab)
+        plt.show()
 
 
 def line_len(l: Line):
