@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 
-window_x = 100
-window_y = 100
+window_x = 50
+window_y = 50
 # Compares x-y coords of points to prev frame and eliminates large differences.
 
 bps = ['AC1', 'AC2', 'LC1', 'LC2', 'LC3', 'LC4', 'LC5', 'LVP', 'RC1', 'RC2', 'RC3', 'RC4', 'RC5', 'RVP', 'LCART1',
