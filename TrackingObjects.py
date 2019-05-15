@@ -25,9 +25,13 @@ class Line:
         y intercept of line
     """
     def __init__(self, e1, e2):
-        self.end1 = e1
-        self.end2 = e2
-        slope = (e2.x - e1.x)/(e2.y - e1.y)
+        if e1.x > e2.x:
+            self.end1 = e2
+            self.end2 = e1
+        else:
+            self.end1 = e1
+            self.end2 = e2
+        slope = (self.end2.y - self.end1.y)/(self.end2.x - self.end1.x)
         self.slope = slope
         yint = e1.y + slope * e1.x
         self.yint = yint

@@ -92,7 +92,7 @@ def line_len(l: Line):
 
 def shortest_distance(p, l):
     """Returns shortest distance between line and point"""
-    return abs((l.slope * p.x + -1 * p.y + l.yint)) / (sqrt(l.slope * l.slope +
+    return abs((-l.slope * p.x + 1 * p.y - l.yint)) / (sqrt(l.slope * l.slope +
                                                             1))
 
 
