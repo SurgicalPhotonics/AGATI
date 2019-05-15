@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-con_const = .9
+con_const = 1
 # Compares x-y coords of points to prev frame and eliminates large differences.
 
 bps = ['AC1', 'AC2', 'LC1', 'LC2', 'LC3', 'LC4', 'LC5', 'LVP', 'RC1', 'RC2',
@@ -34,4 +34,4 @@ def clean_data(data):
 
 
 if __name__ == '__main__':
-    data = read_data('vocal1DeepCut_resnet50_vocal_strobeMay8shuffle1_200000.h5')
+    data = read_data('vocal3DeepCut_resnet50_vocal_strobeMay8shuffle1_200000.h5')
