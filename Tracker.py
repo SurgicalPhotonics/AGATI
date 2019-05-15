@@ -42,7 +42,7 @@ class Tracker:
         graph = []
         temp = []
         for i in range(len(self.data[1])):
-            if not ac1[i][0] == 0 and not ac2[i] == 0:
+            if not ac1[i][2] == 0 and not ac2[i][2] == 0:
                 ac1pt = Point(ac1[i][0], ac1[i][1])
                 ac2pt = Point(ac2[i][0], ac2[i][1])
                 LC_now = []

@@ -33,7 +33,7 @@ class Line:
             self.end2 = e2
         slope = (self.end2.y - self.end1.y)/(self.end2.x - self.end1.x)
         self.slope = slope
-        yint = e1.y + slope * e1.x
+        yint = e1.y - slope * e1.x
         self.yint = yint
 
 # Potential add parabolic approximation later.

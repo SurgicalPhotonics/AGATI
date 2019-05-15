@@ -27,8 +27,10 @@ def clean_data(data):
     """Removes outlier points caused by deeplabcut throwing points it can't find to random places.
     will need to return to this to fix issue when an important point like vocal process isn't visible for majority of
     the first 120 seconds."""
-    for i in range(len(data) - 1):
-        data[i] = (0, 0, 1)
+    for item in data:
+        for i in range(len(item) - 1):
+            if item[i][2] < con_const:
+                item[i] = (0, 0, 0)
 
 
 if __name__ == '__main__':
