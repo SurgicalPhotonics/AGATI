@@ -31,7 +31,10 @@ class Line:
         else:
             self.end1 = e1
             self.end2 = e2
-        slope = (self.end2.y - self.end1.y)/(self.end2.x - self.end1.x)
+        if not self.end2.x == self.end1.x:
+            slope = (self.end2.y - self.end1.y)/(self.end2.x - self.end1.x)
+        else:
+            slope = 999999999999999  # Should be a place holder and won't matter
         self.slope = slope
         yint = e1.y - slope * e1.x
         self.yint = yint

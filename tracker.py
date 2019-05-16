@@ -71,14 +71,17 @@ class Tracker:
                'training'
         ylab = 'Angle from midline'
         f = plt.figure(1)
+        plt.title('Left Cord Angles')
         plt.plot(lgraph)
         plt.xlabel(xlab)
         plt.ylabel(ylab)
         g = plt.figure(2)
+        plt.title('Right Cord Angles')
         plt.plot(rgraph)
         plt.xlabel(xlab)
         plt.ylabel(ylab)
         h = plt.figure(3)
+        plt.title('Angle Differences')
         plt.plot(dif)
         plt.xlabel('Frames')
         plt.ylabel('Difference in angle')
@@ -92,8 +95,7 @@ def line_len(l: Line):
 
 def shortest_distance(p, l):
     """Returns shortest distance between line and point"""
-    return abs((-l.slope * p.x + 1 * p.y - l.yint)) / (sqrt(l.slope * l.slope +
-                                                            1))
+    return abs(-l.slope * p.x + p.y - l.yint) / sqrt(l.slope ** 2 + 1)
 
 
 def angle_of_opening(ac1, ac2, left_cord, right_cord):
@@ -116,10 +118,9 @@ def angle_of_opening(ac1, ac2, left_cord, right_cord):
 
 
 if __name__ == '__main__':
-    data = read_data('vocal3DeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
+    data = read_data('vocal1DeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
     t = Tracker(data)
     t.frame_by()
-    print('something')
 
 
 
