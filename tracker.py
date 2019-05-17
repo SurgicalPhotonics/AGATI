@@ -99,14 +99,14 @@ def shortest_distance(p, l):
     return abs(-l.slope * p.x + p.y - l.yint) / sqrt(l.slope ** 2 + 1)
 
 
-def calc_midline(ac_lst):
-    """Returns a regression line based on the points in ac_lst. Should only take
+def calc_reg_line(pt_lst):
+    """Returns a regression line based on the points in pt_lst. Should only take
     individual frame of AC not entire set. This doesn't work if the line is
     perfectly vertical, but programming an exception case would increase compute
     time for all cases, which is not worth doing for something so unlikely."""
     pfx = []
     pfy = []
-    for item in ac_lst:
+    for item in pt_lst:
         pfx.append(item[0])
         pfy.append(item[1])
     pf = np.polyfit(pfx, pfy, 1)
