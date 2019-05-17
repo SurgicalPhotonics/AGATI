@@ -100,7 +100,9 @@ def shortest_distance(p, l):
 
 def calc_midline(ac_lst):
     """Returns a regression line based on the points in ac_lst. Should only take
-    individual frame of AC not entire set."""
+    individual frame of AC not entire set. This doesn't work if the line is
+    perfectly vertical, but programming an exception case would increase compute
+    time for all cases, which is not worth doing for something so unlikely."""
     pfx = []
     pfy = []
     for item in ac_lst:
@@ -109,7 +111,8 @@ def calc_midline(ac_lst):
     pf = np.polyfit(pfx, pfy, 1)
     slope = pf[0]
     yint = pf[1]
-    
+    return Line(slope, yint)
+
 
 def angle_of_opening(ac1, ac2, left_cord, right_cord):
     """Uses midline defined by points around anterior commissure to

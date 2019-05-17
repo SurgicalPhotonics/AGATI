@@ -30,5 +30,21 @@ def test_different_cord_angles():
     assert angle[0] == pytest.approx(0.8563466906995302)
 
 
+def test_make_midline():
+    """Tests that midlines are computed correctly for different data."""
+    ac_lst = [(3, 2, 1), (2.99, 1, 1), (2.9, 12, 1)]
+    l = tracker.calc_midline(ac_lst)
+    assert l.slope < -100
+    ac_inf = [(3, 2, 1), (3, 1, 1), (3.000001, 15, 1)]
+    m = tracker.calc_midline(ac_inf)
+    assert m.slope > 1000
+
+
+def test_midline_real_data():
+    """Tests midline on data from early dlc output file."""
+    # We'll implement this once we have dlc back up and running on the desktop.
+    pass
+
+
 if __name__ == '__main__':
     pytest.main(['tracker_tests.py'])
