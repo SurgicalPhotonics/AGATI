@@ -36,10 +36,10 @@ def test_different_cord_angles():
 def test_make_midline():
     """Tests that midlines are computed correctly for different data."""
     ac_lst = [(3, 2, 1), (2.99, 1, 1), (2.9, 12, 1)]
-    l = tracker.calc_midline(ac_lst)
+    l = tracker.calc_reg_line(ac_lst)
     assert l.slope < -100
     ac_inf = [(3, 2, 1), (3, 1, 1), (3.000001, 15, 1)]
-    m = tracker.calc_midline(ac_inf)
+    m = tracker.calc_reg_line(ac_inf)
     assert m.slope > 1000
 
 
