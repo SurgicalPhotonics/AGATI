@@ -54,7 +54,8 @@ class Tracker:
                     if LC[j][i][0] != 0 or RC[j][i][0] != 0:
                         cords_there = True
                 if cords_there:
-                    angle = angle_of_opening(ac1pt, ac2pt, LC_now, RC_now)
+                    midline = Line(ac1pt, ac2pt)  # This will change
+                    angle = angle_of_opening(midline, ac1pt, LC_now, RC_now)
                     if angle[0] < pi and angle[1] < pi:
                         graph.append(angle)
                     else:
@@ -114,10 +115,9 @@ def calc_midline(ac_lst):
     return Line(slope, yint)
 
 
-def angle_of_opening(ac1, ac2, left_cord, right_cord):
+def angle_of_opening(midline, ac1, left_cord, right_cord):
     """Uses midline defined by points around anterior commissure to
     approximate angle of opening on each side."""
-    midline = Line(ac1, ac2)
     top_left_num = left_cord[len(left_cord) - 1]
     top_left = Point(top_left_num[0], top_left_num[1])
     top_right_num = right_cord[len(right_cord) - 1]
