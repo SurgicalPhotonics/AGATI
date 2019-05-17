@@ -88,7 +88,7 @@ class Tracker:
         plt.show()
 
 
-def line_len(l: Line):
+def line_len(l):
     """Returns length of input line"""
     return sqrt((l.end2.x - l.end1.x) ** 2 + (l.end2.y - l.end1.y) ** 2)
 
@@ -97,6 +97,19 @@ def shortest_distance(p, l):
     """Returns shortest distance between line and point"""
     return abs(-l.slope * p.x + p.y - l.yint) / sqrt(l.slope ** 2 + 1)
 
+
+def calc_midline(ac_lst):
+    """Returns a regression line based on the points in ac_lst. Should only take
+    individual frame of AC not entire set."""
+    pfx = []
+    pfy = []
+    for item in ac_lst:
+        pfx.append(item[0])
+        pfy.append(item[1])
+    pf = np.polyfit(pfx, pfy, 1)
+    slope = pf[0]
+    yint = pf[1]
+    
 
 def angle_of_opening(ac1, ac2, left_cord, right_cord):
     """Uses midline defined by points around anterior commissure to

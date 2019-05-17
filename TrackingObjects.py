@@ -25,18 +25,25 @@ class Line:
         y intercept of line
     """
     def __init__(self, e1, e2):
-        if e1.x > e2.x:
-            self.end1 = e2
-            self.end2 = e1
+        if isinstance(e1, Point):
+            if e1.x > e2.x:
+                self.end1 = e2
+                self.end2 = e1
+            else:
+                self.end1 = e1
+                self.end2 = e2
+            if not self.end2.x == self.end1.x:
+                slope = (self.end2.y - self.end1.y)/(self.end2.x - self.end1.x)
+            else:
+                slope = 999999999999999
+            self.slope = slope
+            yint = e1.y - slope * e1.x
+            self.yint = yint
         else:
-            self.end1 = e1
-            self.end2 = e2
-        if not self.end2.x == self.end1.x:
-            slope = (self.end2.y - self.end1.y)/(self.end2.x - self.end1.x)
-        else:
-            slope = 999999999999999  # Should be a place holder and won't matter
-        self.slope = slope
-        yint = e1.y - slope * e1.x
-        self.yint = yint
+            # If slope and yint passed directly
+            self.slope = e1
+            self.yint = e2
+            self.end1 = Point(0, self.yint)
+            self.end2 = Point(1, self.yint + self.slope)
 
 # Potential add parabolic approximation later.
