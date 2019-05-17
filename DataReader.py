@@ -34,4 +34,4 @@ def clean_data(data):
 
 
 if __name__ == '__main__':
-    data = read_data('vocal3DeepCut_resnet50_vocal_strobeMay8shuffle1_200000.h5')
+    data = read_data('vocalDeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
