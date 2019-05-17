@@ -30,6 +30,7 @@ class Window(wx.Frame):
 if __name__ == '__main__':
     app = wx.App()
     window = Window(None)
+    # wx.DirDialog() for user friendly directory search
     app.MainLoop()
 
     # data = DataReader.read_data('vocal1DeepCut_resnet50_vocal_strobeMay8shuffle1_200000.h5')
