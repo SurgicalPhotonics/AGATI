@@ -9,7 +9,6 @@ class Window(wx.Frame):
     """Window object that we'll use as base of GUI"""
     def __init__(self, *args, **kwargs):
         super(Window, self).__init__(*args, **kwargs)
-
         self.basicGUI()
 
     def basicGUI(self):
@@ -23,8 +22,9 @@ class Window(wx.Frame):
         self.Show(True)
 
     def Quit(self):
+        pass
         # Add more here
-        self.Close()
+        # self.Close()
 
 
 if __name__ == '__main__':
