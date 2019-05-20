@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from typing import List, Tuple
 from TrackingObjects import Point
 from TrackingObjects import Line
-from math import sqrt, asin, pi
+from math import sqrt, asin, acos, pi
 from DataReader import read_data
 
 """bp = List[Point]  # list of all marked parts presumably get with frame
@@ -28,6 +28,7 @@ class Tracker:
     output: lst[tuple(float, float)]
     contains marked parts and their corresponding points at each frame.
     """
+
     def __init__(self, data):
         self.data = data
 
@@ -40,7 +41,6 @@ class Tracker:
         RC = [self.data[8], self.data[9], self.data[10], self.data[11],
               self.data[12], self.data[13]]
         graph = []
-        temp = []
         for i in range(len(self.data[1])):
             if not ac1[i][2] == 0 and not ac2[i][2] == 0:
                 ac1pt = Point(ac1[i][0], ac1[i][1])
@@ -48,27 +48,30 @@ class Tracker:
                 LC_now = []
                 RC_now = []
                 cords_there = False
-                for j in range(len(LC) - 1):
+                for j in range(len(LC)):
                     LC_now.append(LC[j][i])
                     RC_now.append(RC[j][i])
                     if LC[j][i][0] != 0 or RC[j][i][0] != 0:
                         cords_there = True
                 if cords_there:
-                    midline = Line(ac1pt, ac2pt)  # This will change
-                    angle = angle_of_opening(midline, ac1pt, LC_now, RC_now)
-                    if angle[0] < pi and angle[1] < pi:
+                    # midline = Line(ac1pt, ac2pt)  # This will change
+                    # angle = angle_from_midline(midline, ac1pt, LC_now, RC_now)
+                    angle = angle_of_opening(ac1pt, LC_now, RC_now)
+                    # if angle[0] < pi and angle[1] < pi:
+                    if angle < pi:
                         graph.append(angle)
-                    else:
-                        temp.append(angle)
-        lgraph = []
-        rgraph = []
+        # lgraph = []
+        # rgraph = []
+        dgraph = []
         for item in graph:
-            lgraph.append(item[0] * 360 / (2 * pi))
-            rgraph.append(item[1] * 360 / (2 * pi))
-        dif = []
+            # lgraph.append(item[0] * 360 / (2 * pi))
+            # rgraph.append(item[1] * 360 / (2 * pi))
+            dgraph.append(item * 360 / (2 * pi))
+
+        """dif = []
         for i in range(len(lgraph)):
             dif.append(lgraph[i] - rgraph[i])
-        xlab = 'Frames (could be innacurate depending on quality of video and '\
+        xlab = 'Frames (could be innacurate depending on quality of video and ' \
                'training'
         ylab = 'Angle from midline'
         f = plt.figure(1)
@@ -85,7 +88,12 @@ class Tracker:
         plt.title('Angle Differences')
         plt.plot(dif)
         plt.xlabel('Frames')
-        plt.ylabel('Difference in angle')
+        plt.ylabel('Difference in angle')"""
+        k = plt.figure(4)
+        plt.title('Angle of Opening')
+        plt.plot(dgraph)
+        plt.xlabel('Frames')
+        plt.ylabel('Angle Between Cords')
         plt.show()
 
 
@@ -115,7 +123,7 @@ def calc_reg_line(pt_lst):
     return Line(slope, yint)
 
 
-def angle_of_opening(midline, ac1, left_cord, right_cord):
+def angle_from_midline(midline, ac1, left_cord, right_cord):
     """Uses midline defined by points around anterior commissure to
     approximate angle of opening on each side."""
     top_left_num = left_cord[len(left_cord) - 1]
@@ -133,13 +141,25 @@ def angle_of_opening(midline, ac1, left_cord, right_cord):
     return asin(lsin), asin(rsin)
 
 
+def angle_of_opening(ac1, left_cord, right_cord):
+    """Canclulates angle of opening between left and right cord."""
+    shorter = min(len(left_cord), len(right_cord))
+    top_left_num = left_cord[shorter - 1]
+    top_left = Point(top_left_num[0], top_left_num[1])
+    top_right_num = right_cord[shorter - 1]
+    top_right = Point(top_right_num[0], top_right_num[1])
+    left_line = Line(ac1, top_left)
+    right_line = Line(ac1, top_right)
+    top_line = Line(top_right, top_left)
+    cos = (line_len(left_line) ** 2 + line_len(right_line) ** 2 - line_len
+    (top_line) ** 2) / (2 * line_len(left_line) * line_len(right_line))
+    if cos > 1 or cos < -1:
+        return pi
+    else:
+        return acos(cos)
+
+
 if __name__ == '__main__':
     data = read_data('vocalDeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
     t = Tracker(data)
     t.frame_by()
-
-
-
-
-
-
