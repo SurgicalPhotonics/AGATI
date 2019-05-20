@@ -21,6 +21,7 @@ class Window(wx.Frame):
         self.SetTitle('VCTrack')
         self.Show(True)
 
+
     def Quit(self):
         pass
         # Add more here
