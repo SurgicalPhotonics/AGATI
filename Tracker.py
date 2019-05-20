@@ -89,6 +89,10 @@ class Tracker:
         plt.plot(dif)
         plt.xlabel('Frames')
         plt.ylabel('Difference in angle')"""
+        arr = np.array(dgraph)
+        print(np.mean(arr))
+        print(np.std(arr))
+        print(np.max(arr) - np.min(arr))
         k = plt.figure(4)
         plt.title('Angle of Opening')
         plt.plot(dgraph)
@@ -142,7 +146,7 @@ def angle_from_midline(midline, ac1, left_cord, right_cord):
 
 
 def angle_of_opening(ac1, left_cord, right_cord):
-    """Canclulates angle of opening between left and right cord."""
+    """Calculates angle of opening between left and right cord."""
     top_left_num = left_cord[len(left_cord) - 1]
     top_left = Point(top_left_num[0], top_left_num[1])
     top_right_num = right_cord[len(right_cord) - 1]
@@ -159,6 +163,6 @@ def angle_of_opening(ac1, left_cord, right_cord):
 
 
 if __name__ == '__main__':
-    data = read_data('vocal2DeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
+    data = read_data('vocalDeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
     t = Tracker(data)
     t.frame_by()
