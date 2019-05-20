@@ -42,9 +42,9 @@ class Tracker:
               self.data[12], self.data[13]]
         graph = []
         for i in range(len(self.data[1])):
-            if not ac1[i][2] == 0 and not ac2[i][2] == 0:
+            if not ac1[i][2] == 0:  # and not ac2[i][2] == 0:
                 ac1pt = Point(ac1[i][0], ac1[i][1])
-                ac2pt = Point(ac2[i][0], ac2[i][1])
+                # ac2pt = Point(ac2[i][0], ac2[i][1])
                 LC_now = []
                 RC_now = []
                 cords_there = False
@@ -143,23 +143,22 @@ def angle_from_midline(midline, ac1, left_cord, right_cord):
 
 def angle_of_opening(ac1, left_cord, right_cord):
     """Canclulates angle of opening between left and right cord."""
-    shorter = min(len(left_cord), len(right_cord))
-    top_left_num = left_cord[shorter - 1]
+    top_left_num = left_cord[len(left_cord) - 1]
     top_left = Point(top_left_num[0], top_left_num[1])
-    top_right_num = right_cord[shorter - 1]
+    top_right_num = right_cord[len(right_cord) - 1]
     top_right = Point(top_right_num[0], top_right_num[1])
     left_line = Line(ac1, top_left)
     right_line = Line(ac1, top_right)
     top_line = Line(top_right, top_left)
     cos = (line_len(left_line) ** 2 + line_len(right_line) ** 2 - line_len
     (top_line) ** 2) / (2 * line_len(left_line) * line_len(right_line))
-    if cos > 1 or cos < -1:
+    if cos > 1:
         return pi
     else:
         return acos(cos)
 
 
 if __name__ == '__main__':
-    data = read_data('vocalDeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
+    data = read_data('vocal2DeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
     t = Tracker(data)
     t.frame_by()

@@ -4,8 +4,7 @@ from TrackingObjects import Point, Line
 from math import pi, sqrt
 
 
-def test_angle_calc():
-    """Tests that the basic calculations in angle_of_opening() work correctly"""
+"""def test_angle_calc():
     ac1 = Point(1, 0)
     ac2 = Point(2, -1 / (sqrt(2) - 1))
     midline = Line(ac1, ac2)
@@ -14,8 +13,6 @@ def test_angle_calc():
 
 
 def test_same_angle_hard_pt():
-    """Tests that angle calculations work for same angles with different points
-    as input."""
     ac1 = Point(1, 0)
     ac2 = Point(2, -1 / (sqrt(2) - 1))
     midline = Line(ac1, ac2)
@@ -24,13 +21,12 @@ def test_same_angle_hard_pt():
 
 
 def test_different_cord_angles():
-    """Tests to see that calculations are correct for asymmetrical cords"""
     ac1 = Point(1, 0)
     ac2 = Point(2, -1 / (sqrt(2)-1))
     midline = Line(ac1, ac2)
     angle = tracker.angle_of_opening(midline, ac1, [(1.892, 1.784)], [(0, 1)])
     assert angle[1] == pytest.approx(pi / 8)
-    assert angle[0] == pytest.approx(0.8563466906995302)
+    assert angle[0] == pytest.approx(0.8563466906995302)"""
 
 
 def test_make_midline():
@@ -48,6 +44,15 @@ def test_midline_real_data():
     # We'll implement this once we have dlc back up and running on the desktop.
     pass
 
+
+def test_opeining_angle():
+    """Tests angle_of_opening calculation"""
+    ac1 = Point(.5, 0)
+    LC = [(.6, .1), (1, sqrt(.75))]
+    RC = [(.4, .1), (0, sqrt(.75))]
+    angle = tracker.angle_of_opening(ac1, LC, RC)
+    dangle = angle * 360 / (2 * pi)
+    assert dangle == pytest.approx(60)
 
 if __name__ == '__main__':
     pytest.main(['tracker_tests.py'])
