@@ -143,6 +143,18 @@ def angle_of_opening(left_cord, right_cord):
         return pi
     else:
         return acos(cos)"""
+    """i = 1
+    while i < len(left_cord):
+        if left_cord[i][0] - left_cord[i-1][0] < -2:
+            left_cord.pop(i)
+        else:
+            i += 1
+    i = 1
+    while i < len(right_cord):
+        if right_cord[i][0] - right_cord[i-1][0] > 2:
+            right_cord.pop(i)
+        else:
+            i += 1"""
     left_line = calc_reg_line(left_cord)
     right_line = calc_reg_line(right_cord)
     if left_line.slope == 0 or right_line.slope == 0:
@@ -153,6 +165,6 @@ def angle_of_opening(left_cord, right_cord):
 
 
 if __name__ == '__main__':
-    data = read_data('vocal2DeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
+    data = read_data('vocal3DeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
     t = Tracker(data)
     t.frame_by()
