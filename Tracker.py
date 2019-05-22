@@ -42,9 +42,7 @@ class Tracker:
               self.data[12], self.data[13]]
         graph = []
         for i in range(len(self.data[1])):
-            if not ac1[i][2] == 0:  # and not ac2[i][2] == 0:
-                ac1pt = Point(ac1[i][0], ac1[i][1])
-                # ac2pt = Point(ac2[i][0], ac2[i][1])
+            if not ac1[i][2] == 0:
                 LC_now = []
                 RC_now = []
                 cords_there = False
@@ -69,13 +67,15 @@ class Tracker:
             # rgraph.append(item[1] * 360 / (2 * pi))
             dgraph.append(item * 360 / (2 * pi))
         arr = np.array(dgraph)
+        print('Mean: ')
         print(np.mean(arr))
         print(np.std(arr))
         print(np.max(arr))
+        print('Range: ')
         print(np.max(arr) - np.min(arr))
         print(np.percentile(arr, 99.9))
         k = plt.figure(4)
-        plt.title('Angle of Opening')
+        plt.title('Angle of Opening at Anterior Commissure')
         plt.plot(dgraph)
         plt.xlabel('Frames')
         plt.ylabel('Angle Between Cords')
@@ -165,6 +165,6 @@ def angle_of_opening(left_cord, right_cord):
 
 
 if __name__ == '__main__':
-    data = read_data('vocal3DeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
+    data = read_data('vocalDeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
     t = Tracker(data)
     t.frame_by()
