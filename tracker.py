@@ -103,6 +103,8 @@ def calc_reg_line(pt_lst):
         pfx.append(item[0])
         pfy.append(item[1])
     pf = stats.linregress(pfx, pfy)
+    if abs(pf[2]) < .8:
+        return Line(0, 0)
     slope = pf[0]
     yint = pf[1]
     return Line(slope, yint)
@@ -143,6 +145,8 @@ def angle_of_opening(left_cord, right_cord):
         return acos(cos)"""
     left_line = calc_reg_line(left_cord)
     right_line = calc_reg_line(right_cord)
+    if left_line.slope == 0 or right_line.slope == 0:
+        return pi
     tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope *
                                                       right_line.slope))
     return atan(tan)
