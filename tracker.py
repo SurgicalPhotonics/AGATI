@@ -69,7 +69,9 @@ class Tracker:
         arr = np.array(dgraph)
         print('Mean: ')
         print(np.mean(arr))
+        print('Std Dev')
         print(np.std(arr))
+        print('Max')
         print(np.max(arr))
         print('Range: ')
         print(np.max(arr) - np.min(arr))
@@ -165,6 +167,6 @@ def angle_of_opening(left_cord, right_cord):
 
 
 if __name__ == '__main__':
-    data = read_data('vocalDeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
+    data = read_data('vocal1DeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
     t = Tracker(data)
     t.frame_by()
