@@ -57,7 +57,7 @@ class Tracker:
                 if cords_there:
                     # midline = Line(ac1pt, ac2pt)  # This will change
                     # angle = angle_from_midline(midline, ac1pt, LC_now, RC_now)
-                    angle = angle_of_opening(ac1pt, LC_now, RC_now)
+                    angle = angle_of_opening(LC_now, RC_now)
                     # if angle[0] < pi and angle[1] < pi:
                     if angle < pi:
                         graph.append(angle)
@@ -126,7 +126,7 @@ def angle_from_midline(midline, ac1, left_cord, right_cord):
     return asin(lsin), asin(rsin)
 
 
-def angle_of_opening(ac1, left_cord, right_cord):
+def angle_of_opening(left_cord, right_cord):
     """Calculates angle of opening between left and right cord."""
     """top_left_num = left_cord[len(left_cord) - 1]
     top_left = Point(top_left_num[0], top_left_num[1])
@@ -147,7 +147,8 @@ def angle_of_opening(ac1, left_cord, right_cord):
                                                       right_line.slope))
     return atan(tan)
 
+
 if __name__ == '__main__':
-    data = read_data('vocal3DeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
+    data = read_data('vocal1DeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
     t = Tracker(data)
     t.frame_by()
