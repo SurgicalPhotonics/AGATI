@@ -12,6 +12,7 @@ class Window(wx.Frame):
         self.basicGUI()
 
     def basicGUI(self):
+        """Basic GUI operations."""
         menu = wx.MenuBar()
         file_button = wx.Menu()
         exitItem = file_button.Append(wx.ID_EXIT, 'Exit', 'Status msg')

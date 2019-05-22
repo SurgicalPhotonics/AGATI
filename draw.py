@@ -4,6 +4,8 @@ VID_FR = 30
 
 
 def draw(path, midline, ac1, height):
+    """Takes each frame from video and stitches it back into new video with
+    line drawn on."""
     cap = cv2.VideoCapture(path)
     s, im = cap.read()
     count = 0
