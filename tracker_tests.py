@@ -1,7 +1,7 @@
 import tracker
 import pytest
 from TrackingObjects import Point, Line
-from math import pi, sqrt
+from math import pi, sqrt, atan
 
 
 """def test_angle_calc():
@@ -47,12 +47,10 @@ def test_midline_real_data():
 
 def test_opeining_angle():
     """Tests angle_of_opening calculation"""
-    ac1 = Point(.5, 0)
-    LC = [(.6, .1), (1, sqrt(.75))]
-    RC = [(.4, .1), (0, sqrt(.75))]
-    angle = tracker.angle_of_opening(ac1, LC, RC)
-    dangle = angle * 360 / (2 * pi)
-    assert dangle == pytest.approx(60)
+    tan = abs((2 + 6) / (1 + 2 * -6))
+    f = atan(tan) * 180 / pi
+    assert f == pytest.approx(36.027373385)
+
 
 if __name__ == '__main__':
     pytest.main(['tracker_tests.py'])

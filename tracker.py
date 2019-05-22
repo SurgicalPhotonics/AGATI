@@ -1,9 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import stats
 from typing import List, Tuple
 from TrackingObjects import Point
 from TrackingObjects import Line
-from math import sqrt, asin, acos, pi
+from math import sqrt, asin, acos, atan, pi
 from DataReader import read_data
 
 """bp = List[Point]  # list of all marked parts presumably get with frame
@@ -35,10 +36,9 @@ class Tracker:
     def frame_by(self):
         """Goes through lists and returns all data for each frame."""
         ac1 = self.data[0]
-        ac2 = self.data[1]
-        LC = [self.data[2], self.data[3], self.data[4], self.data[5],
+        LC = [ac1, self.data[2], self.data[3], self.data[4], self.data[5],
               self.data[6], self.data[7]]
-        RC = [self.data[8], self.data[9], self.data[10], self.data[11],
+        RC = [ac1, self.data[8], self.data[9], self.data[10], self.data[11],
               self.data[12], self.data[13]]
         graph = []
         for i in range(len(self.data[1])):
@@ -51,7 +51,8 @@ class Tracker:
                 for j in range(len(LC)):
                     LC_now.append(LC[j][i])
                     RC_now.append(RC[j][i])
-                    if LC[j][i][0] != 0 or RC[j][i][0] != 0:
+                    if LC[j][i][0] != 0 or RC[j][i][0] != 0 and len(LC_now) > 2\
+                            and len(RC_now) > 2:
                         cords_there = True
                 if cords_there:
                     # midline = Line(ac1pt, ac2pt)  # This will change
@@ -67,32 +68,12 @@ class Tracker:
             # lgraph.append(item[0] * 360 / (2 * pi))
             # rgraph.append(item[1] * 360 / (2 * pi))
             dgraph.append(item * 360 / (2 * pi))
-
-        """dif = []
-        for i in range(len(lgraph)):
-            dif.append(lgraph[i] - rgraph[i])
-        xlab = 'Frames (could be innacurate depending on quality of video and ' \
-               'training'
-        ylab = 'Angle from midline'
-        f = plt.figure(1)
-        plt.title('Left Cord Angles')
-        plt.plot(lgraph)
-        plt.xlabel(xlab)
-        plt.ylabel(ylab)
-        g = plt.figure(2)
-        plt.title('Right Cord Angles')
-        plt.plot(rgraph)
-        plt.xlabel(xlab)
-        plt.ylabel(ylab)
-        h = plt.figure(3)
-        plt.title('Angle Differences')
-        plt.plot(dif)
-        plt.xlabel('Frames')
-        plt.ylabel('Difference in angle')"""
         arr = np.array(dgraph)
         print(np.mean(arr))
         print(np.std(arr))
+        print(np.max(arr))
         print(np.max(arr) - np.min(arr))
+        print(np.percentile(arr, 99.9))
         k = plt.figure(4)
         plt.title('Angle of Opening')
         plt.plot(dgraph)
@@ -121,7 +102,7 @@ def calc_reg_line(pt_lst):
     for item in pt_lst:
         pfx.append(item[0])
         pfy.append(item[1])
-    pf = np.polyfit(pfx, pfy, 1)
+    pf = stats.linregress(pfx, pfy)
     slope = pf[0]
     yint = pf[1]
     return Line(slope, yint)
@@ -147,7 +128,7 @@ def angle_from_midline(midline, ac1, left_cord, right_cord):
 
 def angle_of_opening(ac1, left_cord, right_cord):
     """Calculates angle of opening between left and right cord."""
-    top_left_num = left_cord[len(left_cord) - 1]
+    """top_left_num = left_cord[len(left_cord) - 1]
     top_left = Point(top_left_num[0], top_left_num[1])
     top_right_num = right_cord[len(right_cord) - 1]
     top_right = Point(top_right_num[0], top_right_num[1])
@@ -159,10 +140,14 @@ def angle_of_opening(ac1, left_cord, right_cord):
     if cos > 1:
         return pi
     else:
-        return acos(cos)
-
+        return acos(cos)"""
+    left_line = calc_reg_line(left_cord)
+    right_line = calc_reg_line(right_cord)
+    tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope *
+                                                      right_line.slope))
+    return atan(tan)
 
 if __name__ == '__main__':
-    data = read_data('vocalDeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
+    data = read_data('vocal3DeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
     t = Tracker(data)
     t.frame_by()

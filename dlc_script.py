@@ -51,7 +51,7 @@ def refine(cfg):
     dlc.refine_labels(cfg)
     dlc.check_labels(cfg)
     dlc.merge_datasets(cfg)
-    
+
 
 if __name__ == '__main__':
     new_proj('vocal0DeepCut_resnet50_vocal_strobeMay8shuffle1_200000.h5')
