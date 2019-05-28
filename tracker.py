@@ -21,6 +21,12 @@ class Tracker:
         """Goes through each frame worth of data. Analyses and graphs opening
         angle of vocal cords. Prints summary statistics."""
         ac1 = self.data[0]
+        # frames dropped
+        i = 0
+        for item in self.data[1]:
+            if item[0] != 0:
+                i+=1
+        print(i)
         LC = [ac1, self.data[2], self.data[3], self.data[4], self.data[5],
               self.data[6], self.data[7]]
         RC = [ac1, self.data[8], self.data[9], self.data[10], self.data[11],
@@ -45,6 +51,7 @@ class Tracker:
         for item in graph:
             dgraph.append(item * 360 / (2 * pi))
         arr = np.array(dgraph)
+        print(i)
         print('Mean: ')
         print(np.mean(arr))
         print('Std Dev: ')
