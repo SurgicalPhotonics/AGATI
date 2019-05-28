@@ -25,7 +25,7 @@ class Tracker:
         i = 0
         for item in self.data[1]:
             if item[0] != 0:
-                i+=1
+                i += 1
         print(i)
         LC = [ac1, self.data[2], self.data[3], self.data[4], self.data[5],
               self.data[6], self.data[7]]
@@ -33,24 +33,32 @@ class Tracker:
               self.data[12], self.data[13]]
         graph = []
         for i in range(len(self.data[1])):
-            if not ac1[i][2] == 0:
-                LC_now = []
-                RC_now = []
-                cords_there = False
-                for j in range(len(LC)):
-                    LC_now.append(LC[j][i])
-                    RC_now.append(RC[j][i])
-                    if LC[j][i][0] != 0 or RC[j][i][0] != 0 and len(LC_now) > 2\
-                            and len(RC_now) > 2:
-                        cords_there = True
-                if cords_there:
-                    angle = angle_of_opening(LC_now, RC_now)
-                    if angle < pi:
-                        graph.append(angle)
+            LC_now = []
+            RC_now = []
+            cords_there = False
+            for j in range(len(LC)):
+                LC_now.append(LC[j][i])
+                RC_now.append(RC[j][i])
+                if LC[j][i][0] != 0 or RC[j][i][0] != 0 and len(LC_now) > 2\
+                         and len(RC_now) > 2:
+                    cords_there = True
+            if cords_there:
+                angle = angle_of_opening(LC_now, RC_now)
+                if angle < pi:
+                    graph.append(angle)
+                else:
+                    graph.append(None)
+            else:
+                graph.append(None)
         dgraph = []
+        sgraph = []
         for item in graph:
-            dgraph.append(item * 360 / (2 * pi))
-        arr = np.array(dgraph)
+            if item is not None:
+                dgraph.append(item * 360 / (2 * pi))
+                sgraph.append(item * 360 / (2 * pi))
+            else:
+                dgraph.append(None)
+        arr = np.array(sgraph)
         print(i)
         print('Mean: ')
         print(np.mean(arr))
@@ -64,6 +72,7 @@ class Tracker:
         print(np.percentile(arr, 99.9))
         print('Min: ')
         print(np.min(arr))
+        print(len(data[1]) == len(dgraph))
         plt.title('Angle of Opening at Anterior Commissure')
         plt.plot(dgraph)
         plt.xlabel('Frames')
