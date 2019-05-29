@@ -1,4 +1,5 @@
 import cv2
+import os
 import numpy as np
 
 
@@ -8,8 +9,9 @@ def draw(path, lines, frames=30, videotype='.mp4'):
     cap = cv2.VideoCapture(path)
     s, im = cap.read()
     count = 0
-    w = cv2.VideoWriter(path, frames)
-    # New path
+    new_path = os.path.join(path[:path.find('.')], 'lines' + videotype)
+    fourcc = cv2.VideoWriter.fourcc(*'MP4V')
+    w = cv2.VideoWriter(new_path, fourcc, frames, (640, 480))
     while s:
         left_line = lines[0][count]
         right_line = lines[1][count]

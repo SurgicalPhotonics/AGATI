@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from draw import draw
 from scipy import stats
 from TrackingObjects import Line
 from math import atan, pi
@@ -79,7 +80,10 @@ class Tracker:
         plt.plot(dgraph)
         plt.xlabel('Frames')
         plt.ylabel('Angle Between Cords')
+        draw('C:\\Users\\Natad\\Downloads\\vocal1DeepCut_resnet50_vocalMay13shuffle1_1030000_labeled.mp4',
+             (self.left, self.right))
         plt.show()
+
 
     def angle_of_opening(self, left_cord, right_cord):
         """Calculates angle of opening between left and right cord."""
