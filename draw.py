@@ -10,8 +10,8 @@ def draw(path, lines, frames=30, videotype='.mp4'):
     s, im = cap.read()
     count = 0
     new_path = os.path.join(path[:path.find('.')], 'lines' + videotype)
-    fourcc = cv2.VideoWriter.fourcc(*'MP4V')
-    w = cv2.VideoWriter(new_path, fourcc, frames, (640, 480))
+    fourcc = cv2.VideoWriter.fourcc(*'DIVX')
+    w = cv2.VideoWriter('test.avi', fourcc, frames, (640, 480))
     while s:
         print(count)
         left_line = lines[0][count]
@@ -21,12 +21,13 @@ def draw(path, lines, frames=30, videotype='.mp4'):
         else:
             cross = None
         if cross is not None:
-            cv2.imwrite(path + '.png', cv2.line(im, cross, left_line.end2, (255, 0, 0), 3))
+            cv2.imwrite(path + '.png', cv2.line(im, cross, left_line.end2, (255, 0, 0), 2))
             w.write(im)
-            cv2.imwrite(path + '.png', cv2.line(im, cross, right_line.end2, (255, 0, 0), 3))
+            cv2.imwrite(path + '.png', cv2.line(im, cross, right_line.end2, (255, 0, 0), 2))
             w.write(im)
         s, im = cap.read()
         count += 1
+    cap.release()
     w.release()
 
 
