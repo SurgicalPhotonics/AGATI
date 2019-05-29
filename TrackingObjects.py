@@ -39,5 +39,5 @@ class Line:
         if self.slope != 0:
             self.end2 = (int((y - self.yint) / self.slope), int(y))
         else:
-            self.end2 = (1, y)
+            self.end2 = (1, int(y))
 # Potential add parabolic approximation later.

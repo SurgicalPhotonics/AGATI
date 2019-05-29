@@ -13,13 +13,18 @@ def draw(path, lines, frames=30, videotype='.mp4'):
     fourcc = cv2.VideoWriter.fourcc(*'MP4V')
     w = cv2.VideoWriter(new_path, fourcc, frames, (640, 480))
     while s:
+        print(count)
         left_line = lines[0][count]
         right_line = lines[1][count]
-        cross = intersect(left_line, right_line)
-        cv2.imwrite(path, cv2.line(im, cross, left_line.end2, (255, 0, 0), 3))
-        w.write(im)
-        cv2.imwrite(path, cv2.line(im, cross, right_line.end2, (255, 0, 0), 3))
-        w.write(im)
+        if left_line is not None and right_line is not None:
+            cross = intersect(left_line, right_line)
+        else:
+            cross = None
+        if cross is not None:
+            cv2.imwrite(path + '.png', cv2.line(im, cross, left_line.end2, (255, 0, 0), 3))
+            w.write(im)
+            cv2.imwrite(path + '.png', cv2.line(im, cross, right_line.end2, (255, 0, 0), 3))
+            w.write(im)
         s, im = cap.read()
         count += 1
     w.release()
@@ -38,7 +43,7 @@ def intersect(left_line, right_line):
     l2 = np.cross(h[2], h[3])  # get second line
     x, y, z = np.cross(l1, l2)  # point of intersection
     if z == 0:  # lines are parallel
-        return int('inf'), int('inf')
+        return None
     return int(x / z), int(y / z)
 
 

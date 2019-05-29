@@ -52,6 +52,8 @@ class Tracker:
                 else:
                     graph.append(None)
             else:
+                self.left.append(None)
+                self.right.append(None)
                 graph.append(None)
         dgraph = []
         sgraph = []
@@ -80,8 +82,10 @@ class Tracker:
         plt.plot(dgraph)
         plt.xlabel('Frames')
         plt.ylabel('Angle Between Cords')
+        print(len(dgraph))
         draw('C:\\Users\\Natad\\Downloads\\vocal1DeepCut_resnet50_vocalMay13shuffle1_1030000_labeled.mp4',
-             (self.left, self.right))
+            (self.left, self.right))
+        print('Video made')
         plt.show()
 
     def angle_of_opening(self, left_cord, right_cord):
