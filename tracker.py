@@ -84,12 +84,13 @@ class Tracker:
              (self.left, self.right))
         plt.show()
 
-
     def angle_of_opening(self, left_cord, right_cord):
         """Calculates angle of opening between left and right cord."""
         left_line = calc_reg_line(left_cord)
+        left_line.set_end2(left_cord[len(left_cord) - 1])
         self.left.append(left_line)
         right_line = calc_reg_line(right_cord)
+        right_line.set_end2(right_cord[len(right_cord) - 1])
         self.right.append(right_line)
         if left_line.slope == 0 or right_line.slope == 0:
             return pi

@@ -28,18 +28,18 @@ def draw(path, lines, frames=30, videotype='.mp4'):
 def intersect(left_line, right_line):
     """Returns the point of intersection of two lines. Used to define anterior
     commissure from which to start lines."""
-    a1 = left_line.x
-    a2 = left_line.y
-    b1 = right_line.x
-    b2 = right_line.y
+    a1 = left_line.end1
+    a2 = left_line.end2
+    b1 = right_line.end1
+    b2 = right_line.end2
     s = np.vstack([a1, a2, b1, b2])  # s for stacked
     h = np.hstack((s, np.ones((4, 1))))  # h for homogeneous
     l1 = np.cross(h[0], h[1])  # get first line
     l2 = np.cross(h[2], h[3])  # get second line
     x, y, z = np.cross(l1, l2)  # point of intersection
     if z == 0:  # lines are parallel
-        return float('inf'), float('inf')
-    return x / z, y / z
+        return int('inf'), int('inf')
+    return int(x / z), int(y / z)
 
 
 
