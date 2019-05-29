@@ -46,4 +46,8 @@ class Line:
             self.end1 = Point(0, self.yint)
             self.end2 = Point(1, self.yint + self.slope)
 
+    def set_end2(self, end):
+        """Allows a new end2 point to be passed from outside."""
+        y = end.y
+        self.end2 = ((y - self.yint) / self.slope, y)
 # Potential add parabolic approximation later.

@@ -16,6 +16,8 @@ class Tracker:
 
     def __init__(self, data):
         self.data = data
+        self.left = []
+        self.right = []
 
     def frame_by(self):
         """Goes through each frame worth of data. Analyses and graphs opening
@@ -40,10 +42,10 @@ class Tracker:
                 LC_now.append(LC[j][i])
                 RC_now.append(RC[j][i])
                 if LC[j][i][0] != 0 or RC[j][i][0] != 0 and len(LC_now) > 2\
-                         and len(RC_now) > 2:
+                        and len(RC_now) > 2:
                     cords_there = True
             if cords_there:
-                angle = angle_of_opening(LC_now, RC_now)
+                angle = self.angle_of_opening(LC_now, RC_now)
                 if angle < pi:
                     graph.append(angle)
                 else:
@@ -79,6 +81,18 @@ class Tracker:
         plt.ylabel('Angle Between Cords')
         plt.show()
 
+    def angle_of_opening(self, left_cord, right_cord):
+        """Calculates angle of opening between left and right cord."""
+        left_line = calc_reg_line(left_cord)
+        self.left.append(left_line)
+        right_line = calc_reg_line(right_cord)
+        self.right.append(right_line)
+        if left_line.slope == 0 or right_line.slope == 0:
+            return pi
+        tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope *
+                                                          right_line.slope))
+        return atan(tan)
+
 
 def calc_reg_line(pt_lst):
     """Given a list corresponding to points plotted on a vocal cord. Calculates
@@ -94,17 +108,6 @@ def calc_reg_line(pt_lst):
     slope = pf[0]
     yint = pf[1]
     return Line(slope, yint)
-
-
-def angle_of_opening(left_cord, right_cord):
-    """Calculates angle of opening between left and right cord."""
-    left_line = calc_reg_line(left_cord)
-    right_line = calc_reg_line(right_cord)
-    if left_line.slope == 0 or right_line.slope == 0:
-        return pi
-    tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope *
-                                                      right_line.slope))
-    return atan(tan)
 
 
 if __name__ == '__main__':
