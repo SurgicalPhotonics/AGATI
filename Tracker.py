@@ -92,10 +92,16 @@ class Tracker:
         """Calculates angle of opening between left and right cord."""
         left_line = calc_reg_line(left_cord)
         left_line.set_end2(left_cord[len(left_cord) - 1])
-        self.left.append(left_line)
+        if not left_line.slope == 0:
+            self.left.append(left_line)
+        else:
+            self.left.append(None)
         right_line = calc_reg_line(right_cord)
         right_line.set_end2(right_cord[len(right_cord) - 1])
-        self.right.append(right_line)
+        if not right_line.slope == 0:
+            self.right.append(right_line)
+        else:
+            self.right.append(None)
         if left_line.slope == 0 or right_line.slope == 0:
             return pi
         tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope *

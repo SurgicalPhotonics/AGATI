@@ -3,7 +3,7 @@ import os
 import numpy as np
 
 
-def draw(path, lines, frames=30, videotype='.mp4'):
+def draw(path, lines, frames=29.29, videotype='.mp4'):
     """Takes each frame from video and stitches it back into new video with
     line drawn on."""
     cap = cv2.VideoCapture(path)
@@ -11,7 +11,7 @@ def draw(path, lines, frames=30, videotype='.mp4'):
     count = 0
     new_path = os.path.join(path[:path.find('.')], 'lines' + videotype)
     fourcc = cv2.VideoWriter.fourcc(*'DIVX')
-    w = cv2.VideoWriter('test.avi', fourcc, frames, (640, 480))
+    w = cv2.VideoWriter('test.mp4', -1, frames, (480, 360))
     while s:
         print(count)
         left_line = lines[0][count]
@@ -22,8 +22,10 @@ def draw(path, lines, frames=30, videotype='.mp4'):
             cross = None
         if cross is not None:
             cv2.imwrite(path + '.png', cv2.line(im, cross, left_line.end2, (255, 0, 0), 2))
-            w.write(im)
+            #w.write(im)
             cv2.imwrite(path + '.png', cv2.line(im, cross, right_line.end2, (255, 0, 0), 2))
+            w.write(im)
+        else:
             w.write(im)
         s, im = cap.read()
         count += 1

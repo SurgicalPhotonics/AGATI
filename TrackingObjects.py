@@ -31,7 +31,7 @@ class Line:
             self.slope = e1
             self.yint = e2
             self.end1 = (0, self.yint)
-            self.end2 = (1, self.yint + self.slope)
+            self.end2 = (1, int(self.yint + self.slope))
 
     def set_end2(self, end):
         """Allows a new end2 point to be passed from outside."""
