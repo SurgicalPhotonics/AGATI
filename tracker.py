@@ -27,7 +27,7 @@ class Tracker:
         # frames dropped
         i = 0
         for item in self.data[1]:
-            if item[0] != 0:
+            if item is not None:
                 i += 1
         print(i)
         LC = [ac1, self.data[2], self.data[3], self.data[4], self.data[5],
@@ -40,31 +40,28 @@ class Tracker:
             RC_now = []
             cords_there = False
             for j in range(len(LC)):
-                LC_now.append(LC[j][i])
-                if LC[j][i][0] != 0:
+                if LC[j][i] is not None:
+                    LC_now.append(LC[j][i])
                     cords_there = True
             for j in range(len(RC)):
-                RC_now.append(RC[j][i])
-                if RC[j][i][0] != 0:
+                if RC[j][i] is not None:
+                    RC_now.append(RC[j][i])
                     cords_there = True
             num_pts = 0  # number of legitimate points on a cord
             for item in LC_now:
-                if item[0] > 0 or item[1] > 0:
+                if item is not None:
                     num_pts += 1
             if num_pts < 3:
                 cords_there = False
             num_pts = 0
             for item in RC_now:
-                if item[0] > 0 or item[1] > 0:
+                if item is not None:
                     num_pts += 1
             if num_pts < 3:
                 cords_there = False
             if cords_there:
                 angle = self.angle_of_opening(LC_now, RC_now)
-                if angle < pi:
-                    graph.append(angle)
-                else:
-                    graph.append(None)
+                graph.append(angle)
             else:
                 self.left.append(None)
                 self.right.append(None)
@@ -105,19 +102,15 @@ class Tracker:
     def angle_of_opening(self, left_cord, right_cord):
         """Calculates angle of opening between left and right cord."""
         left_line = calc_reg_line(left_cord)
-        left_line.set_end2(left_cord[len(left_cord) - 1])
-        if not left_line.slope == 0:
-            self.left.append(left_line)
-        else:
-            self.left.append(None)
+        if left_line is not None:
+            left_line.set_end2(left_cord[len(left_cord) - 1])
+        self.left.append(left_line)
         right_line = calc_reg_line(right_cord)
-        right_line.set_end2(right_cord[len(right_cord) - 1])
-        if not right_line.slope == 0:
-            self.right.append(right_line)
-        else:
-            self.right.append(None)
-        if left_line.slope == 0 or right_line.slope == 0:
-            return pi
+        if right_line is not None:
+            right_line.set_end2(right_cord[len(right_cord) - 1])
+        self.right.append(right_line)
+        if left_line is None or right_line is None:
+            return None
         tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope *
                                                           right_line.slope))
         return atan(tan)
@@ -129,12 +122,11 @@ def calc_reg_line(pt_lst):
     pfx = []
     pfy = []
     for item in pt_lst:
-        if item[0] > 0 or item[1] > 0:
-            pfx.append(item[0])
-            pfy.append(item[1])
+        pfx.append(item[0])
+        pfy.append(item[1])
     pf = stats.linregress(pfx, pfy)
-    if abs(pf[2]) < .9:
-        return Line(0, 0)
+    if abs(pf[2]) < .7:
+        return None
     slope = pf[0]
     yint = pf[1]
     return Line(slope, yint)

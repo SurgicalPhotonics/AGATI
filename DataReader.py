@@ -29,7 +29,7 @@ def clean_data(data):
     for item in data:
         for i in range(len(item) - 1):
             if item[i][2] < con_const:
-                item[i] = (0, 0, 0)
+                item[i] = None
 
 
 if __name__ == '__main__':
