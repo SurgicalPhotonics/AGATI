@@ -33,11 +33,16 @@ class Line:
             self.end1 = (0, self.yint)
             self.end2 = (1, int(self.yint + self.slope))
 
-    def set_end2(self, end):
+    def set_ends(self, cord):
         """Allows a new end2 point to be passed from outside."""
-        y = end[1]
+        y = cord[len(cord) - 1][1]
         if self.slope != 0:
             self.end2 = (int((y - self.yint) / self.slope), int(y))
         else:
             self.end2 = (1, int(y))
+        y = cord[0][1]
+        if self.slope != 0:
+            self.end1 = (int((y - self.yint) / self.slope), int(y))
+        else:
+            self.end1 = (1, int(y))
 # Potential add parabolic approximation later.

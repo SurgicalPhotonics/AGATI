@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from draw import draw
+from draw import draw, intersect
 from scipy import stats
 from TrackingObjects import Line
 from math import atan, pi
@@ -20,7 +20,7 @@ class Tracker:
         self.left = []
         self.right = []
 
-    def frame_by(self):
+    def frame_by(self, path):
         """Goes through each frame worth of data. Analyses and graphs opening
         angle of vocal cords. Prints summary statistics."""
         ac1 = self.data[0]
@@ -94,8 +94,7 @@ class Tracker:
         plt.xlabel('Frames')
         plt.ylabel('Angle Between Cords')
         print(len(dgraph))
-        draw('C:\\Users\\Natad\\Downloads\\vocal1DeepCut_resnet50_vocalMay13shuffle1_1030000_labeled.mp4',
-            (self.left, self.right))
+        draw(path, (self.left, self.right), dgraph)
         print('Video made')
         plt.show()
 
@@ -103,14 +102,22 @@ class Tracker:
         """Calculates angle of opening between left and right cord."""
         left_line = calc_reg_line(left_cord)
         if left_line is not None:
-            left_line.set_end2(left_cord[len(left_cord) - 1])
+            left_line.set_ends(left_cord)
         self.left.append(left_line)
         right_line = calc_reg_line(right_cord)
         if right_line is not None:
-            right_line.set_end2(right_cord[len(right_cord) - 1])
+            right_line.set_ends(right_cord)
         self.right.append(right_line)
         if left_line is None or right_line is None:
-            return None
+            return
+        if right_line.slope < 0 < left_line.slope:
+            return 0
+        # set zero with high slopes
+        if abs(left_line.slope) > 7 and right_line.slope > 7:
+            return 0
+        crossy = intersect(left_line, right_line)[1]
+        if crossy < left_cord[0][1] - 20 or crossy < right_cord[0][1] - 20:
+            return 0
         tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope *
                                                           right_line.slope))
         return atan(tan)
@@ -125,7 +132,7 @@ def calc_reg_line(pt_lst):
         pfx.append(item[0])
         pfy.append(item[1])
     pf = stats.linregress(pfx, pfy)
-    if abs(pf[2]) < .7:
+    if abs(pf[2]) < .5:
         return None
     slope = pf[0]
     yint = pf[1]
@@ -135,4 +142,4 @@ def calc_reg_line(pt_lst):
 if __name__ == '__main__':
     data = read_data('vocal1DeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
     t = Tracker(data)
-    t.frame_by()
+    t.frame_by('C:\\Users\\Natad\\Downloads\\vocal1DeepCut_resnet50_vocalMay13shuffle1_1030000_labeled.mp4')

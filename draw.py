@@ -3,7 +3,7 @@ import os
 import numpy as np
 
 
-def draw(path, lines, frames=29.29, videotype='.mp4'):
+def draw(path, lines, angles, frames=29.29, videotype='.mp4'):
     """Takes each frame from video and stitches it back into new video with
     line drawn on."""
     cap = cv2.VideoCapture(path)
@@ -11,7 +11,7 @@ def draw(path, lines, frames=29.29, videotype='.mp4'):
     count = 0
     new_path = os.path.join(path[:path.find('.')], 'lines' + videotype)
     fourcc = cv2.VideoWriter.fourcc(*'DIVX')
-    w = cv2.VideoWriter('test.mp4', -1, frames, (480, 360))
+    w = cv2.VideoWriter('test' + videotype, -1, frames, (480, 360))
     while s:
         print(count)
         left_line = lines[0][count]
@@ -20,13 +20,31 @@ def draw(path, lines, frames=29.29, videotype='.mp4'):
             cross = intersect(left_line, right_line)
         else:
             cross = None
-        if cross is not None:
-            cv2.imwrite(path + '.png', cv2.line(im, cross, left_line.end2, (255, 0, 0), 2))
-            #w.write(im)
-            cv2.imwrite(path + '.png', cv2.line(im, cross, right_line.end2, (255, 0, 0), 2))
-            w.write(im)
-        else:
-            w.write(im)
+        if left_line is not None and right_line is not None and left_line.slope \
+                > 7 and right_line.slope > 7:
+            cv2.imwrite(path + '.png',
+                        cv2.line(im, left_line.end1, left_line.end2,
+                                 (255, 0, 0), 2))
+            cv2.imwrite(path + '.png',
+                        cv2.line(im, right_line.end1, right_line.end2,
+                                 (255, 0, 0), 2))
+        elif cross is not None:
+            if cross[1] > (left_line.end1[1] + right_line.end1[1]) / 2 + 20 or \
+                   cross[1] < (left_line.end1[1] + right_line.end1[1]) / 2 - 20:
+                cv2.imwrite(path + '.png', cv2.line
+                (im, left_line.end1, left_line.end2, (255, 0, 0), 2))
+                cv2.imwrite(path + '.png',
+                            cv2.line(im, right_line.end1, right_line.end2,
+                                     (255, 0, 0), 2))
+            else:
+                cv2.imwrite(path + '.png',
+                            cv2.line(im, cross, left_line.end2, (255, 0, 0), 2))
+                cv2.imwrite(path + '.png',
+                            cv2.line(im, cross, right_line.end2, (255, 0, 0),
+                                     2))
+        if angles[count] is not None:
+            cv2.putText(im, str(round(angles[count], 2)), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 1,  (1, 1, 198), 2, cv2.LINE_AA)
+        w.write(im)
         s, im = cap.read()
         count += 1
     cap.release()
@@ -48,6 +66,3 @@ def intersect(left_line, right_line):
     if z == 0:  # lines are parallel
         return None
     return int(x / z), int(y / z)
-
-
-
