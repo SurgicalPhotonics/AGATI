@@ -42,9 +42,10 @@ class Tracker:
             for j in range(len(LC)):
                 LC_now.append(LC[j][i])
                 RC_now.append(RC[j][i])
-                if LC[j][i][0] != 0 or RC[j][i][0] != 0 and len(LC_now) > 2\
-                        and len(RC_now) > 2:
+                if LC[j][i][0] != 0 or RC[j][i][0] != 0:
                     cords_there = True
+            if not len(LC_now) > 2 or not len(RC_now) > 2:
+                cords_there = False
             if cords_there:
                 angle = self.angle_of_opening(LC_now, RC_now)
                 if angle < pi:
