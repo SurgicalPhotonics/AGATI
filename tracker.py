@@ -41,10 +41,23 @@ class Tracker:
             cords_there = False
             for j in range(len(LC)):
                 LC_now.append(LC[j][i])
-                RC_now.append(RC[j][i])
-                if LC[j][i][0] != 0 or RC[j][i][0] != 0:
+                if LC[j][i][0] != 0:
                     cords_there = True
-            if not len(LC_now) > 2 or not len(RC_now) > 2:
+            for j in range(len(RC)):
+                RC_now.append(RC[j][i])
+                if RC[j][i][0] != 0:
+                    cords_there = True
+            num_pts = 0  # number of legitimate points on a cord
+            for item in LC_now:
+                if item[0] > 0 or item[1] > 0:
+                    num_pts += 1
+            if num_pts < 3:
+                cords_there = False
+            num_pts = 0
+            for item in RC_now:
+                if item[0] > 0 or item[1] > 0:
+                    num_pts += 1
+            if num_pts < 3:
                 cords_there = False
             if cords_there:
                 angle = self.angle_of_opening(LC_now, RC_now)
@@ -56,8 +69,8 @@ class Tracker:
                 self.left.append(None)
                 self.right.append(None)
                 graph.append(None)
-        dgraph = []
-        sgraph = []
+        dgraph = []  # keep none to show blank space in graph.
+        sgraph = []  # remove none to perform statistical analysis.
         for item in graph:
             if item is not None:
                 dgraph.append(item * 360 / (2 * pi))
@@ -116,8 +129,9 @@ def calc_reg_line(pt_lst):
     pfx = []
     pfy = []
     for item in pt_lst:
-        pfx.append(item[0])
-        pfy.append(item[1])
+        if item[0] > 0 or item[1] > 0:
+            pfx.append(item[0])
+            pfy.append(item[1])
     pf = stats.linregress(pfx, pfy)
     if abs(pf[2]) < .9:
         return Line(0, 0)
