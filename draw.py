@@ -7,11 +7,13 @@ def draw(path, lines, angles, frames=29.29, videotype='.mp4'):
     """Takes each frame from video and stitches it back into new video with
     line drawn on."""
     cap = cv2.VideoCapture(path)
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     s, im = cap.read()
     count = 0
     new_path = os.path.join(path[:path.find('.')], 'lines' + videotype)
-    fourcc = cv2.VideoWriter.fourcc(*'DIVX')
-    w = cv2.VideoWriter('test' + videotype, -1, frames, (480, 360))
+    fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
+    w = cv2.VideoWriter('test' + videotype, fourcc, frames, (width, height))
     while s:
         print(count)
         left_line = lines[0][count]

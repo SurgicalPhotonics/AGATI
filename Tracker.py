@@ -132,7 +132,7 @@ def calc_reg_line(pt_lst):
         pfx.append(item[0])
         pfy.append(item[1])
     pf = stats.linregress(pfx, pfy)
-    if abs(pf[2]) < .5:
+    if abs(pf[2]) < .8:
         return None
     slope = pf[0]
     yint = pf[1]
@@ -140,6 +140,6 @@ def calc_reg_line(pt_lst):
 
 
 if __name__ == '__main__':
-    data = read_data('vocal1DeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
+    data = read_data('vocalDeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
     t = Tracker(data)
-    t.frame_by('C:\\Users\\Natad\\Downloads\\vocal1DeepCut_resnet50_vocalMay13shuffle1_1030000_labeled.mp4')
+    t.frame_by('vocalDeepCut_resnet50_vocalMay13shuffle1_1030000_labeled.mp4')
