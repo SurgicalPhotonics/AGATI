@@ -12,7 +12,11 @@ def draw(path, lines, angles, frames=29.29, videotype='.mp4'):
     s, im = cap.read()
     count = 0
     new_path = os.path.join(path[:path.find('.')], 'lines' + videotype)
+<<<<<<< HEAD
     fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
+=======
+    fourcc = cv2.VideoWriter.fourcc('m', 'p', '4', 'v')
+>>>>>>> cd8f408138f98fb93094a4fc2a50d705ae5deacf
     w = cv2.VideoWriter('test' + videotype, fourcc, frames, (width, height))
     while s:
         print(count)
