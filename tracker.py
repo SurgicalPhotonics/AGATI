@@ -88,7 +88,7 @@ class Tracker:
         print('Range: ')
         print(np.max(arr) - np.min(arr))
         print('99th: ')
-        print(np.percentile(arr, 99.9))
+        print(np.percentile(arr, 97))
         print('Min: ')
         print(np.min(arr))
         print(len(data[1]) == len(dgraph))
@@ -138,7 +138,6 @@ def calc_reg_line(pt_lst, comm):
     for item in pt_lst:
         pfx.append(item[0])
         pfy.append(item[1])
-        #### Try with All ant com points removed
     pf = stats.linregress(pfx, pfy)
     if comm:
         pfc = stats.linregress(pfx[1:], pfy[1:])
@@ -146,7 +145,7 @@ def calc_reg_line(pt_lst, comm):
             pf = pfc
         if 3 < len(pfx) < 5:
             pf = pfc
-    if abs(pf[2]) ** 2 < .7:
+    if abs(pf[2]) ** 2 < .8:
         return None
     slope = pf[0]
     yint = pf[1]
