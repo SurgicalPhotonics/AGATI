@@ -153,4 +153,4 @@ def calc_reg_line(pt_lst, comm):
 if __name__ == '__main__':
     data = read_data('vocalDeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
     t = Tracker(data)
-    t.frame_by('C:\\Users\\Natad\\Downloads\\vocal1DeepCut_resnet50_vocalMay13shuffle1_1030000_labeled.mp4')
+    t.frame_by('C:\\Users\\Natad\\Downloads\\vocalDeepCut_resnet50_vocalMay13shuffle1_1030000_labeled.mp4')

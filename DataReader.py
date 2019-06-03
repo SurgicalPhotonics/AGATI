@@ -1,6 +1,6 @@
 import pandas as pd
 
-con_const = 1  # How confident we want Deeplabcut to be of its point placement.
+con_const = .9  # How confident we want Deeplabcut to be of its point placement.
 
 bps = ['AC1', 'AC2', 'LC1', 'LC2', 'LC3', 'LC4', 'LC5', 'LVP', 'RC1', 'RC2',
        'RC3', 'RC4', 'RC5', 'RVP']
