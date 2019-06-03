@@ -39,9 +39,12 @@ class Tracker:
             LC_now = []
             RC_now = []
             cords_there = False
+            comm = False
             for j in range(len(LC)):
                 if LC[j][i] is not None:
                     LC_now.append(LC[j][i])
+                    if j == 0:
+                        comm = True
                     cords_there = True
             for j in range(len(RC)):
                 if RC[j][i] is not None:
@@ -60,7 +63,7 @@ class Tracker:
             if num_pts < 3:
                 cords_there = False
             if cords_there:
-                angle = self.angle_of_opening(LC_now, RC_now)
+                angle = self.angle_of_opening(LC_now, RC_now, comm)
                 graph.append(angle)
             else:
                 self.left.append(None)
@@ -94,36 +97,40 @@ class Tracker:
         plt.xlabel('Frames')
         plt.ylabel('Angle Between Cords')
         print(len(dgraph))
-        draw(path, (self.left, self.right), dgraph)
+        #draw(path, (self.left, self.right), dgraph)
         print('Video made')
         plt.show()
 
-    def angle_of_opening(self, left_cord, right_cord):
+    def angle_of_opening(self, left_cord, right_cord, comm):
         """Calculates angle of opening between left and right cord."""
-        left_line = calc_reg_line(left_cord)
+        left_line = calc_reg_line(left_cord, comm)
         if left_line is not None:
             left_line.set_ends(left_cord)
         self.left.append(left_line)
-        right_line = calc_reg_line(right_cord)
+        right_line = calc_reg_line(right_cord, comm)
         if right_line is not None:
             right_line.set_ends(right_cord)
         self.right.append(right_line)
         if left_line is None or right_line is None:
-            return
+            return None
         if right_line.slope < 0 < left_line.slope:
             return 0
         # set zero with high slopes
         if abs(left_line.slope) > 7 and right_line.slope > 7:
             return 0
-        crossy = intersect(left_line, right_line)[1]
-        if crossy < left_cord[0][1] - 20 or crossy < right_cord[0][1] - 20:
+        cross = intersect(left_line, right_line)
+        if cross is not None:
+            crossy = cross[1]
+        else:
+            return 0
+        if crossy > left_cord[0][1] + 20 or crossy > right_cord[0][1] + 20:
             return 0
         tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope *
                                                           right_line.slope))
         return atan(tan)
 
 
-def calc_reg_line(pt_lst):
+def calc_reg_line(pt_lst, comm):
     """Given a list corresponding to points plotted on a vocal cord. Calculates
     a regression line from those points which is used to represent the cord."""
     pfx = []
@@ -132,7 +139,11 @@ def calc_reg_line(pt_lst):
         pfx.append(item[0])
         pfy.append(item[1])
     pf = stats.linregress(pfx, pfy)
-    if abs(pf[2]) < .5:
+    if comm:
+        pfc = stats.linregress(pfx[1:], pfy[1:])
+        if abs(pfc[2]) > abs(pf[2]):
+            pf = pfc
+    if abs(pf[2]) ** 2 < .6:
         return None
     slope = pf[0]
     yint = pf[1]
@@ -140,6 +151,6 @@ def calc_reg_line(pt_lst):
 
 
 if __name__ == '__main__':
-    data = read_data('vocal1DeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
+    data = read_data('vocalDeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
     t = Tracker(data)
     t.frame_by('C:\\Users\\Natad\\Downloads\\vocal1DeepCut_resnet50_vocalMay13shuffle1_1030000_labeled.mp4')
