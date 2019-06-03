@@ -97,7 +97,7 @@ class Tracker:
         plt.xlabel('Frames')
         plt.ylabel('Angle Between Cords')
         print(len(dgraph))
-        #draw(path, (self.left, self.right), dgraph)
+        draw(path, (self.left, self.right), dgraph)
         print('Video made')
         plt.show()
 
