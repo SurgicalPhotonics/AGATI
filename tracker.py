@@ -138,12 +138,15 @@ def calc_reg_line(pt_lst, comm):
     for item in pt_lst:
         pfx.append(item[0])
         pfy.append(item[1])
+        #### Try with All ant com points removed
     pf = stats.linregress(pfx, pfy)
     if comm:
         pfc = stats.linregress(pfx[1:], pfy[1:])
         if abs(pfc[2]) > abs(pf[2]):
             pf = pfc
-    if abs(pf[2]) ** 2 < .6:
+        if 3 < len(pfx) < 5:
+            pf = pfc
+    if abs(pf[2]) ** 2 < .7:
         return None
     slope = pf[0]
     yint = pf[1]
