@@ -143,10 +143,10 @@ def calc_reg_line(pt_lst, comm):
         pfc = stats.linregress(pfx[1:], pfy[1:])
         if abs(pfc[2]) > abs(pf[2]):
             pf = pfc
-        if 3 < len(pfx) < 5:
+        if 3 < len(pfx):
             pf = pfc
-    #pf = outlier_del(pfx, pfy, comm, pf)
-    if abs(pf[2]) ** 2 < .8:
+    pf = outlier_del(pfx, pfy, comm, pf)
+    if abs(pf[2]) ** 2 < .9:
         return None
     slope = pf[0]
     yint = pf[1]
