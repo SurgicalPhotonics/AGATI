@@ -168,6 +168,8 @@ def outlier_del(pfx, pfy, comm, pf):
             newx.pop(i)
             newy.pop(i)
             newline = stats.linregress(newx, newy)
+            if len(newx) > 3:
+                newline = outlier_del(newx, newy, False, newline)
             if abs(newline[2]) > abs(pf[2]):
                 pf = newline
     return pf
