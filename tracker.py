@@ -142,9 +142,11 @@ def calc_reg_line(pt_lst, comm):
     if comm:
         pfc = stats.linregress(pfx[1:], pfy[1:])
         if abs(pfc[2]) > abs(pf[2]):
-            pf = pfc
+            pass
+            #pf = pfc
         if 3 < len(pfx) < 5:
-            pf = pfc
+            pass
+            #pf = pfc
     pf = outlier_del(pfx, pfy, comm, pf)
     if abs(pf[2]) ** 2 < .8:
         return None
@@ -177,5 +179,7 @@ def outlier_del(pfx, pfy, comm, pf):
 
 if __name__ == '__main__':
     data = read_data('vocalDeepCut_resnet50_vocal_paperMay23shuffle1_900000.h5')
+    #data = read_data('uvfp1DeepCut_resnet50_vocal_paperMay23shuffle1_900000.h5')
     t = Tracker(data)
     t.frame_by('vocalDeepCut_resnet50_vocal_paperMay23shuffle1_900000_labeled.mp4')
+    #t.frame_by('uvfp1DeepCut_resnet50_vocal_paperMay23shuffle1_900000_labeled.mp4')
