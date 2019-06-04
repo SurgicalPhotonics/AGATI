@@ -139,15 +139,13 @@ def calc_reg_line(pt_lst, comm):
         pfx.append(item[0])
         pfy.append(item[1])
     pf = stats.linregress(pfx, pfy)
-    if comm:
+    if comm and len(pfx) > 3:
         pfc = stats.linregress(pfx[1:], pfy[1:])
         if abs(pfc[2]) > abs(pf[2]):
-            pass
-            #pf = pfc
+            pf = pfc
         if 3 < len(pfx) < 5:
-            pass
-            #pf = pfc
-    pf = outlier_del(pfx, pfy, comm, pf)
+            pf = pfc
+    #pf = outlier_del(pfx, pfy, comm, pf)
     if abs(pf[2]) ** 2 < .8:
         return None
     slope = pf[0]
