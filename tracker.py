@@ -30,10 +30,10 @@ class Tracker:
             if item is not None:
                 i += 1
         print(i)
-        LC = [ac1, self.data[2], self.data[3], self.data[4], self.data[5],
-              self.data[6], self.data[7]]
-        RC = [ac1, self.data[8], self.data[9], self.data[10], self.data[11],
-              self.data[12], self.data[13]]
+        LC = [ac1, self.data[1], self.data[2], self.data[3], self.data[4],
+              self.data[5], self.data[6]]
+        RC = [ac1, self.data[7], self.data[8], self.data[9], self.data[10],
+              self.data[11], self.data[12]]
         graph = []
         for i in range(len(self.data[1])):
             LC_now = []
@@ -145,6 +145,7 @@ def calc_reg_line(pt_lst, comm):
             pf = pfc
         if 3 < len(pfx) < 5:
             pf = pfc
+    pf = outlier_del(pfx, pfy, comm, pf)
     if abs(pf[2]) ** 2 < .8:
         return None
     slope = pf[0]
@@ -152,7 +153,27 @@ def calc_reg_line(pt_lst, comm):
     return Line(slope, yint)
 
 
+def outlier_del(pfx, pfy, comm, pf):
+    """Deletes outliers from sufficiently large cord lists."""
+    if comm:
+        pfx = pfx[1:]
+        pfy = pfy[1:]
+    if len(pfx) > 3:
+        for i in range(len(pfx) - 1):
+            newx = []
+            newy = []
+            for j in range(len(pfx)):
+                newx.append(pfx[j])
+                newy.append(pfy[j])
+            newx.pop(i)
+            newy.pop(i)
+            newline = stats.linregress(newx, newy)
+            if abs(newline[2]) > abs(pf[2]):
+                pf = newline
+    return pf
+
+
 if __name__ == '__main__':
-    data = read_data('vocalDeepCut_resnet50_vocalMay13shuffle1_1030000.h5')
+    data = read_data('vocalDeepCut_resnet50_vocal_paperMay23shuffle1_900000.h5')
     t = Tracker(data)
-    t.frame_by('C:\\Users\\Natad\\Downloads\\vocalDeepCut_resnet50_vocalMay13shuffle1_1030000_labeled.mp4')
+    t.frame_by('vocalDeepCut_resnet50_vocal_paperMay23shuffle1_900000_labeled.mp4')

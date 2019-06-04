@@ -1,8 +1,8 @@
 import pandas as pd
 
-con_const = .9  # How confident we want Deeplabcut to be of its point placement.
+con_const = .99  # How confident we want Deeplabcut to be of its point placement.
 
-bps = ['AC1', 'AC2', 'LC1', 'LC2', 'LC3', 'LC4', 'LC5', 'LVP', 'RC1', 'RC2',
+bps = ['AC', 'LC1', 'LC2', 'LC3', 'LC4', 'LC5', 'LVP', 'RC1', 'RC2',
        'RC3', 'RC4', 'RC5', 'RVP']
 # This will change (remove AC2) when we update training.
 
@@ -11,7 +11,7 @@ def read_data(path):
     """Reads Deeplabcut video data from dataframe using pandas."""
     placeholder = pd.read_hdf(path)
     # fix next line to take all possible input -- exclude vocal and .h5
-    data = placeholder['DeepCut_resnet50_vocalMay13shuffle1_1030000']
+    data = placeholder['DeepCut_resnet50_vocal_paperMay23shuffle1_900000']
     sorted_data = []
     for part in bps:
         plist = []
