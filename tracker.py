@@ -192,8 +192,8 @@ def outlier_del(pfx, pfy, comm, pf):
 
 
 if __name__ == '__main__':
-    data = read_data('vocal1DeepCut_resnet50_vocal_paperMay23shuffle1_900000.h5')
+    data = read_data('vocalDeepCut_resnet50_vocal_paperMay23shuffle1_900000.h5')
     #data = read_data('uvfp1DeepCut_resnet50_vocal_paperMay23shuffle1_900000.h5')
     t = Tracker(data)
-    t.frame_by('vocal1DeepCut_resnet50_vocal_paperMay23shuffle1_900000_labeled.mp4')
+    t.frame_by('vocalDeepCut_resnet50_vocal_paperMay23shuffle1_900000_labeled.mp4')
     #t.frame_by('uvfp1DeepCut_resnet50_vocal_paperMay23shuffle1_900000_labeled.mp4')
