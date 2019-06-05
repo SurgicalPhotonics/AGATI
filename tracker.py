@@ -73,8 +73,8 @@ class Tracker:
         sgraph = []  # remove none to perform statistical analysis.
         for item in graph:
             if item is not None:
-                dgraph.append(item * 360 / (2 * pi))
-                sgraph.append(item * 360 / (2 * pi))
+                dgraph.append(item * 180 / pi)
+                sgraph.append(item * 180 / pi)
             else:
                 dgraph.append(None)
         arr = np.array(sgraph)
@@ -105,8 +105,13 @@ class Tracker:
         """Calculates angle of opening between left and right cord."""
         left_line = calc_reg_line(left_cord, comm)
         right_line = calc_reg_line(right_cord, comm)
-        self.left.append(left_line)
-        self.right.append(right_line)
+        left_plot = calc_print_line(left_cord)
+        right_plot = calc_print_line(right_cord)
+        self.left.append(left_plot)
+        self.right.append(right_plot)
+        if left_plot is not None and right_plot is not None:
+            left_plot.set_ends(left_cord)
+            right_plot.set_ends(right_cord)
         if left_line is None or right_line is None:
             return None
         left_line.set_ends(left_cord)
@@ -142,6 +147,22 @@ def calc_reg_line(pt_lst, comm):
             pf = pfc
     pf = outlier_del(pfx, pfy, comm, pf)
     if pf[2] ** 2 < .8:
+        return None
+    slope = pf[0]
+    yint = pf[1]
+    return Line(slope, yint)
+
+
+def calc_print_line(pt_lst):
+    """Given a list corresponding to points plotted on a vocal cord. Calculates
+    a regression line from those points which is used to represent the cord."""
+    pfx = []
+    pfy = []
+    for item in pt_lst:
+        pfx.append(item[0])
+        pfy.append(item[1])
+    pf = stats.linregress(pfx, pfy)
+    if pf[2] ** 2 < .5:
         return None
     slope = pf[0]
     yint = pf[1]

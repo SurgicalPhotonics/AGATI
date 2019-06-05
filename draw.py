@@ -35,7 +35,7 @@ def draw(path, lines, angles, frames=29.29, videotype='.mp4'):
             if cross[1] > (left_line.end1[1] + right_line.end1[1]) / 2 + 20 or \
                    cross[1] < (left_line.end1[1] + right_line.end1[1]) / 2 - 20:
                 cv2.imwrite(path + '.png', cv2.line
-                (im, left_line.end1, left_line.end2, (255, 0, 0), 2))
+                            (im, left_line.end1, left_line.end2, (255, 0, 0), 2))
                 cv2.imwrite(path + '.png',
                             cv2.line(im, right_line.end1, right_line.end2,
                                      (255, 0, 0), 2))
