@@ -115,9 +115,6 @@ class Tracker:
             return None
         if right_line.slope < 0 < left_line.slope:
             return 0
-        # set zero with high slopes
-        if abs(left_line.slope) > 7 and right_line.slope > 7:
-            return 0
         cross = intersect(left_line, right_line)
         if cross is not None:
             crossy = cross[1]
@@ -141,12 +138,12 @@ def calc_reg_line(pt_lst, comm):
     pf = stats.linregress(pfx, pfy)
     if comm and len(pfx) > 3:
         pfc = stats.linregress(pfx[1:], pfy[1:])
-        if abs(pfc[2]) > abs(pf[2]):
+        if pfc[2] ** 2 > pf[2] ** 2:
             pf = pfc
         if 3 < len(pfx):
             pf = pfc
     pf = outlier_del(pfx, pfy, comm, pf)
-    if abs(pf[2]) ** 2 < .9:
+    if pf[2] ** 2 < .9:
         return None
     slope = pf[0]
     yint = pf[1]
@@ -170,7 +167,7 @@ def outlier_del(pfx, pfy, comm, pf):
             newline = stats.linregress(newx, newy)
             if len(newx) > 3:
                 newline = outlier_del(newx, newy, False, newline)
-            if abs(newline[2]) > abs(pf[2]):
+            if newline[2] ** 2 > pf[2] ** 2:
                 pf = newline
     return pf
 
