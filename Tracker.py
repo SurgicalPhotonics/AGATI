@@ -104,24 +104,22 @@ class Tracker:
     def angle_of_opening(self, left_cord, right_cord, comm):
         """Calculates angle of opening between left and right cord."""
         left_line = calc_reg_line(left_cord, comm)
-        if left_line is not None:
-            left_line.set_ends(left_cord)
-        self.left.append(left_line)
         right_line = calc_reg_line(right_cord, comm)
-        if right_line is not None:
-            right_line.set_ends(right_cord)
+        self.left.append(left_line)
         self.right.append(right_line)
         if left_line is None or right_line is None:
             return None
+        left_line.set_ends(left_cord)
+        right_line.set_ends(right_cord)
         if right_line.slope < 0 < left_line.slope:
             return 0
-        cross = intersect(left_line, right_line)
+        """cross = intersect(left_line, right_line)
         if cross is not None:
             crossy = cross[1]
         else:
             return 0
         if crossy > left_cord[0][1] + 20 or crossy > right_cord[0][1] + 20:
-            return 0
+            return 0"""
         tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope *
                                                           right_line.slope))
         return atan(tan)
