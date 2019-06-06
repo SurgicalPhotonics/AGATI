@@ -6,7 +6,7 @@ import TrackingObjects
 from Tracker import Tracker
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
-import dlc_script as scr
+#import dlc_script as scr
 # Put dlc project inside app install folder
 
 class Window(wx.Frame):
