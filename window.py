@@ -1,11 +1,13 @@
 import wx
 import os
+import sys
 import DataReader
 import TrackingObjects
 from Tracker import Tracker
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
-
+import dlc_script as scr
+# Put dlc project inside app install folder
 
 class Window(wx.Frame):
     """Window object that we'll use as base of GUI"""
@@ -44,16 +46,22 @@ class Window(wx.Frame):
                 self.file_select()
 
 
-if __name__ == '__main__':
+def run():
+    cfg = os.path.join(sys.argv[0], '\\vp-Nat-2019-06-05')
     app = wx.App()
     window = Window(None)
     # wx.DirDialog() for user friendly directory search
     dlg = wx.MessageBox('Would you like to analyze a new video?', 'Confirm',
                         wx.YES_NO)
     path = window.file_select()
+    scr.new_vid(cfg, path)
+    data_path = scr.analyze(cfg, path)
+    vid_path = scr.new_vid(cfg, path)
+    data = DataReader.read_data(data_path)
+    T = Tracker(data)
+    T.frame_by(vid_path)
     app.MainLoop()
 
-    # data = DataReader.read_data('vocal1DeepCut_resnet50_vocal_strobeMay8shuffle1_200000.h5')
-    # t = Tracker(data)
-    # t.frame_by()
-    # Gonna do this bit with wx now
+
+if __name__ == '__main__':
+    run()
