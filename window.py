@@ -9,6 +9,7 @@ from tkinter.filedialog import askopenfilename
 #import dlc_script as scr
 # Put dlc project inside app install folder
 
+
 class Window(wx.Frame):
     """Window object that we'll use as base of GUI"""
     def __init__(self, *args, **kwargs):
@@ -54,7 +55,7 @@ def run():
     dlg = wx.MessageBox('Would you like to analyze a new video?', 'Confirm',
                         wx.YES_NO)
     path = window.file_select()
-    scr.new_vid(cfg, path)
+    #scr.new_vid(cfg, path)
     # Commented lines don't work yet because of tensorflow issues - May need to
     # convert to tf cpu but will test extensively first.
     # data_path = scr.analyze(cfg, path)
