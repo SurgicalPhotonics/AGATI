@@ -78,22 +78,21 @@ class Tracker:
             else:
                 dgraph.append(None)
         arr = np.array(sgraph)
-        print(i)
-        print('Mean: ')
-        print(np.mean(arr))
-        print('Std Dev: ')
-        print(np.std(arr))
-        print('Max: ')
-        print(np.max(arr))
-        print('Range: ')
-        print(np.max(arr) - np.min(arr))
-        print('99th: ')
-        print(np.percentile(arr, 97))
-        print('Min: ')
-        print(np.min(arr))
-        print(len(data[1]) == len(dgraph))
+        display_graph = []
+        count = 0
+        for i in range(len(dgraph)):
+            if dgraph[i] is None:
+                display_graph.append(None)
+            elif count >= len(arr):
+                display_graph.append(None)
+            elif arr[count] > np.percentile(arr, 97):
+                display_graph.append(0)
+                count += 1
+            else:
+                display_graph.append(arr[count])
+                count += 1
         plt.title('Angle of Opening at Anterior Commissure')
-        plt.plot(dgraph)
+        plt.plot(display_graph)
         plt.xlabel('Frames')
         plt.ylabel('Angle Between Cords')
         print(len(dgraph))
@@ -192,8 +191,8 @@ def outlier_del(pfx, pfy, comm, pf):
 
 
 if __name__ == '__main__':
-    data = read_data('vocalDeepCut_resnet50_vocal_paperMay23shuffle1_900000.h5')
-    #data = read_data('uvfp1DeepCut_resnet50_vocal_paperMay23shuffle1_900000.h5')
+    #data = read_data('nop10DeepCut_resnet50_vocalJun10shuffle1_1030000.h5')
+    data = read_data('vocalDeepCut_resnet50_vocalJun10shuffle1_1030000.h5')
     t = Tracker(data)
-    t.frame_by('vocalDeepCut_resnet50_vocal_paperMay23shuffle1_900000_labeled.mp4')
-    #t.frame_by('uvfp1DeepCut_resnet50_vocal_paperMay23shuffle1_900000_labeled.mp4')
+    #t.frame_by('nop10DeepCut_resnet50_vocalJun10shuffle1_1030000_labeled.mp4')
+    t.frame_by('vocalDeepCut_resnet50_vocalJun10shuffle1_1030000_labeled.mp4')

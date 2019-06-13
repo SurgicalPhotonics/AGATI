@@ -52,7 +52,7 @@ def run():
     app = wx.App()
     window = Window(None)
     # wx.DirDialog() for user friendly directory search
-    dlg = wx.MessageBox('Would you like to analyze a new video?', 'Confirm',
+    dlg = wx.MessageBox('Would you like to add a new video?', 'Confirm',
                         wx.YES_NO)
     path = window.file_select()
     #scr.new_vid(cfg, path)

@@ -11,7 +11,7 @@ def read_data(path):
     """Reads Deeplabcut video data from dataframe using pandas."""
     placeholder = pd.read_hdf(path)
     # fix next line to take all possible input -- exclude vocal and .h5
-    data = placeholder['DeepCut_resnet50_vocal_paperMay23shuffle1_900000']
+    data = placeholder['DeepCut_resnet50_vocalJun10shuffle1_1030000']
     sorted_data = []
     for part in bps:
         plist = []
