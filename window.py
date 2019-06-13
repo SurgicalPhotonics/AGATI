@@ -6,7 +6,7 @@ import TrackingObjects
 from Tracker import Tracker
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
-#import dlc_script as scr
+import dlc_script as scr
 # Put dlc project inside app install folder
 
 
@@ -55,14 +55,12 @@ def run():
     dlg = wx.MessageBox('Would you like to add a new video?', 'Confirm',
                         wx.YES_NO)
     path = window.file_select()
-    #scr.new_vid(cfg, path)
-    # Commented lines don't work yet because of tensorflow issues - May need to
-    # convert to tf cpu but will test extensively first.
-    # data_path = scr.analyze(cfg, path)
-    # vid_path = scr.new_vid(cfg, path)
-    # data = DataReader.read_data(data_path)
-    # T = Tracker(data)
-    # T.frame_by(vid_path)
+    scr.new_vid(cfg, path)
+    data_path = scr.analyze(cfg, path)
+    vid_path = scr.new_vid(cfg, path)
+    data = DataReader.read_data(data_path)
+    T = Tracker(data)
+    T.frame_by(vid_path)
     app.MainLoop()
 
 
