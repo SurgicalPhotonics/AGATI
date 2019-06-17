@@ -21,7 +21,7 @@ def new_vid(config, path):
 def analyze(config, path):
     """Analyzes new video"""
     cfg = os.path.join(config, 'config.yaml')
-    dlc.analyze_videos(cfg, [path], videotype=path[path.last('.') - 1:])
+    dlc.analyze_videos(cfg, [path], videotype=path[path.rfind('.'):])
     conf = dlc.auxiliaryfunctions.read_config(cfg)
     new_vid = conf['video_sets'][VID_NUM]
     h5 = new_vid[0: new_vid.last('.')] + '.h5'
@@ -31,7 +31,7 @@ def analyze(config, path):
 def label(config, path):
     """Creates labeled video from new video"""
     cfg = os.path.join(config, 'config.yaml')
-    dlc.create_labeled_video(cfg, [path], videotype=path[path.last('.') - 1:])
+    dlc.create_labeled_video(cfg, [path], videotype=path[path.rfind('.'):])
     conf = dlc.auxiliaryfunctions.read_config(cfg)
     new_vid = conf['video_sets'][VID_NUM]
     # Test when up and running. Might not return what we expect
