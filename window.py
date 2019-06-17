@@ -1,6 +1,5 @@
 import wx
 import os
-import sys
 import DataReader
 import TrackingObjects
 from Tracker import Tracker
@@ -48,7 +47,8 @@ class Window(wx.Frame):
 
 
 def run():
-    cfg = os.path.join(sys.argv[0], '\\vp-Nat-2019-06-05')
+    name = os.path.dirname(os.path.abspath(__file__))
+    cfg = name + '\\vocal-Nat-2019-06-10'
     app = wx.App()
     window = Window(None)
     # wx.DirDialog() for user friendly directory search
