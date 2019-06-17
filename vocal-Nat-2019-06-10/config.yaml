@@ -4,7 +4,7 @@ scorer: Nat
 date: Jun10
 
 # Project path (change when moving around)
-project_path: C:\Users\NA659\vocal-Nat-2019-06-10
+project_path: C:\Users\natad\PycharmProjects\VCTrack\vocal-Nat-2019-06-10
 
 # Annotation data set configuration (and individual video cropping parameters)
 video_sets:
@@ -91,7 +91,7 @@ colormap: jet
 # Training,Evaluation and Analysis configuration
 TrainingFraction:
 - 0.95
-iteration: 0
+iteration: 1
 resnet: 50
 snapshotindex: -1
 batch_size: 4

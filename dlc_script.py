@@ -8,7 +8,8 @@ VID_NUM = 10
 # might change how we handle pathing
 def new_vid(config, path):
     """Adds new video to project"""
-    cfg = os.path.join(config, 'config.yaml')
+    #cfg = r'' + os.path.join(config, 'config.yaml')
+    cfg = r'C:\Users\natad\PycharmProjects\VCTrack\vocal-Nat-2019-06-10\config.yaml'
     path = r'' + path
     dlc.add_new_videos(cfg, [path])
     location = os.path.join('videos\\' + path[path.rfind('/') + 1:])
