@@ -9,11 +9,12 @@ VID_NUM = 10
 def new_vid(config, path):
     """Adds new video to project"""
     cfg = os.path.join(config, 'config.yaml')
+    path = r'' + path
     dlc.add_new_videos(cfg, [path])
     location = os.path.join('videos\\' + path[path.rfind('/') + 1:])
-    test = os.path.join(config, location)
+    test = r'' + os.path.join(config, location)
     videotype = path[path.rfind('.'):]
-    dlc.analyze_videos(cfg, [os.path.join(config, location)], videotype=videotype)
+    dlc.analyze_videos(cfg, [test], videotype=videotype)
 
 
 def analyze(config, path):
