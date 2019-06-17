@@ -23,8 +23,8 @@ def analyze(config, path):
     cfg = os.path.join(config, 'config.yaml')
     dlc.analyze_videos(cfg, [path], videotype=path[path.rfind('.'):])
     conf = dlc.auxiliaryfunctions.read_config(cfg)
-    new_vid = conf['video_sets'][VID_NUM]
-    h5 = new_vid[0: new_vid.last('.')] + '.h5'
+    new_vid = conf['video_sets']
+    h5 = new_vid[0: new_vid.rfind('.') - 1] + '.h5'
     return h5
 
 
