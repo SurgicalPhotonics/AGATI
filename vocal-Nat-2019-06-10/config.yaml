@@ -62,6 +62,8 @@ video_sets:
     crop: 0, 640, 0, 480
   C:\Users\NA659\vocal-Nat-2019-06-10\videos\uvfp10.mp4:
     crop: 0, 640, 0, 480
+  C:\Users\natad\Downloads\nop10.mp4:
+    crop: 0, 640, 0, 480
 bodyparts:
 - AC
 - LC1
