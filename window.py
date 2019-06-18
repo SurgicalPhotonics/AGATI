@@ -58,9 +58,8 @@ def run():
     vid_path = scr.label(cfg, path)
     data = DataReader.read_data(data_path)
     T = Tracker(data)
-    p = T.frame_by(vid_path)
-    messagebox.showinfo('Video Path', 'Your video can be found here: ' + p)
-    app.MainLoop()
+    T.frame_by(vid_path)
+    window.quit()
 
 
 if __name__ == '__main__':

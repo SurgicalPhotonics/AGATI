@@ -33,9 +33,10 @@ def analyze(config, path):
 def label(config, path):
     """Creates labeled video from new video"""
     cfg = os.path.join(config, 'config.yaml')
-    dlc.create_labeled_video(cfg, [path], videotype=path[path.rfind('.'):])
     location = os.path.join('videos\\', path[path.rfind('/') + 1:])
-    new_vid = os.path.join(config, location)
+    vpath = os.path.join(config, location)
+    dlc.create_labeled_video(cfg, [vpath], videotype=path[path.rfind('.'):])
+    new_vid = os.path.join(config, location[:location.rfind('.')])
     vid = new_vid + FILE_STRING + '_labeled' + path[path.rfind('.'):]
     # Test when up and running. Might not return what we expect
     return vid
