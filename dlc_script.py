@@ -13,10 +13,11 @@ def new_vid(config, path):
     cfg = r'C:\Users\natad\PycharmProjects\VCTrack\vocal-Nat-2019-06-10\config.yaml'
     path = r'' + path
     dlc.add_new_videos(cfg, [path])
-    location = 'videos\\' + path[path.rfind('/') + 1:]
+    location = os.path.join('videos\\', path[path.rfind('/') + 1:])
     test = r'' + os.path.join(config, location)
     videotype = path[path.rfind('.'):]
     dlc.analyze_videos(cfg, [test], videotype=videotype)
+    return os.path.join(config, location)
 
 
 def analyze(config, path):
@@ -33,10 +34,11 @@ def label(config, path):
     """Creates labeled video from new video"""
     cfg = os.path.join(config, 'config.yaml')
     dlc.create_labeled_video(cfg, [path], videotype=path[path.rfind('.'):])
-    conf = dlc.auxiliaryfunctions.read_config(cfg)
-    new_vid = conf['video_sets'][VID_NUM]
+    location = os.path.join('videos\\', path[path.rfind('/') + 1:])
+    new_vid = os.path.join(config, location)
+    vid = new_vid + FILE_STRING + '_labeled' + path[path.rfind('.'):]
     # Test when up and running. Might not return what we expect
-    return new_vid
+    return vid
 
 
 if __name__ == '__main__':
