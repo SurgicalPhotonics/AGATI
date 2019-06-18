@@ -1,9 +1,9 @@
 import wx
 import os
 import DataReader
-import TrackingObjects
 from Tracker import Tracker
-from tkinter import Tk
+from tkinter import*
+from tkinter import messagebox
 from tkinter.filedialog import askopenfilename
 import dlc_script as scr
 # Put dlc project inside app install folder
@@ -58,7 +58,8 @@ def run():
     vid_path = scr.label(cfg, path)
     data = DataReader.read_data(data_path)
     T = Tracker(data)
-    T.frame_by(vid_path)
+    p = T.frame_by(vid_path)
+    messagebox.showinfo('Video Path', 'Your video can be found here: ' + p)
     app.MainLoop()
 
 
