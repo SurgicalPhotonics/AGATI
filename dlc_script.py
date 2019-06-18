@@ -2,6 +2,7 @@ import deeplabcut as dlc
 import os
 
 VID_NUM = 10
+FILE_STRING = 'DeepCut_resnet50_vocalJun10shuffle1_1030000'
 # Only works on windows rn
 
 
@@ -12,7 +13,7 @@ def new_vid(config, path):
     cfg = r'C:\Users\natad\PycharmProjects\VCTrack\vocal-Nat-2019-06-10\config.yaml'
     path = r'' + path
     dlc.add_new_videos(cfg, [path])
-    location = os.path.join('videos\\' + path[path.rfind('/') + 1:])
+    location = 'videos\\' + path[path.rfind('/') + 1:]
     test = r'' + os.path.join(config, location)
     videotype = path[path.rfind('.'):]
     dlc.analyze_videos(cfg, [test], videotype=videotype)
@@ -22,9 +23,9 @@ def analyze(config, path):
     """Analyzes new video"""
     cfg = os.path.join(config, 'config.yaml')
     dlc.analyze_videos(cfg, [path], videotype=path[path.rfind('.'):])
-    conf = dlc.auxiliaryfunctions.read_config(cfg)
-    new_vid = conf['video_sets']
-    h5 = new_vid[0: new_vid.rfind('.') - 1] + '.h5'
+    location = os.path.join('videos\\', path[path.rfind('/') + 1:])
+    new_vid = os.path.join(config, location)
+    h5 = new_vid[0: new_vid.rfind('.')] + FILE_STRING + '.h5'
     return h5
 
 
