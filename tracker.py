@@ -96,9 +96,10 @@ class Tracker:
         plt.xlabel('Frames')
         plt.ylabel('Angle Between Cords')
         print(len(dgraph))
-        draw(path, (self.left, self.right), dgraph)
+        video_path = draw(path, (self.left, self.right), dgraph)
         print('Video made')
         plt.show()
+        return video_path
 
     def angle_of_opening(self, left_cord, right_cord, comm):
         """Calculates angle of opening between left and right cord."""

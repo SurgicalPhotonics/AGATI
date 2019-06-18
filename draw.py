@@ -3,17 +3,18 @@ import os
 import numpy as np
 
 
-def draw(path, lines, angles, frames=30, videotype='.mp4'):
+def draw(path, lines, angles, videotype='.mp4'):
     """Takes each frame from video and stitches it back into new video with
     line drawn on."""
     cap = cv2.VideoCapture(path)
+    frames = cap.get(cv2.CAP_PROP_FPS)
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     s, im = cap.read()
     count = 0
-    new_path = os.path.join(path[:path.rfind('.')], 'lines' + videotype)
+    name = path[path.rfind('/') :path.find('Deep')] + 'with_lines'
     fourcc = cv2.VideoWriter.fourcc('m', 'p', '4', 'v')
-    w = cv2.VideoWriter('test' + videotype, fourcc, frames, (width, height))
+    w = cv2.VideoWriter(name, fourcc, frames, (width, height))
     while s:
         print(count)
         left_line = lines[0][count]
@@ -23,7 +24,7 @@ def draw(path, lines, angles, frames=30, videotype='.mp4'):
         else:
             cross = None
         if left_line is not None and right_line is not None and left_line.slope \
-                > 7 and right_line.slope > 7:
+                > 10 and right_line.slope > 10:
             cv2.imwrite(path + '.png',
                         cv2.line(im, left_line.end1, left_line.end2,
                                  (255, 0, 0), 2))
@@ -51,6 +52,7 @@ def draw(path, lines, angles, frames=30, videotype='.mp4'):
         count += 1
     cap.release()
     w.release()
+    return os.path.join(path[:path.rfind('videos')], name)
 
 
 def intersect(left_line, right_line):

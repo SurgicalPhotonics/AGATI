@@ -51,9 +51,6 @@ def run():
     cfg = name + '\\vocal-Nat-2019-06-10'
     app = wx.App()
     window = Window(None)
-    # wx.DirDialog() for user friendly directory search
-    dlg = wx.MessageBox('Would you like to add a new video?', 'Confirm',
-                        wx.YES_NO)
     path = window.file_select()
     scr.new_vid(cfg, path)
     data_path = scr.analyze(cfg, path)
