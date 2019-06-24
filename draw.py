@@ -14,7 +14,7 @@ def draw(path, lines, angles, videotype='.mp4'):
     count = 0
     name = path[path.rfind('\\')+1: path.rfind('Deep')] + 'with_lines'
     fourcc = cv2.VideoWriter.fourcc('m', 'p', '4', 'v')
-    w = cv2.VideoWriter(name, fourcc, frames, (width, height))
+    w = cv2.VideoWriter(name + videotype, fourcc, frames, (width, height))
     while s:
         print(count)
         left_line = lines[0][count]

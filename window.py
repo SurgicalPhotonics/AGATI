@@ -1,7 +1,7 @@
 import wx
 import os
 import DataReader
-from Tracker import Tracker
+from tracker import Tracker
 from tkinter import*
 from tkinter import messagebox
 from tkinter.filedialog import askopenfilename
