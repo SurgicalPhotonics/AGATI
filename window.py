@@ -1,6 +1,7 @@
 import wx
 import os
 import DataReader
+import matplotlib.pyplot as plt
 from tracker import Tracker
 from tkinter import*
 from tkinter import messagebox
@@ -11,23 +12,17 @@ import dlc_script as scr
 
 class Window(wx.Frame):
     """Window object that we'll use as base of GUI"""
-    def __init__(self, *args, **kwargs):
-        super(Window, self).__init__(*args, **kwargs)
-        self.basicGUI()
+    def __init__(self):
+        wx.Frame.__init__(self, None, title='VCTrack')
+        panel = wx.Panel(self)
 
-    def basicGUI(self):
-        """Basic GUI operations."""
-        menu = wx.MenuBar()
-        file_button = wx.Menu()
-        exitItem = file_button.Append(wx.ID_EXIT, 'Exit', 'Status msg')
-        menu.Append(file_button, 'File')
-        self.SetMenuBar(menu)
-        self.Bind(wx.EVT_MENU, self.quit(), exitItem)
-        self.SetTitle('VCTrack')
-        self.Show(True)
+        lbl = wx.StaticText(panel, -1, style=wx.ALIGN_CENTER)
+        font = wx.Font(18, wx.ROMAN, wx.ITALIC, wx.NORMAL)
+        lbl.SetFont(font)
+        closebtn = wx.Button(panel, label='Close')
+        closebtn.Bind(wx.EVT_BUTTON, self.quit)
 
-    def quit(self):
-        # Add more here
+    def quit(self, event):
         self.Close()
 
     def file_select(self):
@@ -49,8 +44,9 @@ class Window(wx.Frame):
 def run():
     name = os.path.dirname(os.path.abspath(__file__))
     cfg = name + '\\vocal-Nat-2019-06-10'
-    app = wx.App()
-    window = Window(None)
+    app = wx.App(False)
+    window = Window()
+    window.Show()
     path = window.file_select()
     scr.new_vid(cfg, path)
     data_path = scr.analyze(cfg, path)
@@ -58,9 +54,11 @@ def run():
     vid_path = scr.label(cfg, path)
     data = DataReader.read_data(data_path)
     T = Tracker(data)
-    T.frame_by(vid_path)
-    window.quit()
+    d_list = T.frame_by(vid_path)
+    app.MainLoop()
+    plt.show()
 
 
 if __name__ == '__main__':
     run()
+

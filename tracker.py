@@ -1,4 +1,5 @@
 import numpy as np
+import os
 import matplotlib.pyplot as plt
 from draw import draw, intersect
 from scipy import stats
@@ -98,8 +99,24 @@ class Tracker:
         print(len(dgraph))
         video_path = draw(path, (self.left, self.right), dgraph)
         print('Video made')
-        plt.show()
-        return video_path
+        ret_list = []
+        """list indecies doc: 
+        0: video_path
+        1: 97th percentile of angles
+        2: full angle range
+        3: outlier trimmed angle range
+        4+: if we chose to add additional information."""
+        ret_list.append(video_path)
+        ret_list.append(np.percentile(arr, 97))
+        ret_list.append(np.max(arr) - np.min(arr))
+        iqr = np.percentile(arr, 75) - np.percentile(arr, 25)
+        trimmed_arr = arr[np.percentile(arr, 25) - 1.5 * iqr < np.percentile
+            (arr, 75) + 1.5 * iqr]
+        ret_list.append(np.max(trimmed_arr) - np.min(trimmed_arr))
+        plt.savefig(os.path.join(path[:path.rfind('videos')], 'figures\\',
+                                 path[path.rfind('\\'): path.find('Deep')] +
+                                 '.png'))
+        return ret_list
 
     def angle_of_opening(self, left_cord, right_cord, comm):
         """Calculates angle of opening between left and right cord."""
@@ -192,8 +209,8 @@ def outlier_del(pfx, pfy, comm, pf):
 
 
 if __name__ == '__main__':
-    #data = read_data('nop10DeepCut_resnet50_vocalJun10shuffle1_1030000.h5')
+    # data = read_data('nop10DeepCut_resnet50_vocalJun10shuffle1_1030000.h5')
     data = read_data('vocalDeepCut_resnet50_vocalJun10shuffle1_1030000.h5')
     t = Tracker(data)
-    #t.frame_by('nop10DeepCut_resnet50_vocalJun10shuffle1_1030000_labeled.mp4')
+    # t.frame_by('nop10DeepCut_resnet50_vocalJun10shuffle1_1030000_labeled.mp4')
     t.frame_by('vocalDeepCut_resnet50_vocalJun10shuffle1_1030000_labeled.mp4')

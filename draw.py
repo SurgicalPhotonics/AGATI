@@ -52,6 +52,7 @@ def draw(path, lines, angles, videotype='.mp4'):
         count += 1
     cap.release()
     w.release()
+    cv2.destroyAllWindows()
     return os.path.join(path[:path.rfind('videos')], name)
 
 
