@@ -23,7 +23,7 @@ def draw(path, lines, angles, videotype='.mp4'):
             cross = intersect(left_line, right_line)
         else:
             cross = None
-        if left_line is not None and right_line is not None and left_line.slope \
+        if left_line is not None and right_line is not None and left_line.slope\
                 > 10 and right_line.slope > 10:
             cv2.imwrite(path + '.png',
                         cv2.line(im, left_line.end1, left_line.end2,
@@ -46,7 +46,9 @@ def draw(path, lines, angles, videotype='.mp4'):
                             cv2.line(im, cross, right_line.end2, (255, 0, 0),
                                      2))
         if angles[count] is not None:
-            cv2.putText(im, str(round(angles[count], 2)), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 1,  (1, 1, 198), 2, cv2.LINE_AA)
+            cv2.putText(im, str(round(angles[count], 2)), (10, 20),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1,  (1, 1, 198), 2,
+                        cv2.LINE_AA)
         w.write(im)
         s, im = cap.read()
         count += 1
