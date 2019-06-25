@@ -110,8 +110,7 @@ class Tracker:
         ret_list.append(np.percentile(arr, 97))
         ret_list.append(np.max(arr) - np.min(arr))
         iqr = np.percentile(arr, 75) - np.percentile(arr, 25)
-        trimmed_arr = arr[np.percentile(arr, 25) - 1.5 * iqr < np.percentile
-            (arr, 75) + 1.5 * iqr]
+        trimmed_arr = arr[0 < np.percentile(arr, 97)]
         ret_list.append(np.max(trimmed_arr) - np.min(trimmed_arr))
         plt.savefig(os.path.join(path[:path.rfind('videos')], 'figures\\',
                                  path[path.rfind('\\'): path.find('Deep')] +

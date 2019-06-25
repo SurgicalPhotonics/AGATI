@@ -16,11 +16,15 @@ class Window(wx.Frame):
         wx.Frame.__init__(self, None, title='VCTrack')
         panel = wx.Panel(self)
 
-        lbl = wx.StaticText(panel, -1, style=wx.ALIGN_CENTER)
-        font = wx.Font(18, wx.ROMAN, wx.ITALIC, wx.NORMAL)
-        lbl.SetFont(font)
-        closebtn = wx.Button(panel, label='Close')
-        closebtn.Bind(wx.EVT_BUTTON, self.quit)
+        self.lbl = wx.StaticText(panel, -1, style=wx.ALIGN_LEFT)
+        font = wx.Font(12, wx.ROMAN, wx.ITALIC, wx.NORMAL)
+        self.lbl.SetFont(font)
+        self.lbl2 = wx.StaticText(panel, -1, style=wx.ALIGN_LEFT, pos=(0, 20))
+        self.lbl2.SetFont(font)
+        self.lbl3 = wx.StaticText(panel, -1, style=wx.ALIGN_LEFT, pos=(0, 40))
+        self.lbl3.SetFont(font)
+        self.lbl4 = wx.StaticText(panel, -1, style=wx.ALIGN_LEFT, pos=(0, 60))
+        self.lbl4.SetFont(font)
 
     def quit(self, event):
         self.Close()
@@ -55,6 +59,17 @@ def run():
     data = DataReader.read_data(data_path)
     T = Tracker(data)
     d_list = T.frame_by(vid_path)
+    window.lbl.SetLabel('Your video with printed lines can be found here: ' +
+                        d_list[0])
+    nsth = str(round(float(d_list[1]), 2))
+    window.lbl2.SetLabel('The 97th percentile of measured angles was: ' + nsth +
+                         'degrees')
+    fullrange = str(round(float(d_list[2]), 2))
+    window.lbl3.SetLabel('The full measured angle range was: ' + fullrange +
+                         'degrees')
+    trimmedrange = str(round(float(d_list[3]), 2))
+    window.lbl4.SetLabel('The measured angle range when trimming to the 97th '
+                         'percentile was: ' + trimmedrange)
     app.MainLoop()
     plt.show()
 
