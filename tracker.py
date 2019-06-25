@@ -1,7 +1,7 @@
 import numpy as np
 import os
 import matplotlib.pyplot as plt
-from draw import draw, intersect
+from draw import draw
 from scipy import stats
 from TrackingObjects import Line
 from math import atan, pi
