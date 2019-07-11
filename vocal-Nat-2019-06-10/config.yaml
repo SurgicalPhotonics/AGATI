@@ -4,11 +4,13 @@ scorer: Nat
 date: Jun10
 
 # Project path (change when moving around)
-project_path: C:\Users\natad\PycharmProjects\VCTrack\vocal-Nat-2019-06-10
+project_path: C:\Users\natad\To_Compile\VCTrack\vocal-Nat-2019-06-10
 
 # Annotation data set configuration (and individual video cropping parameters)
 video_sets:
   C:\Users\NA659\vocal-Nat-2019-06-10\videos\nop1.mp4:
+    crop: 0, 640, 0, 480
+  C:\Users\NA659\vocal-Nat-2019-06-10\videos\nop10.mp4:
     crop: 0, 640, 0, 480
   C:\Users\NA659\vocal-Nat-2019-06-10\videos\nop2.mp4:
     crop: 0, 640, 0, 480
@@ -27,6 +29,8 @@ video_sets:
   C:\Users\NA659\vocal-Nat-2019-06-10\videos\nop9.mp4:
     crop: 0, 640, 0, 480
   C:\Users\NA659\vocal-Nat-2019-06-10\videos\uvfp1.mp4:
+    crop: 0, 640, 0, 480
+  C:\Users\NA659\vocal-Nat-2019-06-10\videos\uvfp10.mp4:
     crop: 0, 640, 0, 480
   C:\Users\NA659\vocal-Nat-2019-06-10\videos\uvfp2.mp4:
     crop: 0, 640, 0, 480
@@ -57,10 +61,6 @@ video_sets:
   C:\Users\NA659\vocal_converted\nop10.mp4:
     crop: 0, 640, 0, 480
   C:\Users\NA659\vocal_converted\uvfp10.mp4:
-    crop: 0, 640, 0, 480
-  C:\Users\NA659\vocal-Nat-2019-06-10\videos\nop10.mp4:
-    crop: 0, 640, 0, 480
-  C:\Users\NA659\vocal-Nat-2019-06-10\videos\uvfp10.mp4:
     crop: 0, 640, 0, 480
   C:\Users\natad\Downloads\nop10.mp4:
     crop: 0, 640, 0, 480

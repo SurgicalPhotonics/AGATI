@@ -1,6 +1,7 @@
 import wx
 import os
 import DataReader
+import yaml
 import matplotlib.pyplot as plt
 from tracker import Tracker
 from tkinter import*
@@ -47,7 +48,13 @@ class Window(wx.Frame):
 
 def run():
     name = os.path.dirname(os.path.abspath(__file__))
-    cfg = name + '\\vocal-Nat-2019-06-10'
+    cfg = os.path.join(name, 'vocal-Nat-2019-06-10')
+    file_name = os.path.join(cfg, 'config.yaml')
+    stream = open(file_name, 'r')
+    data = yaml.load(stream)
+    data['project_path'] = cfg
+    with open(file_name, 'w') as yaml_file:
+        yaml_file.write(yaml.dump(data, default_flow_style=False))
     app = wx.App(False)
     window = Window()
     window.Show()
@@ -61,15 +68,14 @@ def run():
     d_list = T.frame_by(vid_path)
     window.lbl.SetLabel('Your video with printed lines can be found here: ' +
                         d_list[0])
-    nsth = str(round(float(d_list[1]), 2))
-    window.lbl2.SetLabel('The 97th percentile of measured angles was: ' + nsth +
-                         'degrees')
-    fullrange = str(round(float(d_list[2]), 2))
-    window.lbl3.SetLabel('The full measured angle range was: ' + fullrange +
-                         'degrees')
-    trimmedrange = str(round(float(d_list[3]), 2))
-    window.lbl4.SetLabel('The measured angle range when trimming to the 97th '
-                         'percentile was: ' + trimmedrange)
+    min = str(round(float(d_list[1]), 2))
+    window.lbl2.SetLabel('The minimum measured angle was: ' + min +
+                         ' degrees')
+    nsth = str(round(float(d_list[2]), 2))
+    window.lbl3.SetLabel('The 97th percentile of angles was: ' + nsth +
+                         ' degrees')
+    max = str(round(float(d_list[3]), 2))
+    window.lbl4.SetLabel('The maximum measured angle was: ' + max + ' degrees')
     app.MainLoop()
     plt.show()
 

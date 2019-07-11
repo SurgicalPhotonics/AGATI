@@ -92,7 +92,7 @@ class Tracker:
             else:
                 display_graph.append(arr[count])
                 count += 1
-        plt.title('Angle of Opening at Anterior Commissure')
+        plt.title('Glottic Angle')
         plt.plot(display_graph)
         plt.xlabel('Frames')
         plt.ylabel('Angle Between Cords')
@@ -102,16 +102,13 @@ class Tracker:
         ret_list = []
         """list indecies doc: 
         0: video_path
-        1: 97th percentile of angles
-        2: full angle range
-        3: outlier trimmed angle range
-        4+: if we chose to add additional information."""
+        1: min angle
+        2: 97th percentile
+        3: max angle"""
         ret_list.append(video_path)
+        ret_list.append(np.min(arr))
         ret_list.append(np.percentile(arr, 97))
-        ret_list.append(np.max(arr) - np.min(arr))
-        iqr = np.percentile(arr, 75) - np.percentile(arr, 25)
-        trimmed_arr = arr[0 < np.percentile(arr, 97)]
-        ret_list.append(np.max(trimmed_arr) - np.min(trimmed_arr))
+        ret_list.append(np.max(arr))
         plt.savefig(os.path.join(path[:path.rfind('videos')], 'figures\\',
                                  path[path.rfind('\\'): path.find('Deep')] +
                                  '.png'))
