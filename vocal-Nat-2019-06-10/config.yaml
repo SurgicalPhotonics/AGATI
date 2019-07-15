@@ -4,7 +4,7 @@ scorer: Nat
 date: Jun10
 
 # Project path (change when moving around)
-project_path: C:\Users\natad\To_Compile\VCTrack\vocal-Nat-2019-06-10
+project_path: C:\Users\natad\PycharmProjects\VCTrack\vocal-Nat-2019-06-10
 
 # Annotation data set configuration (and individual video cropping parameters)
 video_sets:

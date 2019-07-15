@@ -5,7 +5,7 @@ import yaml
 import matplotlib.pyplot as plt
 from tracker import Tracker
 from tkinter import*
-from tkinter import messagebox
+from tkinter import filedialog
 from tkinter.filedialog import askopenfilename
 import dlc_script as scr
 # Put dlc project inside app install folder
@@ -35,8 +35,13 @@ class Window(wx.Frame):
         dlg = wx.MessageBox('Would you like to analyze a new video?', 'Confirm',
                             wx.YES_NO)
         if dlg == wx.YES:
-            Tk().withdraw()
-            return askopenfilename()
+            dlg = wx.MessageBox('Would you like to analyze a directory of '
+                                'videos?', 'Confirm', wx.YES_NO)
+            if dlg == wx.YES:
+                return filedialog.askdirectory(), True
+            else:
+                Tk().withdraw()
+                return askopenfilename(), False
         else:
             dlg = wx.MessageBox('Would you like to close the program?', 'Confirm',
                                 wx.YES_NO)
@@ -44,6 +49,25 @@ class Window(wx.Frame):
                 self.quit()
             else:
                 self.file_select()
+
+def vid_analysis(cfg, path, window):
+    """Script calls for analysis of a single video."""
+    scr.new_vid(cfg, path)
+    data_path = scr.analyze(cfg, path)
+    scr.new_vid(cfg, path)
+    vid_path = scr.label(cfg, path)
+    data = DataReader.read_data(data_path)
+    T = Tracker(data)
+    d_list = T.frame_by(vid_path)
+    window.lbl.SetLabel('Your video with printed lines can be found here: ' +
+            d_list[0])
+    min = str(round(float(d_list[1]), 2))
+    window.lbl2.SetLabel('The minimum measured angle was: ' + min + ' degrees')
+    nsth = str(round(float(d_list[2]), 2))
+    window.lbl3.SetLabel('The 97th percentile of angles was: ' + nsth +
+                         ' degrees')
+    max = str(round(float(d_list[3]), 2))
+    window.lbl4.SetLabel('The maximum measured angle was: ' + max + ' degrees')
 
 
 def run():
@@ -58,24 +82,8 @@ def run():
     app = wx.App(False)
     window = Window()
     window.Show()
-    path = window.file_select()
-    scr.new_vid(cfg, path)
-    data_path = scr.analyze(cfg, path)
-    scr.new_vid(cfg, path)
-    vid_path = scr.label(cfg, path)
-    data = DataReader.read_data(data_path)
-    T = Tracker(data)
-    d_list = T.frame_by(vid_path)
-    window.lbl.SetLabel('Your video with printed lines can be found here: ' +
-                        d_list[0])
-    min = str(round(float(d_list[1]), 2))
-    window.lbl2.SetLabel('The minimum measured angle was: ' + min +
-                         ' degrees')
-    nsth = str(round(float(d_list[2]), 2))
-    window.lbl3.SetLabel('The 97th percentile of angles was: ' + nsth +
-                         ' degrees')
-    max = str(round(float(d_list[3]), 2))
-    window.lbl4.SetLabel('The maximum measured angle was: ' + max + ' degrees')
+    path, isdir = window.file_select()
+    vid_analysis(cfg, path, window)
     app.MainLoop()
     plt.show()
 
