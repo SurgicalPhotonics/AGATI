@@ -109,9 +109,9 @@ class Tracker:
         ret_list.append(np.min(arr))
         ret_list.append(np.percentile(arr, 97))
         ret_list.append(np.max(arr))
-        plt.savefig(os.path.join(path[:path.rfind('videos')], 'figures\\',
+        """plt.savefig(os.path.join(path[:path.rfind('videos')], 'figures\\',
                                  path[path.rfind('\\'): path.find('Deep')] +
-                                 '.png'))
+                                 '.png'))"""
         return ret_list
 
     def angle_of_opening(self, left_cord, right_cord, comm):

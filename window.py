@@ -50,6 +50,7 @@ class Window(wx.Frame):
             else:
                 self.file_select()
 
+
 def vid_analysis(cfg, path, window):
     """Script calls for analysis of a single video."""
     scr.new_vid(cfg, path)
