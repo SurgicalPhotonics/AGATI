@@ -21,7 +21,7 @@ class Tracker:
         self.left = []
         self.right = []
 
-    def frame_by(self, path):
+    def frame_by(self, path, run):
         """Goes through each frame worth of data. Analyses and graphs opening
         angle of vocal cords. Prints summary statistics."""
         ac1 = self.data[0]
@@ -47,24 +47,28 @@ class Tracker:
                     if j == 0:
                         comm = True
                     cords_there = True
+                else:
+                    LC_now.append(None)
             for j in range(len(RC)):
                 if RC[j][i] is not None:
                     RC_now.append(RC[j][i])
                     cords_there = True
+                else:
+                    RC_now.append(None)
             num_pts = 0  # number of legitimate points on a cord
             for item in LC_now:
                 if item is not None:
                     num_pts += 1
-            if num_pts < 3:
+            if num_pts < 3 and LC_now[0] is None:
                 cords_there = False
             num_pts = 0
             for item in RC_now:
                 if item is not None:
                     num_pts += 1
-            if num_pts < 3:
+            if num_pts < 3 and RC_now[0] is None:
                 cords_there = False
             if cords_there:
-                angle = self.angle_of_opening(LC_now, RC_now, comm)
+                angle = self.alt_angle(LC_now, RC_now, comm)
                 graph.append(angle)
             else:
                 self.left.append(None)
@@ -92,12 +96,14 @@ class Tracker:
             else:
                 display_graph.append(arr[count])
                 count += 1
+        plt.figure()
         plt.title('Glottic Angle')
         plt.plot(display_graph)
         plt.xlabel('Frames')
         plt.ylabel('Angle Between Cords')
         print(len(dgraph))
-        video_path = draw(path, (self.left, self.right), dgraph)
+        vidtype = path[path.rfind('.'):]
+        video_path = draw(path, (self.left, self.right), dgraph, videotype=vidtype)
         print('Video made')
         ret_list = []
         """list indecies doc: 
@@ -109,22 +115,16 @@ class Tracker:
         ret_list.append(np.min(arr))
         ret_list.append(np.percentile(arr, 97))
         ret_list.append(np.max(arr))
-        """plt.savefig(os.path.join(path[:path.rfind('videos')], 'figures\\',
-                                 path[path.rfind('\\'): path.find('Deep')] +
-                                 '.png'))"""
+        name = path[path.rfind('\\') + 1: path.rfind('Deep')]
+        plt.savefig(name + 'plot%d' % run)
         return ret_list
 
     def angle_of_opening(self, left_cord, right_cord, comm):
         """Calculates angle of opening between left and right cord."""
         left_line = calc_reg_line(left_cord, comm)
         right_line = calc_reg_line(right_cord, comm)
-        left_plot = calc_print_line(left_cord)
-        right_plot = calc_print_line(right_cord)
-        self.left.append(left_plot)
-        self.right.append(right_plot)
-        if left_plot is not None and right_plot is not None:
-            left_plot.set_ends(left_cord)
-            right_plot.set_ends(right_cord)
+        self.left.append(left_line)
+        self.right.append(right_line)
         if left_line is None or right_line is None:
             return None
         left_line.set_ends(left_cord)
@@ -143,22 +143,40 @@ class Tracker:
         return atan(tan)
 
 
+    def alt_angle(self, left_cord, right_cord, comm):
+        """Alternative angle of opening calculation."""
+        left_line = calc_muscular_line(left_cord, comm)
+        right_line = calc_muscular_line(right_cord, comm)
+        self.left.append(left_line)
+        self.right.append(right_line)
+        if left_line is None or right_line is None:
+            return None
+        left_line.set_ends(left_cord)
+        right_line.set_ends(right_cord)
+        if right_line.slope < 0 < left_line.slope:
+            return 0
+        tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope *
+                                                          right_line.slope))
+        return atan(tan)
+
+
 def calc_reg_line(pt_lst, comm):
     """Given a list corresponding to points plotted on a vocal cord. Calculates
     a regression line from those points which is used to represent the cord."""
     pfx = []
     pfy = []
     for item in pt_lst:
-        pfx.append(item[0])
-        pfy.append(item[1])
+        if item is not None:
+            pfx.append(item[0])
+            pfy.append(item[1])
     pf = stats.linregress(pfx, pfy)
     if comm and len(pfx) > 3:
         pfc = stats.linregress(pfx[1:], pfy[1:])
-        if pfc[2] ** 2 > pf[2] ** 2:
+        if pfc[2] > pf[2]:
             pf = pfc
-        if 3 < len(pfx):
-            pf = pfc
-    pf = outlier_del(pfx, pfy, comm, pf)
+    pfc = outlier_del(pfx, pfy, comm, pf)
+    if pfc[2] > pf[2]:
+        pf = pfc
     if pf[2] ** 2 < .8:
         return None
     slope = pf[0]
@@ -166,20 +184,17 @@ def calc_reg_line(pt_lst, comm):
     return Line(slope, yint)
 
 
-def calc_print_line(pt_lst):
-    """Given a list corresponding to points plotted on a vocal cord. Calculates
-    a regression line from those points which is used to represent the cord."""
-    pfx = []
-    pfy = []
-    for item in pt_lst:
-        pfx.append(item[0])
-        pfy.append(item[1])
-    pf = stats.linregress(pfx, pfy)
-    if pf[2] ** 2 < .5:
-        return None
-    slope = pf[0]
-    yint = pf[1]
-    return Line(slope, yint)
+def calc_muscular_line(pt_list, comm):
+    """Calculates angle of opening by drawing straight line from anterior
+     commisure if availible and most distal point on cord."""
+    if pt_list[0] is not None:
+        far_ind = 0
+        for i in range(len(pt_list)):
+            if pt_list[i] is not None:
+                far_ind = i
+        return Line(pt_list[0], pt_list[far_ind])
+    else:
+        return calc_reg_line(pt_list, comm)
 
 
 def outlier_del(pfx, pfy, comm, pf):
@@ -199,7 +214,7 @@ def outlier_del(pfx, pfy, comm, pf):
             newline = stats.linregress(newx, newy)
             if len(newx) > 3:
                 newline = outlier_del(newx, newy, False, newline)
-            if newline[2] ** 2 > pf[2] ** 2:
+            if newline[2] > pf[2]:
                 pf = newline
     return pf
 

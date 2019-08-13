@@ -2,6 +2,7 @@ import wx
 import os
 import DataReader
 import yaml
+import csv
 import matplotlib.pyplot as plt
 from tracker import Tracker
 from tkinter import*
@@ -30,7 +31,7 @@ class Window(wx.Frame):
     def quit(self, event):
         self.Close()
 
-    def file_select(self):
+    def file_select(self) -> (any, bool):
         """Prompts user to select input file for analysis."""
         dlg = wx.MessageBox('Would you like to analyze a new video?', 'Confirm',
                             wx.YES_NO)
@@ -38,6 +39,7 @@ class Window(wx.Frame):
             dlg = wx.MessageBox('Would you like to analyze a directory of '
                                 'videos?', 'Confirm', wx.YES_NO)
             if dlg == wx.YES:
+                Tk().withdraw()
                 return filedialog.askdirectory(), True
             else:
                 Tk().withdraw()
@@ -51,7 +53,7 @@ class Window(wx.Frame):
                 self.file_select()
 
 
-def vid_analysis(cfg, path, window):
+def vid_analysis(cfg, path, window, runnum, output_data):
     """Script calls for analysis of a single video."""
     scr.new_vid(cfg, path)
     data_path = scr.analyze(cfg, path)
@@ -59,7 +61,7 @@ def vid_analysis(cfg, path, window):
     vid_path = scr.label(cfg, path)
     data = DataReader.read_data(data_path)
     T = Tracker(data)
-    d_list = T.frame_by(vid_path)
+    d_list = T.frame_by(vid_path, runnum)
     window.lbl.SetLabel('Your video with printed lines can be found here: ' +
             d_list[0])
     min = str(round(float(d_list[1]), 2))
@@ -69,9 +71,14 @@ def vid_analysis(cfg, path, window):
                          ' degrees')
     max = str(round(float(d_list[3]), 2))
     window.lbl4.SetLabel('The maximum measured angle was: ' + max + ' degrees')
+    output_data.append((vid_path[vid_path.rfind('\\') + 1: path.find('Deep')], min, nsth, max))
 
 
 def run():
+    filepath = os.path.join(os.getcwd(), 'vocal-Nat-2019-06-10', 'videos', 'video_data.csv')
+    f = open(filepath, 'w')
+    f.truncate()
+    output_data = [('vidname', 'min angle', 'max angle', '97th percentile angle')]
     name = os.path.dirname(os.path.abspath(__file__))
     cfg = os.path.join(name, 'vocal-Nat-2019-06-10')
     file_name = os.path.join(cfg, 'config.yaml')
@@ -84,9 +91,18 @@ def run():
     window = Window()
     window.Show()
     path, isdir = window.file_select()
-    vid_analysis(cfg, path, window)
+    if isdir:
+        runnum = 0
+        for filename in os.listdir(path):
+            vid_analysis(cfg, filename, window, runnum, output_data)
+            runnum += 1
+    else:
+        vid_analysis(cfg, path, window, 0, output_data)
+    with open('video_data.csv', 'w') as file:
+        writer = csv.writer(file, delimiter=',')
+        for set in output_data:
+            writer.writerow([set[0], set[1], set[2], set[3]])
     app.MainLoop()
-    plt.show()
 
 
 if __name__ == '__main__':

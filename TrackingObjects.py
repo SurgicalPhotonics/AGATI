@@ -35,12 +35,16 @@ class Line:
 
     def set_ends(self, cord):
         """Allows a new end2 point to be passed from outside."""
-        y = cord[len(cord) - 1][1]
+        c = []
+        for point in cord:
+            if point is not None:
+                c.append(point)
+        y = c[len(c) - 1][1]
         if self.slope != 0:
             self.end2 = (int((y - self.yint) / self.slope), int(y))
         else:
             self.end2 = (1, int(y))
-        y = cord[0][1]
+        y = c[0][1]
         if self.slope != 0:
             self.end1 = (int((y - self.yint) / self.slope), int(y))
         else:

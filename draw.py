@@ -13,7 +13,12 @@ def draw(path, lines, angles, videotype='.mp4'):
     s, im = cap.read()
     count = 0
     name = path[path.rfind('\\')+1: path.rfind('Deep')] + 'with_lines'
-    fourcc = cv2.VideoWriter.fourcc('m', 'p', '4', 'v')
+    if videotype == '.mp4':
+        fourcc = cv2.VideoWriter.fourcc('m', 'p', '4', 'v')
+    elif videotype == '.avi':
+        fourcc = cv2.VideoWriter.fourcc('x', 'v', 'i', 'd')
+    else:
+        fourcc = 0
     w = cv2.VideoWriter(name + videotype, fourcc, frames, (width, height))
     while s:
         print(str(round(count / len(angles) * 100)) + '%')
