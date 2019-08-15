@@ -116,7 +116,7 @@ class Tracker:
         ret_list.append(np.percentile(arr, 97))
         ret_list.append(np.max(arr))
         name = path[path.rfind('\\') + 1: path.rfind('Deep')]
-        plt.savefig(name + 'plot%d' % run)
+        plt.savefig(name + 'plot%d.png' % run)
         return ret_list
 
     def angle_of_opening(self, left_cord, right_cord, comm):
@@ -221,7 +221,7 @@ def outlier_del(pfx, pfy, comm, pf):
 
 if __name__ == '__main__':
     # data = read_data('nop10DeepCut_resnet50_vocalJun10shuffle1_1030000.h5')
-    data = read_data('vocalDeepCut_resnet50_vocalJun10shuffle1_1030000.h5')
+    data = read_data('nop10DeepCut_resnet50_vocal_foldAug7shuffle1_1030000.h5')
     t = Tracker(data)
     # t.frame_by('nop10DeepCut_resnet50_vocalJun10shuffle1_1030000_labeled.mp4')
-    t.frame_by('vocalDeepCut_resnet50_vocalJun10shuffle1_1030000_labeled.mp4')
+    t.frame_by('nop10.mp4', 0)

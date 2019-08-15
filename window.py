@@ -57,9 +57,14 @@ def vid_analysis(cfg, path, window, runnum, output_data):
     """Script calls for analysis of a single video."""
     scr.new_vid(cfg, path)
     data_path = scr.analyze(cfg, path)
-    scr.new_vid(cfg, path)
     vid_path = scr.label(cfg, path)
-    data = DataReader.read_data(data_path)
+    videotype = vid_path[vid_path.rfind('.'):]
+    try:
+        data = DataReader.read_data(data_path)
+    except FileNotFoundError:
+        d_path = os.path.join(path[:path.rfind('\\')], data_path[data_path.rfind('\\') + 1:])
+        data = DataReader.read_data(d_path)
+        vid_path = d_path[:d_path.rfind('Deep')] + videotype
     T = Tracker(data)
     d_list = T.frame_by(vid_path, runnum)
     window.lbl.SetLabel('Your video with printed lines can be found here: ' +
@@ -75,12 +80,12 @@ def vid_analysis(cfg, path, window, runnum, output_data):
 
 
 def run():
-    filepath = os.path.join(os.getcwd(), 'vocal-Nat-2019-06-10', 'videos', 'video_data.csv')
-    f = open(filepath, 'w')
-    f.truncate()
+    #filepath = os.path.join(os.getcwd(), 'vocal-Nat-2019-06-10', 'videos', 'video_data.csv')
+    #f = open(filepath, 'w')
+    #f.truncate()
     output_data = [('vidname', 'min angle', 'max angle', '97th percentile angle')]
     name = os.path.dirname(os.path.abspath(__file__))
-    cfg = os.path.join(name, 'vocal-Nat-2019-06-10')
+    cfg = os.path.join(name, 'vocal_fold-Nat-2019-08-07')
     file_name = os.path.join(cfg, 'config.yaml')
     stream = open(file_name, 'r')
     data = yaml.load(stream)
@@ -94,8 +99,10 @@ def run():
     if isdir:
         runnum = 0
         for filename in os.listdir(path):
-            vid_analysis(cfg, filename, window, runnum, output_data)
-            runnum += 1
+            if filename.endswith('.mp4') or filename.endswith('.avi'):
+                filepath = os.path.join(path, filename)
+                vid_analysis(cfg, filepath, window, runnum, output_data)
+                runnum += 1
     else:
         vid_analysis(cfg, path, window, 0, output_data)
     with open('video_data.csv', 'w') as file:

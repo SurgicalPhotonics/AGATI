@@ -1,20 +1,25 @@
 import deeplabcut as dlc
 import os
+import yaml
 
 VID_NUM = 10
-FILE_STRING = 'DeepCut_resnet50_vocalJun10shuffle1_1030000'
+FILE_STRING = 'DeepCut_resnet50_vocal_foldAug7shuffle1_1030000'
 # Only works on windows rn
 
 
 # might change how we handle pathing
 def new_vid(config, path):
     """Adds new video to project"""
-    cfg = r'' + os.path.join(config, 'config.yaml')
-    path = r'' + path
+    cfg = os.path.join(config, 'config.yaml')
     dlc.add_new_videos(cfg, [path])
-    location = os.path.join('videos\\', path[path.rfind('/') + 1:])
-    test = r'' + os.path.join(config, location)
+    location = os.path.join('videos', path[path.rfind('/') + 1:])
+    test = os.path.join(config, location)
     videotype = path[path.rfind('.'):]
+    """stream = open(cfg, 'r')
+    data = yaml.load(stream)
+    data['video_sets'] += test
+    with open(cfg, 'w') as file:
+        file.write(yaml.dump(data, default_flow_style=False))"""
     dlc.analyze_videos(cfg, [test], videotype=videotype)
     return os.path.join(config, location)
 
@@ -23,7 +28,7 @@ def analyze(config, path):
     """Analyzes new video"""
     cfg = os.path.join(config, 'config.yaml')
     dlc.analyze_videos(cfg, [path], videotype=path[path.rfind('.'):])
-    location = os.path.join('videos\\', path[path.rfind('/') + 1:])
+    location = os.path.join('videos', path[path.rfind('/') + 1:])
     new_vid = os.path.join(config, location)
     h5 = new_vid[0: new_vid.rfind('.')] + FILE_STRING + '.h5'
     return h5
