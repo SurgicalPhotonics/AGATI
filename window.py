@@ -3,7 +3,7 @@ import os
 import DataReader
 import yaml
 import csv
-import matplotlib.pyplot as plt
+import cv2
 from tracker import Tracker
 from tkinter import*
 from tkinter import filedialog
@@ -79,6 +79,31 @@ def vid_analysis(cfg, path, window, runnum, output_data):
     output_data.append((vid_path[vid_path.rfind('\\') + 1: path.find('Deep')], min, nsth, max))
 
 
+def downsample(path):
+    """Downsamples high res videos"""
+    cap = cv2.VideoCapture(path)
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    if height <= 480:
+        print('Already proper resolution')
+        return path
+    else:
+        print('Downsampling to better resolution')
+        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        frames = cap.get(cv2.CAP_PROP_FPS)
+        r_height = 360
+        ar = width / height
+        r_width = int(ar * 360)
+        fourcc = cv2.VideoWriter.fourcc('m', 'p', '4', 'v')
+        name = path[:path.rfind('.')] + '_resized.mp4'
+        writer = cv2.VideoWriter(name, fourcc, frames, (r_width, r_height))
+        s, im = cap.read()
+        while s:
+            image = cv2.resize(im, (r_width, r_height))
+            writer.write(image)
+            s, im = cap.read()
+        return name
+
+
 def run():
     #filepath = os.path.join(os.getcwd(), 'vocal-Nat-2019-06-10', 'videos', 'video_data.csv')
     #f = open(filepath, 'w')
@@ -101,9 +126,11 @@ def run():
         for filename in os.listdir(path):
             if filename.endswith('.mp4') or filename.endswith('.avi'):
                 filepath = os.path.join(path, filename)
+                filepath = downsample(filepath)
                 vid_analysis(cfg, filepath, window, runnum, output_data)
                 runnum += 1
     else:
+        path = downsample(path)
         vid_analysis(cfg, path, window, 0, output_data)
     with open('video_data.csv', 'w') as file:
         writer = csv.writer(file, delimiter=',')

@@ -1,4 +1,6 @@
 vidname,min angle,max angle,97th percentile angle
 nop10.mp,0.0,60.81,85.55
+nop1corr_resized.mp,0.0,67.2,75.0
+nop1corr_resized.mp,0.0,67.2,75.0
 nop3.mp,0.07,80.15,86.89
 uvfp7.mp,0.0,39.0,60.13
