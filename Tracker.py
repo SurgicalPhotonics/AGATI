@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import cv2
 import matplotlib.pyplot as plt
 from draw import draw
 from scipy import stats
@@ -96,6 +97,32 @@ class Tracker:
             else:
                 display_graph.append(arr[count])
                 count += 1
+        vid = cv2.VideoCapture(path)
+        frames = vid.get(cv2.CAP_PROP_FPS)
+        vels = [0] # change in angle in degrees / sec
+        dif = 1
+        for i in range(1, len(dgraph)):
+            if dgraph[i] is not None and dgraph[i - dif] is not None:
+                vels.append((dgraph[i] - dgraph[i-dif]) * frames / dif)
+                dif = 1
+            elif dgraph[i - dif] is None:
+                i += 1
+                vels.append(None)
+            else:
+                vels.append(None)
+                i += 1
+                dif += 1
+        accs = [0]
+        dif = 1
+        for i in range(1, len(vels)):
+            if vels[i] is not None and vels[i - dif] is not None:
+                accs.append((vels[i] - vels[i-dif]) * frames / dif)
+                dif = 1
+            elif vels[i - dif] is None:
+                i += 1
+            else:
+                i += 1
+                dif += 1
         plt.figure()
         plt.title('Glottic Angle')
         plt.plot(display_graph)
@@ -106,15 +133,31 @@ class Tracker:
         video_path = draw(path, (self.left, self.right), dgraph, videotype=vidtype)
         print('Video made')
         ret_list = []
+        new_vel = []
+        for vel in vels:
+            if vel is not None:
+                new_vel.append(vel)
+        vel_arr = np.array(new_vel)
+        acc_arr = np.array(accs)
         """list indecies doc: 
         0: video_path
         1: min angle
-        2: 97th percentile
-        3: max angle"""
+        2: 3rd percentile angle
+        3: 97th percentile angle
+        4: max angle
+        5: 97th percentile pos velocity
+        6: 97th percentile neg velocity
+        7: 97th percentile pos acceleration
+        8: 97th percentile neg acceleration"""
         ret_list.append(video_path)
         ret_list.append(np.min(arr))
+        ret_list.append(np.percentile(arr, 3))
         ret_list.append(np.percentile(arr, 97))
         ret_list.append(np.max(arr))
+        ret_list.append(np.percentile(vel_arr, 97))
+        ret_list.append(np.percentile(vel_arr, 3))
+        ret_list.append(np.percentile(acc_arr, 97))
+        ret_list.append(np.percentile(acc_arr, 3))
         name = path[path.rfind('\\') + 1: path.rfind('Deep')]
         plt.savefig(name + 'plot%d.png' % run)
         return ret_list

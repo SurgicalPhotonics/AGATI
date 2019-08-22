@@ -76,7 +76,9 @@ def vid_analysis(cfg, path, window, runnum, output_data):
                          ' degrees')
     max = str(round(float(d_list[3]), 2))
     window.lbl4.SetLabel('The maximum measured angle was: ' + max + ' degrees')
-    output_data.append((vid_path[vid_path.rfind('\\') + 1: path.find('Deep')], min, nsth, max))
+    output_data.append((vid_path[vid_path.rfind('\\') + 1: path.find('Deep')],
+                        d_list[1], d_list[2], d_list[3], d_list[4], d_list[5],
+                        d_list[6], d_list[7], d_list[8]))
 
 
 def downsample(path):
@@ -108,7 +110,10 @@ def run():
     #filepath = os.path.join(os.getcwd(), 'vocal-Nat-2019-06-10', 'videos', 'video_data.csv')
     #f = open(filepath, 'w')
     #f.truncate()
-    output_data = [('vidname', 'min angle', 'max angle', '97th percentile angle')]
+    output_data = [('vidname', 'min angle', '3rd percentile angle',
+                    '97th percentile angle', 'max angle', '97th percentile positive velocity',
+                    '97th percentile negative velocity', '97th percentile positive acceleration',
+                    '97th percentile negative acceleration')]
     name = os.path.dirname(os.path.abspath(__file__))
     cfg = os.path.join(name, 'vocal_fold-Nat-2019-08-07')
     file_name = os.path.join(cfg, 'config.yaml')
@@ -135,7 +140,9 @@ def run():
     with open('video_data.csv', 'w') as file:
         writer = csv.writer(file, delimiter=',')
         for set in output_data:
-            writer.writerow([set[0], set[1], set[2], set[3]])
+            writer.writerow([set[0], set[1], set[2], set[3], set[4], set[5],
+                             set[6], set[7], set[8]])
+    print('Data stored')
     app.MainLoop()
 
 
