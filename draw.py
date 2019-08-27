@@ -19,7 +19,8 @@ def draw(path, lines, angles, videotype='.mp4'):
         fourcc = cv2.VideoWriter.fourcc('x', 'v', 'i', 'd')
     else:
         fourcc = 0
-    w = cv2.VideoWriter(name + videotype, fourcc, frames, (width, height))
+    outfile = os.path.join(os.getcwd(), name + videotype)
+    w = cv2.VideoWriter(outfile, fourcc, frames, (width, height))
     while s:
         print(str(round(count / len(angles) * 100)) + '%')
         if count % 5 == 0:

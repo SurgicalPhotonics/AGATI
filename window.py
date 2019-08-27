@@ -137,12 +137,14 @@ def run():
     else:
         path = downsample(path)
         vid_analysis(cfg, path, window, 0, output_data)
-    with open('video_data.csv', 'w') as file:
+    #put data in vocal folder
+    outfile = os.path.join(os.getcwd(), 'video_data.csv')
+    with open(outfile, 'w') as file:
         writer = csv.writer(file, delimiter=',')
         for set in output_data:
             writer.writerow([set[0], set[1], set[2], set[3], set[4], set[5],
                              set[6], set[7], set[8]])
-    print('Data stored')
+    print('Your video data is stored here: ' + outfile)
     app.MainLoop()
 
 

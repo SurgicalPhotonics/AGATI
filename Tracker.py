@@ -159,7 +159,8 @@ class Tracker:
         ret_list.append(np.percentile(acc_arr, 97))
         ret_list.append(np.percentile(acc_arr, 3))
         name = path[path.rfind('\\') + 1: path.rfind('Deep')]
-        plt.savefig(name + 'plot%d.png' % run)
+        outfile = os.path.join(os.getcwd(), name + 'plot%d.png' % run)
+        plt.savefig(outfile)
         return ret_list
 
     def angle_of_opening(self, left_cord, right_cord, comm):
