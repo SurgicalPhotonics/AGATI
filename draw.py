@@ -3,7 +3,7 @@ import os
 import numpy as np
 
 
-def draw(path, lines, angles, videotype='.mp4'):
+def draw(path, lines, angles, outfile, videotype='.mp4'):
     """Takes each frame from video and stitches it back into new video with
     line drawn on."""
     cap = cv2.VideoCapture(path)
@@ -12,15 +12,15 @@ def draw(path, lines, angles, videotype='.mp4'):
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     s, im = cap.read()
     count = 0
-    name = path[path.rfind('\\')+1: path.rfind('Deep')] + 'with_lines'
+    name = path[path.rfind('\\') + 1:path.rfind('.')] + 'with_lines'
     if videotype == '.mp4':
         fourcc = cv2.VideoWriter.fourcc('m', 'p', '4', 'v')
     elif videotype == '.avi':
         fourcc = cv2.VideoWriter.fourcc('x', 'v', 'i', 'd')
     else:
         fourcc = 0
-    outfile = os.path.join(os.getcwd(), name + videotype)
-    w = cv2.VideoWriter(outfile, fourcc, frames, (width, height))
+    out = os.path.join(outfile, name + videotype)
+    w = cv2.VideoWriter(out, fourcc, frames, (width, height))
     while s:
         print(str(round(count / len(angles) * 100)) + '%')
         if count % 5 == 0:

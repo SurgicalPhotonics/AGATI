@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import cv2
+import csv
 import matplotlib.pyplot as plt
 from draw import draw
 from scipy import stats
@@ -22,9 +23,10 @@ class Tracker:
         self.left = []
         self.right = []
 
-    def frame_by(self, path, run):
+    def frame_by(self, path, run, outfile):
         """Goes through each frame worth of data. Analyses and graphs opening
         angle of vocal cords. Prints summary statistics."""
+        of = outfile
         ac1 = self.data[0]
         # frames dropped
         i = 0
@@ -130,7 +132,7 @@ class Tracker:
         plt.ylabel('Angle Between Cords')
         print(len(dgraph))
         vidtype = path[path.rfind('.'):]
-        video_path = draw(path, (self.left, self.right), dgraph, videotype=vidtype)
+        video_path = draw(path, (self.left, self.right), dgraph, outfile, videotype=vidtype)
         print('Video made')
         ret_list = []
         new_vel = []
@@ -158,9 +160,14 @@ class Tracker:
         ret_list.append(np.percentile(vel_arr, 3))
         ret_list.append(np.percentile(acc_arr, 97))
         ret_list.append(np.percentile(acc_arr, 3))
-        name = path[path.rfind('\\') + 1: path.rfind('Deep')]
-        outfile = os.path.join(os.getcwd(), name + 'plot%d.png' % run)
-        plt.savefig(outfile)
+        o = of
+        out = os.path.join(of, 'plot%d.png' % run)
+        plt.savefig(out)
+        csvout = os.path.join(o, 'plot%d.csv' % run)
+        with open(csvout, 'w') as file:
+            writer = csv.writer(file, delimiter=',')
+            for i in range(len(dgraph)):
+                writer.writerow([i + 1, dgraph[i]])
         return ret_list
 
     def angle_of_opening(self, left_cord, right_cord, comm):

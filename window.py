@@ -17,16 +17,11 @@ class Window(wx.Frame):
     def __init__(self):
         wx.Frame.__init__(self, None, title='VCTrack')
         panel = wx.Panel(self)
+        start_image = wx.Image('Splashscreen.jpg')
+        start_image.Rescale(385, 425, quality=wx.IMAGE_QUALITY_HIGH)
+        img = wx.BitmapFromImage(start_image)
+        wx.StaticBitmap(self, -1, img, (0, 0), (img.GetWidth(), img.GetHeight()))
 
-        self.lbl = wx.StaticText(panel, -1, style=wx.ALIGN_LEFT)
-        font = wx.Font(12, wx.ROMAN, wx.ITALIC, wx.NORMAL)
-        self.lbl.SetFont(font)
-        self.lbl2 = wx.StaticText(panel, -1, style=wx.ALIGN_LEFT, pos=(0, 20))
-        self.lbl2.SetFont(font)
-        self.lbl3 = wx.StaticText(panel, -1, style=wx.ALIGN_LEFT, pos=(0, 40))
-        self.lbl3.SetFont(font)
-        self.lbl4 = wx.StaticText(panel, -1, style=wx.ALIGN_LEFT, pos=(0, 60))
-        self.lbl4.SetFont(font)
 
     def quit(self, event):
         self.Close()
@@ -53,30 +48,19 @@ class Window(wx.Frame):
                 self.file_select()
 
 
-def vid_analysis(cfg, path, window, runnum, output_data):
+def vid_analysis(cfg, path, window, runnum, output_data, outfile):
     """Script calls for analysis of a single video."""
     scr.new_vid(cfg, path)
     data_path = scr.analyze(cfg, path)
-    vid_path = scr.label(cfg, path)
-    videotype = vid_path[vid_path.rfind('.'):]
+    videotype = path[path.rfind('.'):]
     try:
         data = DataReader.read_data(data_path)
     except FileNotFoundError:
         d_path = os.path.join(path[:path.rfind('\\')], data_path[data_path.rfind('\\') + 1:])
         data = DataReader.read_data(d_path)
-        vid_path = d_path[:d_path.rfind('Deep')] + videotype
     T = Tracker(data)
-    d_list = T.frame_by(vid_path, runnum)
-    window.lbl.SetLabel('Your video with printed lines can be found here: ' +
-            d_list[0])
-    min = str(round(float(d_list[1]), 2))
-    window.lbl2.SetLabel('The minimum measured angle was: ' + min + ' degrees')
-    nsth = str(round(float(d_list[2]), 2))
-    window.lbl3.SetLabel('The 97th percentile of angles was: ' + nsth +
-                         ' degrees')
-    max = str(round(float(d_list[3]), 2))
-    window.lbl4.SetLabel('The maximum measured angle was: ' + max + ' degrees')
-    output_data.append((vid_path[vid_path.rfind('\\') + 1: path.find('Deep')],
+    d_list = T.frame_by(path, runnum, outfile)
+    output_data.append((path[path.rfind('\\') + 1:],
                         d_list[1], d_list[2], d_list[3], d_list[4], d_list[5],
                         d_list[6], d_list[7], d_list[8]))
 
@@ -106,7 +90,7 @@ def downsample(path):
         return name
 
 
-def run():
+def run(r=0):
     #filepath = os.path.join(os.getcwd(), 'vocal-Nat-2019-06-10', 'videos', 'video_data.csv')
     #f = open(filepath, 'w')
     #f.truncate()
@@ -125,26 +109,35 @@ def run():
     app = wx.App(False)
     window = Window()
     window.Show()
+    wx.MessageBox('Please Select the directory in which you would like your '
+                  'data to be stored', style=wx.OK | wx.ICON_INFORMATION)
+    Tk().withdraw()
+    outfile = filedialog.askdirectory()
     path, isdir = window.file_select()
     if isdir:
-        runnum = 0
+        runnum = r * 10
         for filename in os.listdir(path):
             if filename.endswith('.mp4') or filename.endswith('.avi'):
                 filepath = os.path.join(path, filename)
                 filepath = downsample(filepath)
-                vid_analysis(cfg, filepath, window, runnum, output_data)
+                vid_analysis(cfg, filepath, window, runnum, output_data, outfile)
                 runnum += 1
     else:
         path = downsample(path)
-        vid_analysis(cfg, path, window, 0, output_data)
+        vid_analysis(cfg, path, window, 0, output_data, outfile)
     #put data in vocal folder
-    outfile = os.path.join(os.getcwd(), 'video_data.csv')
-    with open(outfile, 'w') as file:
+    csv_data = os.path.join(outfile, 'video_data%d.csv' %r)
+    with open(csv_data, 'w') as file:
         writer = csv.writer(file, delimiter=',')
         for set in output_data:
             writer.writerow([set[0], set[1], set[2], set[3], set[4], set[5],
                              set[6], set[7], set[8]])
     print('Your video data is stored here: ' + outfile)
+    dlg = wx.MessageBox('Would you like to analyze more videos?', 'Continue', wx.YES_NO)
+    if dlg == wx.YES:
+        run(r=r + 1)
+    else:
+        pass
     app.MainLoop()
 
 
