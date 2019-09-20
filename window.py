@@ -17,7 +17,8 @@ class Window(wx.Frame):
     def __init__(self):
         wx.Frame.__init__(self, None, title='VCTrack')
         panel = wx.Panel(self)
-        start_image = wx.Image('Splashscreen.jpg')
+        impath = os.path.dirname(os.path.realpath(__file__))
+        start_image = wx.Image(os.path.join(impath, 'Splashscreen.jpg'))
         start_image.Rescale(385, 425, quality=wx.IMAGE_QUALITY_HIGH)
         img = wx.BitmapFromImage(start_image)
         wx.StaticBitmap(self, -1, img, (0, 0), (img.GetWidth(), img.GetHeight()))
@@ -48,10 +49,10 @@ class Window(wx.Frame):
                 self.file_select()
 
 
-def vid_analysis(cfg, path, window, runnum, output_data, outfile):
+def vid_analysis(cfg, path, window, runnum, output_data, outfile, use_gpu):
     """Script calls for analysis of a single video."""
     scr.new_vid(cfg, path)
-    data_path = scr.analyze(cfg, path)
+    data_path = scr.analyze(cfg, path, use_gpu)
     videotype = path[path.rfind('.'):]
     try:
         data = DataReader.read_data(data_path)
@@ -109,6 +110,9 @@ def run(r=0):
     app = wx.App(False)
     window = Window()
     window.Show()
+    dlg = wx.MessageBox('If this computer has a gpu that you would like to use '
+                        'to reduce runtime press yes. Otherwise press no.', 'confirm', wx.YES_NO)
+    use_gpu = dlg == wx.YES
     wx.MessageBox('Please Select the directory in which you would like your '
                   'data to be stored', style=wx.OK | wx.ICON_INFORMATION)
     Tk().withdraw()
@@ -120,7 +124,7 @@ def run(r=0):
             if filename.endswith('.mp4') or filename.endswith('.avi'):
                 filepath = os.path.join(path, filename)
                 filepath = downsample(filepath)
-                vid_analysis(cfg, filepath, window, runnum, output_data, outfile)
+                vid_analysis(cfg, filepath, window, runnum, output_data, outfile, use_gpu)
                 runnum += 1
     else:
         path = downsample(path)
