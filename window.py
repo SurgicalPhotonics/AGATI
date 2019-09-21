@@ -53,7 +53,6 @@ def vid_analysis(cfg, path, window, runnum, output_data, outfile, use_gpu):
     """Script calls for analysis of a single video."""
     scr.new_vid(cfg, path)
     data_path = scr.analyze(cfg, path, use_gpu)
-    videotype = path[path.rfind('.'):]
     try:
         data = DataReader.read_data(data_path)
     except FileNotFoundError:
@@ -92,9 +91,6 @@ def downsample(path):
 
 
 def run(r=0):
-    #filepath = os.path.join(os.getcwd(), 'vocal-Nat-2019-06-10', 'videos', 'video_data.csv')
-    #f = open(filepath, 'w')
-    #f.truncate()
     output_data = [('vidname', 'min angle', '3rd percentile angle',
                     '97th percentile angle', 'max angle', '97th percentile positive velocity',
                     '97th percentile negative velocity', '97th percentile positive acceleration',
@@ -128,9 +124,9 @@ def run(r=0):
                 runnum += 1
     else:
         path = downsample(path)
-        vid_analysis(cfg, path, window, 0, output_data, outfile)
+        vid_analysis(cfg, path, window, 0, output_data, outfile, use_gpu)
     #put data in vocal folder
-    csv_data = os.path.join(outfile, 'video_data%d.csv' %r)
+    csv_data = os.path.join(outfile, 'video_data%d.csv' % r)
     with open(csv_data, 'w') as file:
         writer = csv.writer(file, delimiter=',')
         for set in output_data:
