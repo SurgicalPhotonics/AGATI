@@ -27,8 +27,8 @@ def new_vid(config, path):
 def analyze(config, path, use_gpu):
     """Analyzes new video"""
     cfg = os.path.join(config, 'config.yaml')
-    if use_gpu:
-        dlc.analyze_videos(cfg, [path], videotype=path[path.rfind('.'):], gputouse=0)
+    if use_gpu is not None:
+        dlc.analyze_videos(cfg, [path], videotype=path[path.rfind('.'):], gputouse=use_gpu)
     else:
         dlc.analyze_videos(cfg, [path], videotype=path[path.rfind('.'):])
     location = os.path.join('videos', path[path.rfind('/') + 1:])

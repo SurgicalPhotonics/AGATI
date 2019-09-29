@@ -90,6 +90,14 @@ def downsample(path):
         return name
 
 
+def ask(parent=None, message=''):
+    dlg = wx.TextEntryDialog(parent, message)
+    dlg.ShowModal()
+    result = dlg.GetValue()
+    dlg.Destroy()
+    return result
+
+
 def run(r=0):
     output_data = [('vidname', 'min angle', '3rd percentile angle',
                     '97th percentile angle', 'max angle', '97th percentile positive velocity',
@@ -108,7 +116,14 @@ def run(r=0):
     window.Show()
     dlg = wx.MessageBox('If this computer has a gpu that you would like to use '
                         'to reduce runtime press yes. Otherwise press no.', 'confirm', wx.YES_NO)
-    use_gpu = dlg == wx.YES
+    if dlg == wx.YES:
+        use_gpu = True
+    else:
+        use_gpu = False
+    if use_gpu:
+        dlg = ask(message='Enter the number corresponding to your GPU\'s pci slot')
+    else:
+        dlg = None
     wx.MessageBox('Please Select the directory in which you would like your '
                   'data to be stored', style=wx.OK | wx.ICON_INFORMATION)
     Tk().withdraw()
@@ -120,11 +135,11 @@ def run(r=0):
             if filename.endswith('.mp4') or filename.endswith('.avi'):
                 filepath = os.path.join(path, filename)
                 filepath = downsample(filepath)
-                vid_analysis(cfg, filepath, window, runnum, output_data, outfile, use_gpu)
+                vid_analysis(cfg, filepath, window, runnum, output_data, outfile, dlg)
                 runnum += 1
     else:
         path = downsample(path)
-        vid_analysis(cfg, path, window, 0, output_data, outfile, use_gpu)
+        vid_analysis(cfg, path, window, 0, output_data, outfile, dlg)
     #put data in vocal folder
     csv_data = os.path.join(outfile, 'video_data%d.csv' % r)
     with open(csv_data, 'w') as file:
