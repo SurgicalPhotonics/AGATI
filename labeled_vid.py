@@ -10,7 +10,7 @@ def downsample(path):
         print('Already proper resolution')
         return path
     else:
-        print('Downsampling to better resolution')
+        print('Downsampling to more fitting resolution')
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         frames = cap.get(cv2.CAP_PROP_FPS)
         r_height = 360

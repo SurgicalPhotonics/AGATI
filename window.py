@@ -114,8 +114,9 @@ def run(r=0):
     app = wx.App(False)
     window = Window()
     window.Show()
-    dlg = wx.MessageBox('If this computer has a gpu that you would like to use '
-                        'to reduce runtime press yes. Otherwise press no.', 'confirm', wx.YES_NO)
+    #dlg = wx.MessageBox('If this computer has a gpu that you would like to use '
+    #                    'to reduce runtime press yes. Otherwise press no.', 'confirm', wx.YES_NO)
+    dlg = wx.NO
     if dlg == wx.YES:
         use_gpu = True
     else:

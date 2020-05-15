@@ -22,9 +22,9 @@ def draw(path, lines, angles, outfile, videotype='.mp4'):
     out = os.path.join(outfile, name + videotype)
     w = cv2.VideoWriter(out, fourcc, frames, (width, height))
     while s:
-        print(str(round(count / len(angles) * 100)) + '%')
         if count % 5 == 0:
             print('Printing lines on your video.')
+            print(str(round(count / len(angles) * 100)) + '%')
         left_line = lines[0][count]
         right_line = lines[1][count]
         if left_line is not None and right_line is not None:

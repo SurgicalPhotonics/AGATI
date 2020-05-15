@@ -1,0 +1,159 @@
+# Project definitions (do not edit)
+Task: vocal_fold
+scorer: Nat
+date: Aug7
+
+# Project path (change when moving around)
+project_path: C:\Users\natad\PycharmProjects\VCTrack\vocal_fold-Nat-2019-08-07
+
+# Annotation data set configuration (and individual video cropping parameters)
+video_sets:
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop10corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop11corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop12corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop13corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop14corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop15corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop16corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop17corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop18corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop19corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop1corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop20corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop2corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop3corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop4corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop5corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop6corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop7corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop8corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\nop9corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp10corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp11corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp12corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp13corr.mp4:
+    crop: 0, 720, 0, 480
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp14corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp15corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp16corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp17corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp18corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp19corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp1corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp20corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp2corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp3corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp4corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp5corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp6corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp7corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp8corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp9corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\test_vids\nop10.mp4:
+    crop: 0, 640, 0, 480
+  C:\Users\natad\Downloads\test_vids\nop10with_lines.mp4:
+    crop: 0, 640, 0, 480
+  C:\Users\natad\Downloads\test_vids\nop10with_lineswith_lines.mp4:
+    crop: 0, 640, 0, 480
+  C:\Users\natad\Downloads\test_vids\nop1corr_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\test_vids\nop1corr_resizedwith_lines.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\test_vids\nop1corr_resizedwith_lineswith_lines.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\natad\Downloads\test_vids\nop3.mp4:
+    crop: 0, 640, 0, 480
+  C:\Users\natad\Downloads\test_vids\nop3with_lines.mp4:
+    crop: 0, 640, 0, 480
+  C:\Users\natad\Downloads\test_vids\nop3with_lineswith_lines.mp4:
+    crop: 0, 640, 0, 480
+  C:\Users\natad\Downloads\test_vids\uvfp7.mp4:
+    crop: 0, 640, 0, 480
+  C:\Users\natad\Downloads\test_vids\uvfp7with_lines.mp4:
+    crop: 0, 640, 0, 480
+  C:\Users\natad\PycharmProjects\VCTrack\vocal_fold-Nat-2019-08-07\video\nop3.mp4:
+    crop: 0, 640, 0, 480
+bodyparts:
+- AC
+- LC1
+- LC2
+- LC3
+- LC4
+- LC5
+- LVP
+- RC1
+- RC2
+- RC3
+- RC4
+- RC5
+- RVP
+start: 0
+stop: 1
+numframes2pick: 20
+
+# Plotting configuration
+pcutoff: 0.1
+dotsize: 4
+alphavalue: 0.7
+colormap: jet
+
+# Training,Evaluation and Analysis configuration
+TrainingFraction:
+- 0.95
+iteration: 0
+resnet: 50
+snapshotindex: -1
+batch_size: 4
+
+# Cropping Parameters (for analysis and outlier frame detection)
+cropping: false
+#if cropping is true for analysis, then set the values here:
+x1: 0
+x2: 640
+y1: 277
+y2: 624
+
+# Refinement configuration (parameters from annotation dataset configuration also relevant in this stage)
+corner2move2:
+- 50
+- 50
+move2corner: true
