@@ -4,7 +4,7 @@ scorer: Nat
 date: Aug7
 
 # Project path (change when moving around)
-project_path: C:\Users\natad\PycharmProjects\VCTrack\vocal_fold-Nat-2019-08-07
+project_path: D:\Python Workspace\Projects\VCTrack\vocal_fold-Nat-2019-08-07
 
 # Annotation data set configuration (and individual video cropping parameters)
 video_sets:
@@ -131,6 +131,8 @@ stop: 1
 numframes2pick: 20
 
 # Plotting configuration
+skeleton: []
+skeleton_color: black
 pcutoff: 0.1
 dotsize: 4
 alphavalue: 0.7

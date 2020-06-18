@@ -56,7 +56,8 @@ def vid_analysis(cfg, path, window, runnum, output_data, outfile, use_gpu):
     try:
         data = DataReader.read_data(data_path)
     except FileNotFoundError:
-        d_path = os.path.join(path[:path.rfind('\\')], data_path[data_path.rfind('\\') + 1:])
+        location = os.path.split(os.path.split(data_path)[0])[1]
+        d_path = os.path.join(path[:path.rfind('\\')], location + data_path[data_path.rfind('\\') + 1:])
         data = DataReader.read_data(d_path)
     T = Tracker(data)
     d_list = T.frame_by(path, runnum, outfile)
@@ -114,15 +115,14 @@ def run(r=0):
     app = wx.App(False)
     window = Window()
     window.Show()
-    #dlg = wx.MessageBox('If this computer has a gpu that you would like to use '
-    #                    'to reduce runtime press yes. Otherwise press no.', 'confirm', wx.YES_NO)
-    dlg = wx.NO
+    dlg = wx.MessageBox('If this computer has a gpu that you would like to use '
+                        'to reduce runtime press yes. Otherwise press no.', 'confirm', wx.YES_NO)
     if dlg == wx.YES:
         use_gpu = True
     else:
         use_gpu = False
     if use_gpu:
-        dlg = ask(message='Enter the number corresponding to your GPU\'s pci slot')
+        dlg = ask(message='Enter the number corresponding to your GPU\'s pci slot. If you don\'t know what this means, enter 0')
     else:
         dlg = None
     wx.MessageBox('Please Select the directory in which you would like your '
