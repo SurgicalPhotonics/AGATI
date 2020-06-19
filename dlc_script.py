@@ -1,8 +1,6 @@
 import deeplabcut as dlc
 import os
-import yaml
 
-VID_NUM = 10
 FILE_STRING = 'DLC_resnet50_vocal_foldAug7shuffle1_1030000'
 # Only works on windows rn
 

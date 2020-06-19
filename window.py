@@ -1,30 +1,31 @@
 import wx
 import os
 import DataReader
-import yaml
 import csv
 import cv2
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+import yaml
+import tensorflow as tf
+if type(tf.contrib) != type(tf): tf.contrib._warning = None
 from tracker import Tracker
-from tkinter import*
-from tkinter import filedialog
-from tkinter.filedialog import askopenfilename
 import dlc_script as scr
+
+
 # Put dlc project inside app install folder
 
 
 class Window(wx.Frame):
-    """Window object that we'll use as base of GUI"""
+    """Base of GUI. Displays AGATI Image. Added functionality coming."""
     def __init__(self):
-        wx.Frame.__init__(self, None, title='VCTrack')
-        panel = wx.Panel(self)
+        wx.Frame.__init__(self, None, id=wx.ID_ANY, title='AGATI', pos=(100, 100), size=(385, 425))
         impath = os.path.dirname(os.path.realpath(__file__))
         start_image = wx.Image(os.path.join(impath, 'Splashscreen.jpg'))
         start_image.Rescale(385, 425, quality=wx.IMAGE_QUALITY_HIGH)
-        img = wx.BitmapFromImage(start_image)
+        img = wx.Bitmap(start_image)
         wx.StaticBitmap(self, -1, img, (0, 0), (img.GetWidth(), img.GetHeight()))
 
-
-    def quit(self, event):
+    def quit(self):
         self.Close()
 
     def file_select(self) -> (any, bool):
@@ -35,11 +36,17 @@ class Window(wx.Frame):
             dlg = wx.MessageBox('Would you like to analyze a directory of '
                                 'videos?', 'Confirm', wx.YES_NO)
             if dlg == wx.YES:
-                Tk().withdraw()
-                return filedialog.askdirectory(), True
+                fd = wx.DirDialog(self, "Choose Input Directory", style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
+                if fd.ShowModal() == wx.ID_OK:
+                    path = fd.GetPath()
+                    fd.Destroy()
+                    return path, True
             else:
-                Tk().withdraw()
-                return askopenfilename(), False
+                fd = wx.FileDialog(self, "Choose Input Video", style=wx.FD_DEFAULT_STYLE | wx.FD_FILE_MUST_EXIST)
+                if fd.ShowModal() == wx.ID_OK:
+                    path = fd.GetPath()
+                    fd.Destroy()
+                    return path, False
         else:
             dlg = wx.MessageBox('Would you like to close the program?', 'Confirm',
                                 wx.YES_NO)
@@ -49,7 +56,7 @@ class Window(wx.Frame):
                 self.file_select()
 
 
-def vid_analysis(cfg, path, window, runnum, output_data, outfile, use_gpu):
+def vid_analysis(cfg, path, runnum, output_data, outfile, use_gpu):
     """Script calls for analysis of a single video."""
     scr.new_vid(cfg, path)
     data_path = scr.analyze(cfg, path, use_gpu)
@@ -67,7 +74,7 @@ def vid_analysis(cfg, path, window, runnum, output_data, outfile, use_gpu):
 
 
 def downsample(path):
-    """Downsamples high res videos"""
+    """Downsamples high res videos to more manageable resolution for DeepLabCut"""
     cap = cv2.VideoCapture(path)
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     if height <= 480:
@@ -108,10 +115,11 @@ def run(r=0):
     cfg = os.path.join(name, 'vocal_fold-Nat-2019-08-07')
     file_name = os.path.join(cfg, 'config.yaml')
     stream = open(file_name, 'r')
-    data = yaml.load(stream)
-    data['project_path'] = cfg
-    with open(file_name, 'w') as yaml_file:
-        yaml_file.write(yaml.dump(data, default_flow_style=False))
+    data = yaml.load(stream, Loader=yaml.FullLoader)
+    if data['project_path'] != cfg:
+        data['project_path'] = cfg
+        with open(file_name, 'w') as yaml_file:
+            yaml_file.write(yaml.dump(data, default_flow_style=False))
     app = wx.App(False)
     window = Window()
     window.Show()
@@ -122,13 +130,17 @@ def run(r=0):
     else:
         use_gpu = False
     if use_gpu:
-        dlg = ask(message='Enter the number corresponding to your GPU\'s pci slot. If you don\'t know what this means, enter 0')
+        dlg = ask(message='Enter the number corresponding to the GPU you would like to use. If you don\'t know what this means or only have one '
+                          'gpu, enter 0')
     else:
         dlg = None
     wx.MessageBox('Please Select the directory in which you would like your '
                   'data to be stored', style=wx.OK | wx.ICON_INFORMATION)
-    Tk().withdraw()
-    outfile = filedialog.askdirectory()
+    fd = wx.DirDialog(None, "Choose Input Video", style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
+    outfile = fd.GetPath()
+    if fd.ShowModal() == wx.ID_OK:
+        outfile = fd.GetPath()
+        fd.Destroy()
     path, isdir = window.file_select()
     if isdir:
         runnum = r * 10
@@ -136,11 +148,11 @@ def run(r=0):
             if filename.endswith('.mp4') or filename.endswith('.avi'):
                 filepath = os.path.join(path, filename)
                 filepath = downsample(filepath)
-                vid_analysis(cfg, filepath, window, runnum, output_data, outfile, dlg)
+                vid_analysis(cfg, filepath, runnum, output_data, outfile, dlg)
                 runnum += 1
     else:
         path = downsample(path)
-        vid_analysis(cfg, path, window, 0, output_data, outfile, dlg)
+        vid_analysis(cfg, path, 0, output_data, outfile, dlg)
     #put data in vocal folder
     csv_data = os.path.join(outfile, 'video_data%d.csv' % r)
     with open(csv_data, 'w') as file:
