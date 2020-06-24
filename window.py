@@ -11,7 +11,6 @@ if type(tf.contrib) != type(tf): tf.contrib._warning = None
 from tracker import Tracker
 import dlc_script as scr
 
-
 # Put dlc project inside app install folder
 
 
@@ -112,9 +111,15 @@ def run(r=0):
                     '97th percentile negative velocity', '97th percentile positive acceleration',
                     '97th percentile negative acceleration')]
     name = os.path.dirname(os.path.abspath(__file__))
+    name2 = os.getcwd()
     cfg = os.path.join(name, 'vocal_fold-Nat-2019-08-07')
     file_name = os.path.join(cfg, 'config.yaml')
-    stream = open(file_name, 'r')
+    try:
+        stream = open(file_name, 'r')
+    except FileNotFoundError:
+        cfg = os.path.join(name2, 'vocal_fold-Nat-2019-08-07')
+        file_name = os.path.join(cfg, 'config.yaml')
+        stream = open(file_name, 'r')
     data = yaml.load(stream, Loader=yaml.FullLoader)
     if data['project_path'] != cfg:
         data['project_path'] = cfg
