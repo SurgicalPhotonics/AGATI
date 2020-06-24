@@ -117,8 +117,8 @@ def run(r=0):
     try:
         stream = open(file_name, 'r')
     except FileNotFoundError:
-        name2 = sys._MEIPASS
-        cfg = os.path.join(name2, 'vocal_fold-Nat-2019-08-07')
+        name = sys._MEIPASS
+        cfg = os.path.join(name, 'vocal_fold-Nat-2019-08-07')
         file_name = os.path.join(cfg, 'config.yaml')
         stream = open(file_name, 'r')
 
