@@ -1,9 +1,7 @@
 import deeplabcut as dlc
 import os
-import yaml
 
-VID_NUM = 10
-FILE_STRING = 'DeepCut_resnet50_vocal_foldAug7shuffle1_1030000'
+FILE_STRING = 'DLC_resnet50_vocal_foldAug7shuffle1_1030000'
 # Only works on windows rn
 
 
@@ -31,9 +29,9 @@ def analyze(config, path, use_gpu):
         dlc.analyze_videos(cfg, [path], videotype=path[path.rfind('.'):], gputouse=use_gpu)
     else:
         dlc.analyze_videos(cfg, [path], videotype=path[path.rfind('.'):])
-    location = os.path.join('videos', path[path.rfind('/') + 1:])
-    new_vid = os.path.join(config, location)
-    h5 = new_vid[0: new_vid.rfind('.')] + FILE_STRING + '.h5'
+    location = os.path.basename(os.path.normpath(path))
+    new_vid = os.path.join(config, "videos", location)
+    h5 = os.path.join(new_vid[0: new_vid.rfind('.')], FILE_STRING + '.h5')
     return h5
 
 
