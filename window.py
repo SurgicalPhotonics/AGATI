@@ -1,4 +1,5 @@
 import wx
+import wx._core
 import os
 import DataReader
 import csv
@@ -20,7 +21,13 @@ class Window(wx.Frame):
     def __init__(self):
         wx.Frame.__init__(self, None, id=wx.ID_ANY, title='AGATI', pos=(100, 100), size=(385, 425))
         impath = os.path.dirname(os.path.realpath(__file__))
-        start_image = wx.Image(os.path.join(impath, 'Splashscreen.jpg'))
+        try:
+            start_image = wx.Image(os.path.join(impath, 'Splashscreen.jpg'))
+        except wx._core.wxAssertionError:
+            impath = sys._MEIPASS
+            start_image = wx.Image(os.path.join(impath, 'Splashscreen.jpg'))
+
+
         start_image.Rescale(385, 425, quality=wx.IMAGE_QUALITY_HIGH)
         img = wx.Bitmap(start_image)
         wx.StaticBitmap(self, -1, img, (0, 0), (img.GetWidth(), img.GetHeight()))
