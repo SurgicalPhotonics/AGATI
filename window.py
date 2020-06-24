@@ -4,6 +4,7 @@ import DataReader
 import csv
 import cv2
 import warnings
+import sys
 warnings.simplefilter(action='ignore', category=FutureWarning)
 import yaml
 import tensorflow as tf
@@ -111,15 +112,17 @@ def run(r=0):
                     '97th percentile negative velocity', '97th percentile positive acceleration',
                     '97th percentile negative acceleration')]
     name = os.path.dirname(os.path.abspath(__file__))
-    name2 = os.getcwd()
     cfg = os.path.join(name, 'vocal_fold-Nat-2019-08-07')
     file_name = os.path.join(cfg, 'config.yaml')
     try:
         stream = open(file_name, 'r')
     except FileNotFoundError:
+        name2 = sys._MEIPASS
         cfg = os.path.join(name2, 'vocal_fold-Nat-2019-08-07')
         file_name = os.path.join(cfg, 'config.yaml')
         stream = open(file_name, 'r')
+
+
     data = yaml.load(stream, Loader=yaml.FullLoader)
     if data['project_path'] != cfg:
         data['project_path'] = cfg
