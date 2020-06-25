@@ -20,12 +20,9 @@ class Window(wx.Frame):
     """Base of GUI. Displays AGATI Image. Added functionality coming."""
     def __init__(self):
         wx.Frame.__init__(self, None, id=wx.ID_ANY, title='AGATI', pos=(100, 100), size=(385, 425))
-        impath = os.path.dirname(os.path.realpath(__file__))
-        try:
-            start_image = wx.Image(os.path.join(impath, 'Splashscreen.jpg'))
-        except FileNotFoundError:
-            impath = sys._MEIPASS
-            start_image = wx.Image(os.path.join(impath, 'Splashscreen.jpg'))
+        #impath = os.path.dirname(os.path.realpath(__file__)) uncomment this if running as python code
+        impath = sys._MEIPASS #for pyinstaller compile.
+        start_image = wx.Image(os.path.join(impath, 'Splashscreen.jpg'))
 
 
         start_image.Rescale(385, 425, quality=wx.IMAGE_QUALITY_HIGH)
