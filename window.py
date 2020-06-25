@@ -23,7 +23,7 @@ class Window(wx.Frame):
         impath = os.path.dirname(os.path.realpath(__file__))
         try:
             start_image = wx.Image(os.path.join(impath, 'Splashscreen.jpg'))
-        except wx._core.wxAssertionError:
+        except FileNotFoundError:
             impath = sys._MEIPASS
             start_image = wx.Image(os.path.join(impath, 'Splashscreen.jpg'))
 
