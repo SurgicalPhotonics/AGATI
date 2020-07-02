@@ -1,5 +1,6 @@
 import wx
 import os
+print("The Application is Loading. Please Wait.")
 import DataReader
 import csv
 import cv2

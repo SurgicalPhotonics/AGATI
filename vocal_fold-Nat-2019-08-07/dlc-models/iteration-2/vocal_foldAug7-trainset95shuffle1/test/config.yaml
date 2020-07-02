@@ -1,0 +1,130 @@
+# Project definitions (do not edit)
+Task: vocal_fold
+scorer: Nat
+date: Aug7
+
+# Project path (change when moving around)
+project_path: C:\Users\NA659\Documents\vocal_fold-Nat-2019-08-07
+
+# Annotation data set configuration (and individual video cropping parameters)
+video_sets:
+  C:\Users\NA659\Documents\Mau Vids\004E.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\Mau Vids\005D.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\Mau Vids\007C.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\Mau Vids\002B_resized.mp4:
+    crop: 0, 640, 0, 360
+    C:\Users\NA659\Documents\test_vids\nop10.mp4:
+  C:\Users\NA659\Documents\test_vids\nop11.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\nop12.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\nop13.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\nop14.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\nop15.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\nop19.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\nop1.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\nop20.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\nop2.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\nop3.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\nop4.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\nop5.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\nop6.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\nop7.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\nop8.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\nop9.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\uvfp10.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\uvfp11.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\uvfp12.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\uvfp13.mp4:
+    crop: 0, 720, 0, 480
+  C:\Users\NA659\Documents\test_vids\uvfp14.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\uvfp15.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\uvfp1.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\uvfp20.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\uvfp2.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\uvfp3.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\uvfp4.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\uvfp5.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\uvfp6.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\uvfp7.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\uvfp8.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\uvfp9.mp4:
+    crop: 0, 640, 0, 360
+bodyparts:
+- AC
+- LC1
+- LC2
+- LC3
+- LC4
+- LC5
+- LVP
+- RC1
+- RC2
+- RC3
+- RC4
+- RC5
+- RVP
+start: 0
+stop: 1
+numframes2pick: 20
+
+# Plotting configuration
+pcutoff: 0.1
+dotsize: 4
+alphavalue: 0.7
+colormap: jet
+
+# Training,Evaluation and Analysis configuration
+TrainingFraction:
+- 0.95
+iteration: 2
+resnet: 50
+snapshotindex: -1
+batch_size: 4
+
+# Cropping Parameters (for analysis and outlier frame detection)
+cropping: false
+#if cropping is true for analysis, then set the values here:
+x1: 0
+x2: 640
+y1: 277
+y2: 624
+
+# Refinement configuration (parameters from annotation dataset configuration also relevant in this stage)
+corner2move2:
+- 50
+- 50
+move2corner: true
+skeleton: []
+skeleton_color: black

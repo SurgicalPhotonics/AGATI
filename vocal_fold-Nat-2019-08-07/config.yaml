@@ -8,110 +8,79 @@ project_path: D:\Python Workspace\Projects\VCTrack\vocal_fold-Nat-2019-08-07
 
 # Annotation data set configuration (and individual video cropping parameters)
 video_sets:
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop10corr_resized.mp4:
+  C:\Users\NA659\Documents\Mau Vids\002B_resized.mp4:
+    C:\Users\NA659\Documents\test_vids\nop10.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop11corr_resized.mp4:
+  C:\Users\NA659\Documents\Mau Vids\004E.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop12corr_resized.mp4:
+  C:\Users\NA659\Documents\Mau Vids\005D.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop13corr_resized.mp4:
+  C:\Users\NA659\Documents\Mau Vids\007C.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop14corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\nop1.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop15corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\nop11.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop16corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\nop12.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop17corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\nop13.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop18corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\nop14.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop19corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\nop15.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop1corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\nop19.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop20corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\nop2.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop2corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\nop20.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop3corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\nop3.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop4corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\nop4.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop5corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\nop5.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop6corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\nop6.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop7corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\nop7.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop8corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\nop8.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\nop9corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\nop9.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp10corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\uvfp1.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp11corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\uvfp10.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp12corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\uvfp11.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp13corr.mp4:
+  C:\Users\NA659\Documents\test_vids\uvfp12.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Documents\test_vids\uvfp13.mp4:
     crop: 0, 720, 0, 480
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp14corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\uvfp14.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp15corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\uvfp15.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp16corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\uvfp2.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp17corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\uvfp20.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp18corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\uvfp3.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp19corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\uvfp4.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp1corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\uvfp5.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp20corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\uvfp6.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp2corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\uvfp7.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp3corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\uvfp8.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp4corr_resized.mp4:
+  C:\Users\NA659\Documents\test_vids\uvfp9.mp4:
     crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp5corr_resized.mp4:
-    crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp6corr_resized.mp4:
-    crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp7corr_resized.mp4:
-    crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp8corr_resized.mp4:
-    crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\Barrel Distortion Correction\uvfp9corr_resized.mp4:
-    crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\test_vids\nop10.mp4:
-    crop: 0, 640, 0, 480
-  C:\Users\natad\Downloads\test_vids\nop10with_lines.mp4:
-    crop: 0, 640, 0, 480
-  C:\Users\natad\Downloads\test_vids\nop10with_lineswith_lines.mp4:
-    crop: 0, 640, 0, 480
-  C:\Users\natad\Downloads\test_vids\nop1corr_resized.mp4:
-    crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\test_vids\nop1corr_resizedwith_lines.mp4:
-    crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\test_vids\nop1corr_resizedwith_lineswith_lines.mp4:
-    crop: 0, 640, 0, 360
-  C:\Users\natad\Downloads\test_vids\nop3.mp4:
-    crop: 0, 640, 0, 480
-  C:\Users\natad\Downloads\test_vids\nop3with_lines.mp4:
-    crop: 0, 640, 0, 480
-  C:\Users\natad\Downloads\test_vids\nop3with_lineswith_lines.mp4:
-    crop: 0, 640, 0, 480
-  C:\Users\natad\Downloads\test_vids\uvfp7.mp4:
-    crop: 0, 640, 0, 480
-  C:\Users\natad\Downloads\test_vids\uvfp7with_lines.mp4:
-    crop: 0, 640, 0, 480
-  C:\Users\natad\PycharmProjects\VCTrack\vocal_fold-Nat-2019-08-07\video\nop3.mp4:
-    crop: 0, 640, 0, 480
   D:\MovedDownload\test_vids\nop10.mp4:
     crop: 0, 640, 0, 480
   D:\MovedDownload\test_vids\nop3.mp4:
@@ -147,7 +116,7 @@ colormap: jet
 # Training,Evaluation and Analysis configuration
 TrainingFraction:
 - 0.95
-iteration: 0
+iteration: 2
 resnet: 50
 snapshotindex: -1
 batch_size: 4
