@@ -71,8 +71,8 @@ class Tracker:
             if num_pts < 3 and RC_now[0] is None:
                 cords_there = False
             if cords_there:
-                angle = self.alt_angle(LC_now, RC_now, comm)
-                graph.append(angle)
+                angle, lslope, rslope = self.alt_angle(LC_now, RC_now, comm)
+                graph.append([angle, lslope, rslope])
             else:
                 self.left.append(None)
                 self.right.append(None)
@@ -80,9 +80,11 @@ class Tracker:
         dgraph = []  # keep none to show blank space in graph.
         sgraph = []  # remove none to perform statistical analysis.
         for item in graph:
-            if item is not None:
-                dgraph.append(item * 180 / pi)
-                sgraph.append(item * 180 / pi)
+            if item is None:
+                dgraph.append(None)
+            elif item[0] is not None:
+                dgraph.append([item[0] * 180 / pi, item[1], item[2]])
+                sgraph.append(item[0] * 180 / pi)
             else:
                 dgraph.append(None)
         arr = np.array(sgraph)
@@ -90,6 +92,8 @@ class Tracker:
         count = 0
         for i in range(len(dgraph)):
             if dgraph[i] is None:
+                display_graph.append(None)
+            elif dgraph[i][0] is None:
                 display_graph.append(None)
             elif count >= len(arr):
                 display_graph.append(None)
@@ -104,10 +108,12 @@ class Tracker:
         vels = [0] # change in angle in degrees / sec
         dif = 1
         for i in range(1, len(dgraph)):
-            if dgraph[i] is not None and dgraph[i - dif] is not None:
-                vels.append((dgraph[i] - dgraph[i-dif]) * frames / dif)
+            if dgraph[i] is None or dgraph[i-dif] is None:
+                vels.append(None)
+            elif dgraph[i][0] is not None and dgraph[i - dif][0] is not None:
+                vels.append((dgraph[i][0] - dgraph[i-dif][0]) * frames / dif)
                 dif = 1
-            elif dgraph[i - dif] is None:
+            elif dgraph[i - dif][0] is None:
                 i += 1
                 vels.append(None)
             else:
@@ -167,7 +173,10 @@ class Tracker:
         with open(csvout, 'w') as file:
             writer = csv.writer(file, delimiter=',')
             for i in range(len(dgraph)):
-                writer.writerow([i + 1, dgraph[i]])
+                if dgraph[i] is not None:
+                    writer.writerow([i + 1, dgraph[i][0], dgraph[i][1], dgraph[i][2]])
+                else:
+                    writer.writerow([i+1, dgraph[i]])
         return ret_list
 
     def angle_of_opening(self, left_cord, right_cord, comm):
@@ -193,7 +202,6 @@ class Tracker:
                                                           right_line.slope))
         return atan(tan)
 
-
     def alt_angle(self, left_cord, right_cord, comm):
         """Alternative angle of opening calculation."""
         left_line = calc_muscular_line(left_cord, comm)
@@ -201,14 +209,14 @@ class Tracker:
         self.left.append(left_line)
         self.right.append(right_line)
         if left_line is None or right_line is None:
-            return None
+            return None, None, None
         left_line.set_ends(left_cord)
         right_line.set_ends(right_cord)
         if right_line.slope < 0 < left_line.slope:
-            return 0
+            return 0, left_line.slope, right_line.slope
         tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope *
                                                           right_line.slope))
-        return atan(tan)
+        return atan(tan), left_line.slope, right_line.slope
 
 
 def calc_reg_line(pt_lst, comm):
@@ -223,10 +231,10 @@ def calc_reg_line(pt_lst, comm):
     pf = stats.linregress(pfx, pfy)
     if comm and len(pfx) > 3:
         pfc = stats.linregress(pfx[1:], pfy[1:])
-        if pfc[2] > pf[2]:
+        if abs(pfc[2]) > abs(pf[2]):
             pf = pfc
     pfc = outlier_del(pfx, pfy, comm, pf)
-    if pfc[2] > pf[2]:
+    if abs(pfc[2]) > abs(pf[2]):
         pf = pfc
     if pf[2] ** 2 < .8:
         return None

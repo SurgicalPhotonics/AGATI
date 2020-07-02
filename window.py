@@ -1,15 +1,15 @@
 import wx
-import wx._core
 import os
 import DataReader
 import csv
 import cv2
 import warnings
 import sys
+warnings.filterwarnings("ignore", "(?s).*MATPLOTLIBDATA.*", category=UserWarning)
 warnings.simplefilter(action='ignore', category=FutureWarning)
-import yaml
 import tensorflow as tf
 if type(tf.contrib) != type(tf): tf.contrib._warning = None
+import yaml
 from tracker import Tracker
 import dlc_script as scr
 
@@ -20,8 +20,8 @@ class Window(wx.Frame):
     """Base of GUI. Displays AGATI Image. Added functionality coming."""
     def __init__(self):
         wx.Frame.__init__(self, None, id=wx.ID_ANY, title='AGATI', pos=(100, 100), size=(385, 425))
-        #impath = os.path.dirname(os.path.realpath(__file__)) #uncomment this if running as python code
-        impath = sys._MEIPASS #for pyinstaller compile.
+        impath = os.path.dirname(os.path.realpath(__file__)) #uncomment this if running as python code
+        #impath = sys._MEIPASS #for pyinstaller compile.
         start_image = wx.Image(os.path.join(impath, 'Splashscreen.jpg'))
 
 
@@ -72,9 +72,8 @@ def vid_analysis(cfg, path, runnum, output_data, outfile, use_gpu):
         data = DataReader.read_data(d_path)
     T = Tracker(data)
     d_list = T.frame_by(path, runnum, outfile)
-    output_data.append((path[path.rfind('\\') + 1:],
-                        d_list[1], d_list[2], d_list[3], d_list[4], d_list[5],
-                        d_list[6], d_list[7], d_list[8]))
+    output_data.append((path[path.rfind('\\') + 1:], d_list[1], d_list[2], d_list[3], d_list[4], d_list[5], d_list[6],
+                        d_list[7], d_list[8]))
 
 
 def downsample(path):
@@ -148,7 +147,7 @@ def run(r=0):
         dlg = None
     wx.MessageBox('Please Select the directory in which you would like your '
                   'data to be stored', style=wx.OK | wx.ICON_INFORMATION)
-    fd = wx.DirDialog(None, "Choose Input Video", style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
+    fd = wx.DirDialog(None, "Choose Output Directory", style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
     outfile = fd.GetPath()
     if fd.ShowModal() == wx.ID_OK:
         outfile = fd.GetPath()
@@ -177,7 +176,7 @@ def run(r=0):
     if dlg == wx.YES:
         run(r=r + 1)
     else:
-        pass
+        window.quit()
     app.MainLoop()
 
 
