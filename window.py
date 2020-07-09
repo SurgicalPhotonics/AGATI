@@ -1,6 +1,6 @@
 import wx
 import os
-print("The Application is Loading. Please Wait.")
+print("Loading Dependencies. Please Wait.")
 import DataReader
 import csv
 import cv2
@@ -111,10 +111,12 @@ def ask(parent=None, message=''):
 
 
 def run(r=0):
+    print("Dependencies Loaded")
     output_data = [('vidname', 'min angle', '3rd percentile angle',
                     '97th percentile angle', 'max angle', '97th percentile positive velocity',
                     '97th percentile negative velocity', '97th percentile positive acceleration',
                     '97th percentile negative acceleration')]
+    print("Loading Project Settings")
     name = os.path.dirname(os.path.abspath(__file__))
     cfg = os.path.join(name, 'vocal_fold-Nat-2019-08-07')
     file_name = os.path.join(cfg, 'config.yaml')
@@ -125,13 +127,13 @@ def run(r=0):
         cfg = os.path.join(name, 'vocal_fold-Nat-2019-08-07')
         file_name = os.path.join(cfg, 'config.yaml')
         stream = open(file_name, 'r')
-
-
+    print("Checking File Paths")
     data = yaml.load(stream, Loader=yaml.FullLoader)
     if data['project_path'] != cfg:
         data['project_path'] = cfg
         with open(file_name, 'w') as yaml_file:
             yaml_file.write(yaml.dump(data, default_flow_style=False))
+    print("Initializing GUI")
     app = wx.App(False)
     window = Window()
     window.Show()
