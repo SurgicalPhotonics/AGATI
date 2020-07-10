@@ -23,7 +23,7 @@ class Tracker:
         self.left = []
         self.right = []
 
-    def frame_by(self, path, run, outfile):
+    def frame_by(self, path, run, outfile, name):
         """Goes through each frame worth of data. Analyses and graphs opening
         angle of vocal cords. Prints summary statistics."""
         of = outfile
@@ -166,12 +166,14 @@ class Tracker:
         ret_list.append(np.percentile(vel_arr, 3))
         ret_list.append(np.percentile(acc_arr, 97))
         ret_list.append(np.percentile(acc_arr, 3))
-        o = of
-        out = os.path.join(of, 'plot%d.png' % run)
+        pn = name + 'graph.png'
+        dn = name + 'data.csv'
+        out = os.path.join(of, pn)
         plt.savefig(out)
-        csvout = os.path.join(o, 'plot%d.csv' % run)
+        csvout = os.path.join(of, dn)
         with open(csvout, 'w') as file:
             writer = csv.writer(file, delimiter=',')
+            writer.writerow(['Frame Number', 'Anterior Glottic Angle', 'Slope of Left Line', 'Slope of Right Line'])
             for i in range(len(dgraph)):
                 if dgraph[i] is not None:
                     writer.writerow([i + 1, dgraph[i][0], dgraph[i][1], dgraph[i][2]])

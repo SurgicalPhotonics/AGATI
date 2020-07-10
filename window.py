@@ -1,16 +1,26 @@
+print("Initializing. This may take a minute.")
+print("Importing wx")
 import wx
+print("Importing utilities")
 import os
-print("Loading Dependencies. Please Wait.")
 import DataReader
 import csv
+print("Importing OpenCV")
 import cv2
+print("Filtering warnings")
 import warnings
+print("Checking system variables")
 import sys
+print("filtering warnings")
 warnings.filterwarnings("ignore", "(?s).*MATPLOTLIBDATA.*", category=UserWarning)
 warnings.simplefilter(action='ignore', category=FutureWarning)
+print("Importing tensorflow")
 import tensorflow as tf
+print("filtering tensorflow warnings")
 if type(tf.contrib) != type(tf): tf.contrib._warning = None
+print("importing yaml")
 import yaml
+print("Importing AGATI functions")
 from tracker import Tracker
 import dlc_script as scr
 
@@ -20,13 +30,13 @@ import dlc_script as scr
 class Window(wx.Frame):
     """Base of GUI. Displays AGATI Image. Added functionality coming."""
     def __init__(self):
-        wx.Frame.__init__(self, None, id=wx.ID_ANY, title='AGATI', pos=(100, 100), size=(385, 425))
+        wx.Frame.__init__(self, None, id=wx.ID_ANY, title='AGATI', pos=(100, 100), size=(700, 800))
         impath = os.path.dirname(os.path.realpath(__file__)) #uncomment this if running as python code
         #impath = sys._MEIPASS #for pyinstaller compile.
         start_image = wx.Image(os.path.join(impath, 'Splashscreen.jpg'))
 
 
-        start_image.Rescale(385, 425, quality=wx.IMAGE_QUALITY_HIGH)
+        start_image.Rescale(700, 800, quality=wx.IMAGE_QUALITY_HIGH)
         img = wx.Bitmap(start_image)
         wx.StaticBitmap(self, -1, img, (0, 0), (img.GetWidth(), img.GetHeight()))
 
@@ -61,10 +71,10 @@ class Window(wx.Frame):
                 self.file_select()
 
 
-def vid_analysis(cfg, path, runnum, output_data, outfile, use_gpu):
+def vid_analysis(cfg, path, runnum, output_data, outfile):
     """Script calls for analysis of a single video."""
     scr.new_vid(cfg, path)
-    data_path = scr.analyze(cfg, path, use_gpu)
+    data_path = scr.analyze(cfg, path)
     try:
         data = DataReader.read_data(data_path)
     except FileNotFoundError:
@@ -72,7 +82,8 @@ def vid_analysis(cfg, path, runnum, output_data, outfile, use_gpu):
         d_path = os.path.join(path[:path.rfind('\\')], location + data_path[data_path.rfind('\\') + 1:])
         data = DataReader.read_data(d_path)
     T = Tracker(data)
-    d_list = T.frame_by(path, runnum, outfile)
+    name = path[path.rfind('\\') + 1:path.rfind('.')]
+    d_list = T.frame_by(path, runnum, outfile, name)
     output_data.append((path[path.rfind('\\') + 1:], d_list[1], d_list[2], d_list[3], d_list[4], d_list[5], d_list[6],
                         d_list[7], d_list[8]))
 
@@ -85,7 +96,7 @@ def downsample(path):
         print('Already proper resolution')
         return path
     else:
-        print('Downsampling to better resolution')
+        print('Downsampling to better resolution for analysis.')
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         frames = cap.get(cv2.CAP_PROP_FPS)
         r_height = 360
@@ -137,17 +148,6 @@ def run(r=0):
     app = wx.App(False)
     window = Window()
     window.Show()
-    dlg = wx.MessageBox('If this computer has a gpu that you would like to use '
-                        'to reduce runtime press yes. Otherwise press no.', 'confirm', wx.YES_NO)
-    if dlg == wx.YES:
-        use_gpu = True
-    else:
-        use_gpu = False
-    if use_gpu:
-        dlg = ask(message='Enter the number corresponding to the GPU you would like to use. If you don\'t know what this means or only have one '
-                          'gpu, enter 0')
-    else:
-        dlg = None
     wx.MessageBox('Please Select the directory in which you would like your '
                   'data to be stored', style=wx.OK | wx.ICON_INFORMATION)
     fd = wx.DirDialog(None, "Choose Output Directory", style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
@@ -162,7 +162,7 @@ def run(r=0):
             if filename.endswith('.mp4') or filename.endswith('.avi'):
                 filepath = os.path.join(path, filename)
                 filepath = downsample(filepath)
-                vid_analysis(cfg, filepath, runnum, output_data, outfile, dlg)
+                vid_analysis(cfg, filepath, runnum, output_data, outfile)
                 runnum += 1
     else:
         path = downsample(path)
@@ -175,6 +175,19 @@ def run(r=0):
             writer.writerow([set[0], set[1], set[2], set[3], set[4], set[5],
                              set[6], set[7], set[8]])
     print('Your video data is stored here: ' + outfile)
+    #Delete videos added to DLC videos folder
+    vfolder = os.path.join(cfg, 'videos')
+    for filename in os.listdir(vfolder):
+        filepath = os.path.join(vfolder, filename)
+        if os.path.islink(filepath):
+            os.unlink(filepath)
+        if os.path.isfile(filepath):
+            os.remove(filepath)
+    for filename in os.listdir(outfile):
+        filepath = os.path.join(vfolder, filename)
+        if filename.endswith('_resized.mp4'):
+            os.remove(filepath)
+
     dlg = wx.MessageBox('Would you like to analyze more videos?', 'Continue', wx.YES_NO)
     if dlg == wx.YES:
         run(r=r + 1)

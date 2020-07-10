@@ -23,13 +23,10 @@ def new_vid(config, path):
     return os.path.join(config, location)
 
 
-def analyze(config, path, use_gpu):
+def analyze(config, path):
     """Analyzes new video"""
     cfg = os.path.join(config, 'config.yaml')
-    if use_gpu is not None:
-        dlc.analyze_videos(cfg, [path], videotype=path[path.rfind('.'):], gputouse=use_gpu)
-    else:
-        dlc.analyze_videos(cfg, [path], videotype=path[path.rfind('.'):])
+    dlc.analyze_videos(cfg, [path], videotype=path[path.rfind('.'):], gputouse=0)
     location = os.path.basename(os.path.normpath(path))
     new_vid = os.path.join(config, "videos", location)
     h5 = os.path.join(new_vid[0: new_vid.rfind('.')], FILE_STRING + '.h5')
