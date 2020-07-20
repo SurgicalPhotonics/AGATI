@@ -1,7 +1,7 @@
 import numpy as np
-import os
 import cv2
 import csv
+from os import path as ospath
 import matplotlib.pyplot as plt
 from draw import draw
 from scipy import stats
@@ -168,9 +168,9 @@ class Tracker:
         ret_list.append(np.percentile(acc_arr, 3))
         pn = name + 'graph.png'
         dn = name + 'data.csv'
-        out = os.path.join(of, pn)
+        out = ospath.join(of, pn)
         plt.savefig(out)
-        csvout = os.path.join(of, dn)
+        csvout = ospath.join(of, dn)
         with open(csvout, 'w') as file:
             writer = csv.writer(file, delimiter=',')
             writer.writerow(['Frame Number', 'Anterior Glottic Angle', 'Slope of Left Line', 'Slope of Right Line'])

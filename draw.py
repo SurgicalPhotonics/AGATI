@@ -1,5 +1,5 @@
 import cv2
-import os
+from os import path as ospath
 import numpy as np
 
 
@@ -19,7 +19,7 @@ def draw(path, lines, angles, outfile, videotype='.mp4'):
         fourcc = cv2.VideoWriter.fourcc('x', 'v', 'i', 'd')
     else:
         fourcc = 0
-    out = os.path.join(outfile, name + videotype)
+    out = ospath.join(outfile, name + videotype)
     w = cv2.VideoWriter(out, fourcc, frames, (width, height))
     print('Printing lines on your video.')
     while s:
@@ -49,7 +49,7 @@ def draw(path, lines, angles, outfile, videotype='.mp4'):
     cap.release()
     w.release()
     cv2.destroyAllWindows()
-    return os.path.join(path[:path.rfind('videos')], name)
+    return ospath.join(path[:path.rfind('videos')], name)
 
 
 def intersect(left_line, right_line):
