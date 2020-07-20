@@ -166,7 +166,7 @@ def run(r=0):
                 runnum += 1
     else:
         path = downsample(path)
-        vid_analysis(cfg, path, 0, output_data, outfile, dlg)
+        vid_analysis(cfg, path, 0, output_data, outfile)
     #put data in vocal folder
     csv_data = os.path.join(outfile, 'video_data%d.csv' % r)
     with open(csv_data, 'w') as file:

@@ -5,7 +5,7 @@
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/vocal_fold-Nat-2019-08-07" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.6 (DLC-GPU)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.6 (3)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
