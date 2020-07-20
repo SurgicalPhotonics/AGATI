@@ -10,18 +10,19 @@ import cv2
 print("Filtering warnings")
 import warnings
 print("Checking system variables")
-import sys
-print("filtering warnings")
+from sys import _MEIPASS
+print("Filtering warnings")
 warnings.filterwarnings("ignore", "(?s).*MATPLOTLIBDATA.*", category=UserWarning)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 print("Importing tensorflow")
 import tensorflow as tf
-print("filtering tensorflow warnings")
+print("Filtering tensorflow warnings")
 if type(tf.contrib) != type(tf): tf.contrib._warning = None
-print("importing yaml")
+print("Importing yaml")
 import yaml
 print("Importing AGATI functions")
 from tracker import Tracker
+print("Importing DeepLabCut Functions")
 import dlc_script as scr
 
 # Put dlc project inside app install folder
@@ -32,10 +33,8 @@ class Window(wx.Frame):
     def __init__(self):
         wx.Frame.__init__(self, None, id=wx.ID_ANY, title='AGATI', pos=(100, 100), size=(700, 800))
         impath = os.path.dirname(os.path.realpath(__file__)) #uncomment this if running as python code
-        #impath = sys._MEIPASS #for pyinstaller compile.
+        #impath = _MEIPASS #for pyinstaller compile.
         start_image = wx.Image(os.path.join(impath, 'Splashscreen.jpg'))
-
-
         start_image.Rescale(700, 800, quality=wx.IMAGE_QUALITY_HIGH)
         img = wx.Bitmap(start_image)
         wx.StaticBitmap(self, -1, img, (0, 0), (img.GetWidth(), img.GetHeight()))
@@ -48,8 +47,7 @@ class Window(wx.Frame):
         dlg = wx.MessageBox('Would you like to analyze a new video?', 'Confirm',
                             wx.YES_NO)
         if dlg == wx.YES:
-            dlg = wx.MessageBox('Would you like to analyze a directory of '
-                                'videos?', 'Confirm', wx.YES_NO)
+            dlg = wx.MessageBox('Would you like to analyze a directory of videos?', 'Confirm', wx.YES_NO)
             if dlg == wx.YES:
                 fd = wx.DirDialog(self, "Choose Input Directory", style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
                 if fd.ShowModal() == wx.ID_OK:
@@ -134,7 +132,7 @@ def run(r=0):
     try:
         stream = open(file_name, 'r')
     except FileNotFoundError:
-        name = sys._MEIPASS
+        name = _MEIPASS
         cfg = os.path.join(name, 'vocal_fold-Nat-2019-08-07')
         file_name = os.path.join(cfg, 'config.yaml')
         stream = open(file_name, 'r')

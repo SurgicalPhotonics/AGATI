@@ -1,4 +1,4 @@
-import pandas as pd
+from pandas import read_hdf
 
 con_const = .99  # How confident we want Deeplabcut to be of its point placement.
 
@@ -10,7 +10,7 @@ bps = ['AC', 'LC1', 'LC2', 'LC3', 'LC4', 'LC5', 'LVP', 'RC1', 'RC2',
 
 def read_data(path):
     """Reads Deeplabcut video data from dataframe using pandas."""
-    placeholder = pd.read_hdf(path)
+    placeholder = read_hdf(path)
     # fix next line to take all possible input -- exclude vocal and .h5
     data = placeholder['DLC_resnet50_vocal_foldAug7shuffle1_1030000'] #Newer DLC
     #data = placeholder['DeepCut_resnet50_vocal_foldAug7shuffle1_1030000']
