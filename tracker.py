@@ -1,6 +1,6 @@
 import numpy as np
-import cv2
 import csv
+from cv2 import CAP_PROP_FPS, VideoCapture
 from os import path as ospath
 import matplotlib.pyplot as plt
 from draw import draw
@@ -103,8 +103,8 @@ class Tracker:
             else:
                 display_graph.append(arr[count])
                 count += 1
-        vid = cv2.VideoCapture(path)
-        frames = vid.get(cv2.CAP_PROP_FPS)
+        vid = VideoCapture(path)
+        frames = vid.get(CAP_PROP_FPS)
         vels = [0] # change in angle in degrees / sec
         dif = 1
         for i in range(1, len(dgraph)):

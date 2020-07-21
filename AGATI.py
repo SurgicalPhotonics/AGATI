@@ -2,18 +2,19 @@ print("Initializing. This may take a minute.")
 print("Importing wx")
 import wx
 print("Importing utilities")
-import os
+from os import path as ospath
+from os import listdir, remove, unlink
 import DataReader
 import csv
 print("Importing OpenCV")
-import cv2
+from cv2 import CAP_PROP_FPS, CAP_PROP_FRAME_WIDTH, CAP_PROP_FRAME_HEIGHT, VideoCapture, VideoWriter, resize
 print("Filtering warnings")
-import warnings
+from warnings import filterwarnings, simplefilter
 print("Checking system variables")
-from sys import _MEIPASS
+#from sys import _MEIPASS
 print("Filtering warnings")
-warnings.filterwarnings("ignore", "(?s).*MATPLOTLIBDATA.*", category=UserWarning)
-warnings.simplefilter(action='ignore', category=FutureWarning)
+filterwarnings("ignore", "(?s).*MATPLOTLIBDATA.*", category=UserWarning)
+simplefilter(action='ignore', category=FutureWarning)
 print("Importing tensorflow")
 import tensorflow as tf
 print("Filtering tensorflow warnings")
@@ -25,16 +26,14 @@ from tracker import Tracker
 print("Importing DeepLabCut Functions")
 import dlc_script as scr
 
-# Put dlc project inside app install folder
-
 
 class Window(wx.Frame):
     """Base of GUI. Displays AGATI Image. Added functionality coming."""
     def __init__(self):
         wx.Frame.__init__(self, None, id=wx.ID_ANY, title='AGATI', pos=(100, 100), size=(700, 800))
-        impath = os.path.dirname(os.path.realpath(__file__)) #uncomment this if running as python code
+        impath = ospath.dirname(ospath.realpath(__file__)) #uncomment this if running as python code
         #impath = _MEIPASS #for pyinstaller compile.
-        start_image = wx.Image(os.path.join(impath, 'Splashscreen.jpg'))
+        start_image = wx.Image(ospath.join(impath, 'Splashscreen.jpg'))
         start_image.Rescale(700, 800, quality=wx.IMAGE_QUALITY_HIGH)
         img = wx.Bitmap(start_image)
         wx.StaticBitmap(self, -1, img, (0, 0), (img.GetWidth(), img.GetHeight()))
@@ -76,8 +75,8 @@ def vid_analysis(cfg, path, runnum, output_data, outfile):
     try:
         data = DataReader.read_data(data_path)
     except FileNotFoundError:
-        location = os.path.split(os.path.split(data_path)[0])[1]
-        d_path = os.path.join(path[:path.rfind('\\')], location + data_path[data_path.rfind('\\') + 1:])
+        location = ospath.split(ospath.split(data_path)[0])[1]
+        d_path = ospath.join(path[:path.rfind('\\')], location + data_path[data_path.rfind('\\') + 1:])
         data = DataReader.read_data(d_path)
     T = Tracker(data)
     name = path[path.rfind('\\') + 1:path.rfind('.')]
@@ -88,24 +87,24 @@ def vid_analysis(cfg, path, runnum, output_data, outfile):
 
 def downsample(path):
     """Downsamples high res videos to more manageable resolution for DeepLabCut"""
-    cap = cv2.VideoCapture(path)
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    cap = VideoCapture(path)
+    height = int(cap.get(CAP_PROP_FRAME_HEIGHT))
     if height <= 480:
         print('Already proper resolution')
         return path
     else:
         print('Downsampling to better resolution for analysis.')
-        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        frames = cap.get(cv2.CAP_PROP_FPS)
+        width = int(cap.get(CAP_PROP_FRAME_WIDTH))
+        frames = cap.get(CAP_PROP_FPS)
         r_height = 360
         ar = width / height
         r_width = int(ar * 360)
-        fourcc = cv2.VideoWriter.fourcc('m', 'p', '4', 'v')
+        fourcc = VideoWriter.fourcc('m', 'p', '4', 'v')
         name = path[:path.rfind('.')] + '_resized.mp4'
-        writer = cv2.VideoWriter(name, fourcc, frames, (r_width, r_height))
+        writer = VideoWriter(name, fourcc, frames, (r_width, r_height))
         s, im = cap.read()
         while s:
-            image = cv2.resize(im, (r_width, r_height))
+            image = resize(im, (r_width, r_height))
             writer.write(image)
             s, im = cap.read()
         return name
@@ -126,15 +125,15 @@ def run(r=0):
                     '97th percentile negative velocity', '97th percentile positive acceleration',
                     '97th percentile negative acceleration')]
     print("Loading Project Settings")
-    name = os.path.dirname(os.path.abspath(__file__))
-    cfg = os.path.join(name, 'vocal_fold-Nat-2019-08-07')
-    file_name = os.path.join(cfg, 'config.yaml')
+    name = ospath.dirname(ospath.abspath(__file__))
+    cfg = ospath.join(name, 'vocal_fold-Nat-2019-08-07')
+    file_name = ospath.join(cfg, 'config.yaml')
     try:
         stream = open(file_name, 'r')
     except FileNotFoundError:
         name = _MEIPASS
-        cfg = os.path.join(name, 'vocal_fold-Nat-2019-08-07')
-        file_name = os.path.join(cfg, 'config.yaml')
+        cfg = ospath.join(name, 'vocal_fold-Nat-2019-08-07')
+        file_name = ospath.join(cfg, 'config.yaml')
         stream = open(file_name, 'r')
     print("Checking File Paths")
     data = yaml.load(stream, Loader=yaml.FullLoader)
@@ -156,9 +155,9 @@ def run(r=0):
     path, isdir = window.file_select()
     if isdir:
         runnum = r * 10
-        for filename in os.listdir(path):
+        for filename in listdir(path):
             if filename.endswith('.mp4') or filename.endswith('.avi'):
-                filepath = os.path.join(path, filename)
+                filepath = ospath.join(path, filename)
                 filepath = downsample(filepath)
                 vid_analysis(cfg, filepath, runnum, output_data, outfile)
                 runnum += 1
@@ -166,7 +165,7 @@ def run(r=0):
         path = downsample(path)
         vid_analysis(cfg, path, 0, output_data, outfile, dlg)
     #put data in vocal folder
-    csv_data = os.path.join(outfile, 'video_data%d.csv' % r)
+    csv_data = ospath.join(outfile, 'video_data%d.csv' % r)
     with open(csv_data, 'w') as file:
         writer = csv.writer(file, delimiter=',')
         for set in output_data:
@@ -174,17 +173,17 @@ def run(r=0):
                              set[6], set[7], set[8]])
     print('Your video data is stored here: ' + outfile)
     #Delete videos added to DLC videos folder
-    vfolder = os.path.join(cfg, 'videos')
-    for filename in os.listdir(vfolder):
-        filepath = os.path.join(vfolder, filename)
-        if os.path.islink(filepath):
-            os.unlink(filepath)
-        if os.path.isfile(filepath):
-            os.remove(filepath)
-    for filename in os.listdir(outfile):
-        filepath = os.path.join(vfolder, filename)
+    vfolder = ospath.join(cfg, 'videos')
+    for filename in listdir(vfolder):
+        filepath = ospath.join(vfolder, filename)
+        if ospath.islink(filepath):
+            unlink(filepath)
+        if ospath.isfile(filepath):
+            remove(filepath)
+    for filename in listdir(outfile):
+        filepath = ospath.join(vfolder, filename)
         if filename.endswith('_resized.mp4'):
-            os.remove(filepath)
+            remove(filepath)
 
     dlg = wx.MessageBox('Would you like to analyze more videos?', 'Continue', wx.YES_NO)
     if dlg == wx.YES:

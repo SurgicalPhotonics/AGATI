@@ -1,5 +1,8 @@
+print("Create Projext")
 from deeplabcut import create_project
+print("Analyze videos")
 from deeplabcut import analyze_videos
+print("Create Labeled Video")
 from deeplabcut import create_labeled_video
 print("DeepLabCut functions Loaded")
 from os import path as ospath
