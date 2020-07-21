@@ -4,7 +4,7 @@ scorer: Nat
 date: Aug7
 
 # Project path (change when moving around)
-project_path: D:\Python Workspace\Projects\VCTrack\vocal_fold-Nat-2019-08-07
+project_path: C:\Users\NA659\Documents\GitHub\VCTrack\vocal_fold-Nat-2019-08-07
 
 # Annotation data set configuration (and individual video cropping parameters)
 video_sets:
@@ -87,6 +87,14 @@ video_sets:
     crop: 0, 640, 0, 480
   D:\MovedDownload\test_vids\uvfp7.mp4:
     crop: 0, 640, 0, 480
+  C:\Users\NA659\Desktop\test_vids\vocal.mp4:
+    crop: 0, 480, 0, 360
+  C:\Users\NA659\Desktop\test_vids\vocal0_resized.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Desktop\test_vids\vocal0_resizedwith_lines.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Desktop\test_vids\vocalwith_lines.mp4:
+    crop: 0, 480, 0, 360
 bodyparts:
 - AC
 - LC1
