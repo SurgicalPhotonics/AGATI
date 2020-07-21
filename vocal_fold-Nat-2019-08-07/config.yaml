@@ -95,6 +95,10 @@ video_sets:
     crop: 0, 640, 0, 360
   C:\Users\NA659\Desktop\test_vids\vocalwith_lines.mp4:
     crop: 0, 480, 0, 360
+  C:\Users\NA659\Desktop\test_vids\vocal0_resizedwith_lineswith_lines.mp4:
+    crop: 0, 640, 0, 360
+  C:\Users\NA659\Desktop\test_vids\vocalwith_lineswith_lines.mp4:
+    crop: 0, 480, 0, 360
 bodyparts:
 - AC
 - LC1

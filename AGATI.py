@@ -32,8 +32,8 @@ class Window(wx.Frame):
     """Base of GUI. Displays AGATI Image. Added functionality coming."""
     def __init__(self):
         wx.Frame.__init__(self, None, id=wx.ID_ANY, title='AGATI', pos=(100, 100), size=(700, 800))
-        impath = os.path.dirname(os.path.realpath(__file__)) #uncomment this if running as python code
-        #impath = _MEIPASS #for pyinstaller compile.
+        #impath = os.path.dirname(os.path.realpath(__file__)) #uncomment this if running as python code
+        impath = _MEIPASS #for pyinstaller compile.
         start_image = wx.Image(os.path.join(impath, 'Splashscreen.jpg'))
         start_image.Rescale(700, 800, quality=wx.IMAGE_QUALITY_HIGH)
         img = wx.Bitmap(start_image)
