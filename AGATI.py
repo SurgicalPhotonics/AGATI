@@ -26,7 +26,7 @@ from tracker import Tracker
 print("Importing DeepLabCut Functions")
 import dlc_script as scr
 
-
+#Main Vers
 class Window(wx.Frame):
     """Base of GUI. Displays AGATI Image. Added functionality coming."""
     def __init__(self):
