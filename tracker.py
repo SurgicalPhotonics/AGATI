@@ -1,5 +1,5 @@
-import numpy as np
-import csv
+from csv import writer as csvwriter
+from numpy import percentile, max as npmax, min as npmin, array as nparray
 from cv2 import CAP_PROP_FPS, VideoCapture
 from os import path as ospath
 import matplotlib.pyplot as plt
@@ -87,7 +87,7 @@ class Tracker:
                 sgraph.append(item[0] * 180 / pi)
             else:
                 dgraph.append(None)
-        arr = np.array(sgraph)
+        arr = nparray(sgraph)
         display_graph = []
         count = 0
         for i in range(len(dgraph)):
@@ -97,7 +97,7 @@ class Tracker:
                 display_graph.append(None)
             elif count >= len(arr):
                 display_graph.append(None)
-            elif arr[count] > np.percentile(arr, 97):
+            elif arr[count] > percentile(arr, 97):
                 display_graph.append(0)
                 count += 1
             else:
@@ -145,8 +145,8 @@ class Tracker:
         for vel in vels:
             if vel is not None:
                 new_vel.append(vel)
-        vel_arr = np.array(new_vel)
-        acc_arr = np.array(accs)
+        vel_arr = nparray(new_vel)
+        acc_arr = nparray(accs)
         """list indecies doc: 
         0: video_path
         1: min angle
@@ -158,22 +158,23 @@ class Tracker:
         7: 97th percentile pos acceleration
         8: 97th percentile neg acceleration"""
         ret_list.append(video_path)
-        ret_list.append(np.min(arr))
-        ret_list.append(np.percentile(arr, 3))
-        ret_list.append(np.percentile(arr, 97))
-        ret_list.append(np.max(arr))
-        ret_list.append(np.percentile(vel_arr, 97))
-        ret_list.append(np.percentile(vel_arr, 3))
-        ret_list.append(np.percentile(acc_arr, 97))
-        ret_list.append(np.percentile(acc_arr, 3))
+        ret_list.append(npmin(arr))
+        ret_list.append(percentile(arr, 3))
+        ret_list.append(percentile(arr, 97))
+        ret_list.append(npmax(arr))
+        ret_list.append(percentile(vel_arr, 97))
+        ret_list.append(percentile(vel_arr, 3))
+        ret_list.append(percentile(acc_arr, 97))
+        ret_list.append(percentile(acc_arr, 3))
         pn = name + 'graph.png'
         dn = name + 'data.csv'
         out = ospath.join(of, pn)
         plt.savefig(out)
         csvout = ospath.join(of, dn)
         with open(csvout, 'w') as file:
-            writer = csv.writer(file, delimiter=',')
-            writer.writerow(['Frame Number', 'Anterior Glottic Angle', 'Slope of Left Line', 'Slope of Right Line'])
+            writer = csvwriter(file, delimiter=',')
+            #Right line and left line flipped in videos
+            writer.writerow(['Frame Number', 'Anterior Glottic Angle', 'Slope of Right Cord', 'Slope of Left Cord'])
             for i in range(len(dgraph)):
                 if dgraph[i] is not None:
                     writer.writerow([i + 1, dgraph[i][0], dgraph[i][1], dgraph[i][2]])

@@ -1,11 +1,11 @@
-print("Create Projext")
+print("Create Project")
 from deeplabcut import create_project
 print("Analyze videos")
 from deeplabcut import analyze_videos
-print("Create Labeled Video")
-from deeplabcut import create_labeled_video
 print("DeepLabCut functions Loaded")
+print("OSPath")
 from os import path as ospath
+
 
 FILE_STRING = 'DLC_resnet50_vocal_foldAug7shuffle1_1030000' #for newer DLC
 #FILE_STRING = 'DeepCut_resnet50_vocal_foldAug7shuffle1_1030000'
@@ -39,15 +39,15 @@ def analyze(config, path):
     return h5
 
 
-def label(config, path):
-    """Creates labeled video from new video"""
+"""def label(config, path):
+    Creates labeled video from new video
     cfg = ospath.join(config, 'config.yaml')
     location = ospath.join('videos\\', path[path.rfind('/') + 1:])
     vpath = ospath.join(config, location)
     create_labeled_video(cfg, [vpath], videotype=path[path.rfind('.'):])
     new_vid = ospath.join(config, location[:location.rfind('.')])
     vid = new_vid + FILE_STRING + '_labeled' + path[path.rfind('.'):]
-    return vid
+    return vid"""
 
 
 if __name__ == '__main__':

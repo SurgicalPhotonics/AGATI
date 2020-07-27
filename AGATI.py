@@ -5,17 +5,17 @@ print("Importing utilities")
 from os import path as ospath
 from os import listdir, remove, unlink
 import DataReader
-import csv
+from csv import writer as csvwriter
 print("Importing OpenCV")
 from cv2 import CAP_PROP_FPS, CAP_PROP_FRAME_WIDTH, CAP_PROP_FRAME_HEIGHT, VideoCapture, VideoWriter, resize
 print("Filtering warnings")
 from warnings import filterwarnings, simplefilter
 print("Checking system variables")
-#from sys import _MEIPASS
+import sys
 print("Filtering warnings")
 filterwarnings("ignore", "(?s).*MATPLOTLIBDATA.*", category=UserWarning)
 simplefilter(action='ignore', category=FutureWarning)
-print("Importing tensorflow")
+print("Importing Tensorflow")
 import tensorflow as tf
 print("Filtering tensorflow warnings")
 if type(tf.contrib) != type(tf): tf.contrib._warning = None
@@ -23,18 +23,20 @@ print("Importing yaml")
 import yaml
 print("Importing AGATI functions")
 from tracker import Tracker
-print("Importing DeepLabCut Functions")
+print("Importing DeepLabCut functions. This step may take longer than others.")
 import dlc_script as scr
 
-#Main Vers
+
+
+
 class Window(wx.Frame):
     """Base of GUI. Displays AGATI Image. Added functionality coming."""
     def __init__(self):
-        wx.Frame.__init__(self, None, id=wx.ID_ANY, title='AGATI', pos=(100, 100), size=(700, 800))
-        impath = ospath.dirname(ospath.realpath(__file__)) #uncomment this if running as python code
-        #impath = _MEIPASS #for pyinstaller compile.
+        wx.Frame.__init__(self, None, id=wx.ID_ANY, title='AGATI', pos=(100, 100), size=(1600, 900))
+        #impath = ospath.dirname(ospath.realpath(__file__)) #uncomment this if running as python code
+        impath = sys._MEIPASS #for pyinstaller compile.
         start_image = wx.Image(ospath.join(impath, 'Splashscreen.jpg'))
-        start_image.Rescale(700, 800, quality=wx.IMAGE_QUALITY_HIGH)
+        start_image.Rescale(1600, 900, quality=wx.IMAGE_QUALITY_HIGH)
         img = wx.Bitmap(start_image)
         wx.StaticBitmap(self, -1, img, (0, 0), (img.GetWidth(), img.GetHeight()))
 
@@ -131,7 +133,7 @@ def run(r=0):
     try:
         stream = open(file_name, 'r')
     except FileNotFoundError:
-        name = _MEIPASS
+        name = sys._MEIPASS
         cfg = ospath.join(name, 'vocal_fold-Nat-2019-08-07')
         file_name = ospath.join(cfg, 'config.yaml')
         stream = open(file_name, 'r')
@@ -165,9 +167,9 @@ def run(r=0):
         path = downsample(path)
         vid_analysis(cfg, path, 0, output_data, outfile)
     #put data in vocal folder
-    csv_data = ospath.join(outfile, 'video_data%d.csv' % r)
+    csv_data = ospath.join(outfile, 'ensemble_statistics.csv')
     with open(csv_data, 'w') as file:
-        writer = csv.writer(file, delimiter=',')
+        writer = csvwriter(file, delimiter=',')
         for set in output_data:
             writer.writerow([set[0], set[1], set[2], set[3], set[4], set[5],
                              set[6], set[7], set[8]])
