@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from draw import draw
 from scipy import stats
 from TrackingObjects import Line
-from math import atan, pi
+from math import atan, pi, radians, degrees
 from DataReader import read_data
 
 
@@ -26,6 +26,7 @@ class Tracker:
     def frame_by(self, path, run, outfile, name):
         """Goes through each frame worth of data. Analyses and graphs opening
         angle of vocal cords. Prints summary statistics."""
+        print("Analyzing Video Data")
         of = outfile
         ac1 = self.data[0]
         # frames dropped
@@ -71,8 +72,8 @@ class Tracker:
             if num_pts < 3 and RC_now[0] is None:
                 cords_there = False
             if cords_there:
-                angle, lslope, rslope = self.alt_angle(LC_now, RC_now, comm)
-                graph.append([angle, lslope, rslope])
+                angle, lang, rang = self.alt_angle(LC_now, RC_now, comm)
+                graph.append([angle, lang, rang])
             else:
                 self.left.append(None)
                 self.right.append(None)
@@ -174,7 +175,7 @@ class Tracker:
         with open(csvout, 'w') as file:
             writer = csvwriter(file, delimiter=',')
             #Right line and left line flipped in videos
-            writer.writerow(['Frame Number', 'Anterior Glottic Angle', 'Slope of Right Cord', 'Slope of Left Cord'])
+            writer.writerow(['Frame Number', 'Anterior Glottic Angle', 'Angle of Left Cord', 'Angle of Right Cord'])
             for i in range(len(dgraph)):
                 if dgraph[i] is not None:
                     writer.writerow([i + 1, dgraph[i][0], dgraph[i][1], dgraph[i][2]])
@@ -219,7 +220,25 @@ class Tracker:
             return 0, left_line.slope, right_line.slope
         tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope *
                                                           right_line.slope))
-        return atan(tan), left_line.slope, right_line.slope
+        ladj = left_line.end2[0] - left_line.end1[0]
+        lop = abs(left_line.end2[1] - left_line.end1[1])
+        radj = right_line.end2[0] - right_line.end1[0]
+        rop = abs(right_line.end2[1] - right_line.end1[1])
+        if radj == 0:
+            radj = 0.00001
+        if ladj == 0:
+            ladj = 0.00001
+        lang = degrees(atan(lop / ladj))
+        rang = degrees(atan(rop / radj))
+        if left_line.slope < 0:
+            lret = 90 - lang
+        else:
+            lret = -lang - 90
+        if right_line.slope > 0:
+            rret = -rang - 90
+        else:
+            rret = 90 - rang
+        return atan(tan), lret, rret
 
 
 def calc_reg_line(pt_lst, comm):

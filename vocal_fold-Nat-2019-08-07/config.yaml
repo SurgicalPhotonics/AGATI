@@ -1,41 +1,12 @@
+# Project definitions (do not edit)
 Task: vocal_fold
-TrainingFraction:
-- 0.95
-alphavalue: 0.7
-batch_size: 4
-bodyparts:
-- AC
-- LC1
-- LC2
-- LC3
-- LC4
-- LC5
-- LVP
-- RC1
-- RC2
-- RC3
-- RC4
-- RC5
-- RVP
-colormap: jet
-corner2move2:
-- 50
-- 50
-cropping: false
-date: Aug7
-dotsize: 4
-iteration: 2
-move2corner: true
-numframes2pick: 20
-pcutoff: 0.1
-project_path: D:\Python Workspace\Projects\VCTrack\vocal_fold-Nat-2019-08-07
-resnet: 50
 scorer: Nat
-skeleton: []
-skeleton_color: black
-snapshotindex: -1
-start: 0
-stop: 1
+date: Aug7
+
+# Project path (change when moving around)
+project_path: D:\Python Workspace\Projects\VCTrack\vocal_fold-Nat-2019-08-07
+
+# Annotation data set configuration (and individual video cropping parameters)
 video_sets:
   C:\Users\NA659\Desktop\test_vids\vocal.mp4:
     crop: 0, 480, 0, 360
@@ -46,7 +17,7 @@ video_sets:
   C:\Users\NA659\Desktop\test_vids\vocalwith_lines.mp4:
     crop: 0, 480, 0, 360
   C:\Users\NA659\Documents\Mau Vids\002B_resized.mp4:
-    C:\Users\NA659\Documents\test_vids\nop10.mp4: null
+    C:\Users\NA659\Documents\test_vids\nop10.mp4:
     crop: 0, 640, 0, 360
   C:\Users\NA659\Documents\Mau Vids\004E.mp4:
     crop: 0, 640, 0, 360
@@ -124,7 +95,50 @@ video_sets:
     crop: 0, 640, 0, 480
   D:\MovedDownload\test_vids\uvfp7.mp4:
     crop: 0, 640, 0, 480
+bodyparts:
+- AC
+- LC1
+- LC2
+- LC3
+- LC4
+- LC5
+- LVP
+- RC1
+- RC2
+- RC3
+- RC4
+- RC5
+- RVP
+start: 0
+stop: 1
+numframes2pick: 20
+
+# Plotting configuration
+skeleton: []
+skeleton_color: black
+pcutoff: 0.1
+dotsize: 4
+alphavalue: 0.7
+colormap: jet
+
+# Training,Evaluation and Analysis configuration
+TrainingFraction:
+- 0.95
+iteration: 2
+resnet: 50
+snapshotindex: -1
+batch_size: 4
+
+# Cropping Parameters (for analysis and outlier frame detection)
+cropping: false
+#if cropping is true for analysis, then set the values here:
 x1: 0
 x2: 640
 y1: 277
 y2: 624
+
+# Refinement configuration (parameters from annotation dataset configuration also relevant in this stage)
+corner2move2:
+- 50
+- 50
+move2corner: true

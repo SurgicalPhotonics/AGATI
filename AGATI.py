@@ -27,16 +27,15 @@ print("Importing DeepLabCut functions. This step may take longer than others.")
 import dlc_script as scr
 
 
-
-
 class Window(wx.Frame):
     """Base of GUI. Displays AGATI Image. Added functionality coming."""
     def __init__(self):
-        wx.Frame.__init__(self, None, id=wx.ID_ANY, title='AGATI', pos=(100, 100), size=(1600, 900))
-        #impath = ospath.dirname(ospath.realpath(__file__)) #uncomment this if running as python code
-        impath = sys._MEIPASS #for pyinstaller compile.
+        x, y = wx.GetDisplaySize()
+        wx.Frame.__init__(self, None, id=wx.ID_ANY, title='AGATI', pos=(100, 100), size=(x/2, y/2))
+        impath = ospath.dirname(ospath.realpath(__file__)) #uncomment this if running as python code
+        #impath = sys._MEIPASS #for pyinstaller compile.
         start_image = wx.Image(ospath.join(impath, 'Splashscreen.jpg'))
-        start_image.Rescale(1600, 900, quality=wx.IMAGE_QUALITY_HIGH)
+        start_image.Rescale(x/2, y/2, quality=wx.IMAGE_QUALITY_HIGH)
         img = wx.Bitmap(start_image)
         wx.StaticBitmap(self, -1, img, (0, 0), (img.GetWidth(), img.GetHeight()))
 
@@ -183,7 +182,7 @@ def run(r=0):
         if ospath.isfile(filepath):
             remove(filepath)
     for filename in listdir(outfile):
-        filepath = ospath.join(vfolder, filename)
+        filepath = ospath.join(outfile, filename)
         if filename.endswith('_resized.mp4'):
             remove(filepath)
 
