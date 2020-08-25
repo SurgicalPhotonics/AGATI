@@ -7,8 +7,8 @@ print("OSPath")
 from os import path as ospath
 
 
-FILE_STRING = 'DLC_resnet50_vocal_foldAug7shuffle1_1030000' #for newer DLC
-#FILE_STRING = 'DeepCut_resnet50_vocal_foldAug7shuffle1_1030000'
+#FILE_STRING = 'DLC_resnet50_vocal_foldAug7shuffle1_1030000' #for newer DLC
+FILE_STRING = 'DeepCut_resnet50_vocal_foldAug7shuffle1_1030000'
 # Only works on windows rn
 
 
@@ -32,7 +32,7 @@ def new_vid(config, path):
 def analyze(config, path):
     """Analyzes new video"""
     cfg = ospath.join(config, 'config.yaml')
-    analyze_videos(cfg, [path], videotype=path[path.rfind('.'):], gputouse=0)
+    analyze_videos(cfg, [path], videotype=path[path.rfind('.'):])
     location = ospath.basename(ospath.normpath(path))
     new_vid = ospath.join(config, "videos", location)
     h5 = ospath.join(new_vid[0: new_vid.rfind('.')], FILE_STRING + '.h5')

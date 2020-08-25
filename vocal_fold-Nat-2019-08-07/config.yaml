@@ -28,7 +28,7 @@ iteration: 2
 move2corner: true
 numframes2pick: 20
 pcutoff: 0.1
-project_path: D:\Python Workspace\Projects\VCTrack\vocal_fold-Nat-2019-08-07
+project_path: C:\Users\natad\PycharmProjects\VCTrack\vocal_fold-Nat-2019-08-07
 resnet: 50
 scorer: Nat
 skeleton: []
