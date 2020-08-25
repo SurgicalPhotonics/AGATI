@@ -6,6 +6,7 @@ from numpy import cross as npcross, vstack, hstack, ones
 def draw(path, lines, angles, outfile, videotype='.mp4'):
     """Takes each frame from video and stitches it back into new video with
     line drawn on."""
+    print("Printing Lines on Videos")
     cap = VideoCapture(path)
     frames = cap.get(CAP_PROP_FPS)
     width = int(cap.get(CAP_PROP_FRAME_WIDTH))
