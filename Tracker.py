@@ -27,6 +27,8 @@ class Tracker:
         """Goes through each frame worth of data. Analyses and graphs opening
         angle of vocal cords. Prints summary statistics."""
         print("Analyzing Video Data")
+
+        # Organizing and sorting through points
         of = outfile
         ac1 = self.data[0]
         # frames dropped
@@ -60,6 +62,8 @@ class Tracker:
                 else:
                     RC_now.append(None)
             num_pts = 0  # number of legitimate points on a cord
+
+            # Checking Point Validity
             for item in LC_now:
                 if item is not None:
                     num_pts += 1
@@ -71,13 +75,20 @@ class Tracker:
                     num_pts += 1
             if num_pts < 3 and RC_now[0] is None:
                 cords_there = False
+
+            # Performing angle calculations
             if cords_there:
-                angle, lang, rang = self.alt_angle(LC_now, RC_now, comm)
+                angle, lang = self.alt_angle(LC_now, RC_now, comm)
+                if lang is not None:
+                    rang = -(angle * 180 / pi - lang)
+                else:
+                    rang = None
                 graph.append([angle, lang, rang])
             else:
                 self.left.append(None)
                 self.right.append(None)
                 graph.append(None)
+            last_ac = self.data[0][i]
         dgraph = []  # keep none to show blank space in graph.
         sgraph = []  # remove none to perform statistical analysis.
         for item in graph:
@@ -104,9 +115,11 @@ class Tracker:
             else:
                 display_graph.append(arr[count])
                 count += 1
+
+        # Computing velocities and accelerations
         vid = VideoCapture(path)
         frames = vid.get(CAP_PROP_FPS)
-        vels = [0] # change in angle in degrees / sec
+        vels = [0]  # change in angle in degrees / sec
         dif = 1
         for i in range(1, len(dgraph)):
             if dgraph[i] is None or dgraph[i-dif] is None:
@@ -208,37 +221,33 @@ class Tracker:
 
     def alt_angle(self, left_cord, right_cord, comm):
         """Alternative angle of opening calculation."""
-        left_line = calc_muscular_line(left_cord, comm)
-        right_line = calc_muscular_line(right_cord, comm)
+        # AGA @ anterior commisure
+        left_line = calc_reg_line(left_cord, comm)
+        right_line = calc_reg_line(right_cord, comm)
         self.left.append(left_line)
         self.right.append(right_line)
         if left_line is None or right_line is None:
-            return None, None, None
+            return None, None
         left_line.set_ends(left_cord)
         right_line.set_ends(right_cord)
         if right_line.slope < 0 < left_line.slope:
             return 0, left_line.slope, right_line.slope
         tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope *
                                                           right_line.slope))
+
+        # Angles of cords from vertical midline
         ladj = left_line.end2[0] - left_line.end1[0]
         lop = abs(left_line.end2[1] - left_line.end1[1])
-        radj = right_line.end2[0] - right_line.end1[0]
-        rop = abs(right_line.end2[1] - right_line.end1[1])
-        if radj == 0:
-            radj = 0.00001
         if ladj == 0:
             ladj = 0.00001
         lang = degrees(atan(lop / ladj))
-        rang = degrees(atan(rop / radj))
         if left_line.slope < 0:
             lret = 90 - lang
         else:
             lret = -lang - 90
-        if right_line.slope > 0:
-            rret = -rang - 90
-        else:
-            rret = 90 - rang
-        return atan(tan), lret, rret
+        if lret == -90:
+            print('wat')
+        return atan(tan), lret
 
 
 def calc_reg_line(pt_lst, comm):

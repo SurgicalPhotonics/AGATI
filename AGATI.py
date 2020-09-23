@@ -32,8 +32,8 @@ class Window(wx.Frame):
     def __init__(self):
         x, y = wx.GetDisplaySize()
         wx.Frame.__init__(self, None, id=wx.ID_ANY, title='AGATI', pos=(100, 100), size=(x/2, y/2))
-        impath = ospath.dirname(ospath.realpath(__file__)) #uncomment this if running as python code
-        #impath = sys._MEIPASS #for pyinstaller compile.
+        #impath = ospath.dirname(ospath.realpath(__file__)) #uncomment this if running as python code
+        impath = sys._MEIPASS #for pyinstaller compile.
         start_image = wx.Image(ospath.join(impath, 'Splashscreen.jpg'))
         start_image.Rescale(x/2, y/2, quality=wx.IMAGE_QUALITY_HIGH)
         img = wx.Bitmap(start_image)

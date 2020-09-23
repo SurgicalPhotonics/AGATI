@@ -95,6 +95,8 @@ video_sets:
     crop: 0, 640, 0, 480
   D:\MovedDownload\test_vids\uvfp7.mp4:
     crop: 0, 640, 0, 480
+  D:\MovedDownload\output\nop10with_lines.mp4:
+    crop: 0, 640, 0, 480
 bodyparts:
 - AC
 - LC1
