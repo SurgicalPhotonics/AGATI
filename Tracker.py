@@ -245,8 +245,6 @@ class Tracker:
             lret = 90 - lang
         else:
             lret = -lang - 90
-        if lret == -90:
-            print('wat')
         return atan(tan), lret
 
 

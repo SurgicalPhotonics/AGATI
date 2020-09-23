@@ -7,8 +7,8 @@ print("OSPath")
 from os import path as ospath
 
 
-#FILE_STRING = 'DLC_resnet50_vocal_foldAug7shuffle1_1030000' #for newer DLC
-FILE_STRING = 'DeepCut_resnet50_vocal_foldAug7shuffle1_1030000'
+FILE_STRING = 'DLC_resnet50_vocal_foldAug7shuffle1_1030000' #for newer DLC
+#FILE_STRING = 'DeepCut_resnet50_vocal_foldAug7shuffle1_1030000'
 # Only works on windows rn
 
 
