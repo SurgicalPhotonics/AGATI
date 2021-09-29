@@ -1,4 +1,5 @@
-# VCTrack
+# AGATI
+
 Analyzer for data collected on vocal cord movement using DeepLabCut. 
 
 Current version: Full release for windows. See directions for installation under releases. 
