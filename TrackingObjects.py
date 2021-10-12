@@ -10,6 +10,7 @@ class Line:
     yint: float
         y intercept of line
     """
+
     def __init__(self, e1, e2):
         if isinstance(e1, tuple):
             if e1[0] > e2[0]:
@@ -19,8 +20,7 @@ class Line:
                 self.end1 = e1
                 self.end2 = e2
             if not self.end2[0] == self.end1[0]:
-                slope = (self.end2[1] - self.end1[1])/(self.end2[0] - self.end1
-                [0])
+                slope = (self.end2[1] - self.end1[1]) / (self.end2[0] - self.end1[0])
             else:
                 slope = 999999999999999
             self.slope = slope
@@ -49,4 +49,6 @@ class Line:
             self.end1 = (int((y - self.yint) / self.slope), int(y))
         else:
             self.end1 = (1, int(y))
+
+
 # Potential add parabolic approximation later.
