@@ -6,7 +6,7 @@ from deeplabcut import analyze_videos
 
 print("DeepLabCut functions Loaded")
 print("OSPath")
-from os import path as ospath
+import os
 
 
 FILE_STRING = "DLC_resnet50_vocal_foldAug7shuffle1_1030000"  # for newer DLC
@@ -17,18 +17,23 @@ FILE_STRING = "DLC_resnet50_vocal_foldAug7shuffle1_1030000"  # for newer DLC
 # might change how we handle pathing
 def new_vid(config, path):
     """Adds new video to project"""
-    cfg = ospath.join(config, "config.yaml")
+    print("path " + path)
+    cfg = os.path.join(config, "config.yaml")
+    print("config " + cfg)
+    if not os.path.isdir(os.path.join(config, "videos")):
+        os.mkdir(os.path.join(config, "videos"))
     create_project.add_new_videos(cfg, [path])
-    location = ospath.join("videos", path[path.rfind("/") + 1 :])
-    test = ospath.join(config, location)
+    location = os.path.join("videos", path[path.rfind("/") + 1 :])
+    test = os.path.join(config, location)
     videotype = path[path.rfind(".") :]
     """stream = open(cfg, 'r')
     data = yaml.load(stream)
     data['video_sets'] += test
     with open(cfg, 'w') as file:
         file.write(yaml.dump(data, default_flow_style=False))"""
+    print("test? " + str(test))
     analyze_videos(cfg, [test], videotype=videotype)
-    return ospath.join(config, location)
+    return os.path.join(config, location)
 
 
 def analyze(config, path):
