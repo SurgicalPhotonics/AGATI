@@ -1,5 +1,4 @@
-from deeplabcut import create_project
-from deeplabcut import analyze_videos
+from deeplabcut import create_project, analyze_videos
 import os
 
 
@@ -9,11 +8,14 @@ FILE_STRING = "DLC_resnet50_vocal_foldAug7shuffle1_1030000"  # for newer DLC
 
 
 # might change how we handle pathing
-def new_vid(config, path):
-    """Adds new video to project"""
-    print("path " + path)
+def new_vid(config: str, path: str):
+    """
+    adds new video to deeplabcut project
+    :param config: the name of the path to the config.yaml file
+    :param path: the path of videos or directory containing
+    :return:
+    """
     cfg = os.path.join(config, "config.yaml")
-    print("config " + cfg)
     if not os.path.isdir(os.path.join(config, "videos")):
         os.mkdir(os.path.join(config, "videos"))
     create_project.add_new_videos(cfg, [path])
@@ -21,18 +23,19 @@ def new_vid(config, path):
     test = os.path.join(config, location)
     videotype = path[path.rfind(".") :]
     print("test? " + str(test))
-    analyze_videos(cfg, [test], videotype=videotype)
+    print("videotype " + videotype)
+    analyze_videos(cfg, [test], videotype=videotype, TFGPUinference=False)
     return os.path.join(config, location)
 
 
-def analyze(config, path):
+def analyze(config, path, h5_dir=os.getcwd()+"/output"):
     """Analyzes new video"""
     cfg = os.path.join(config, "config.yaml")
-    analyze_videos(cfg, [path], videotype=path[path.rfind(".") :])
+    name = analyze_videos(cfg, [path], videotype=path[path.rfind("."):], destfolder=h5_dir)
     location = os.path.basename(os.path.normpath(path))
     new_vid = os.path.join(config, "videos", location)
-    h5 = os.path.join(new_vid[0 : new_vid.rfind(".")], FILE_STRING + ".h5")
-    return h5
+    h5 = h5_dir + "/" + name + ".h5"
+    return h5, name
 
 
 if __name__ == "__main__":

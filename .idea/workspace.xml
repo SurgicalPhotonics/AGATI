@@ -7,7 +7,7 @@
 <<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/tracker.py" beforeDir="false" afterPath="$PROJECT_DIR$/tracker.py" afterDir="false" />
 =======
-      <change beforePath="$PROJECT_DIR$/.idea/VCTrack.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/VCTrack.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/AGATI.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AGATI.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
 >>>>>>> 1087ba30d0f223723de87445f1534e37cb7f86d6
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
@@ -106,8 +106,8 @@
         <subPane>
           <expand>
             <path>
-              <item name="VCTrack" type="b2602c69:ProjectViewProjectNode" />
-              <item name="VCTrack" type="462c0819:PsiDirectoryNode" />
+              <item name="AGATI" type="b2602c69:ProjectViewProjectNode" />
+              <item name="AGATI" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -136,7 +136,7 @@
   </component>
   <component name="RunManager">
     <configuration name="DataReader" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="VCTrack" />
+      <module name="AGATI" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
