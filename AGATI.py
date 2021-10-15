@@ -1,7 +1,7 @@
 import os
 import wx
 import DataReader
-from csv import writer as csvwriter
+from csv import writer
 from cv2 import (
     CAP_PROP_FPS,
     CAP_PROP_FRAME_WIDTH,
@@ -12,7 +12,7 @@ from cv2 import (
 )
 import yaml
 from tracker import Tracker
-import dlc_script as scr
+import dlc_script
 
 
 class Window(wx.Frame):
@@ -77,10 +77,10 @@ class Window(wx.Frame):
 def vid_analysis(cfg, path, runnum, output_data, outfile):
     """Script calls for analysis of a single video."""
     print("path" + path)
-    scr.new_vid(cfg, path)
-    data_path = scr.analyze(cfg, path)
+    dlc_script.new_vid(cfg, path)
+    data_path, f_name = dlc_script.analyze(cfg, path)
     try:
-        data = DataReader.read_data(data_path)
+        data = DataReader.read_data(data_path, f_name)
     except FileNotFoundError:
         location = os.path.split(os.path.split(data_path)[0])[1]
         print("path = " + path + " location = " + location + " data_path = " + data_path)
@@ -123,11 +123,11 @@ def downsample(path):
         r_width = int(ar * 360)
         fourcc = VideoWriter.fourcc("m", "p", "4", "v")
         name = path[: path.rfind(".")] + "_resized.mp4"
-        writer = VideoWriter(name, fourcc, frames, (r_width, r_height))
+        v_writer = VideoWriter(name, fourcc, frames, (r_width, r_height))
         s, im = cap.read()
         while s:
             image = resize(im, (r_width, r_height))
-            writer.write(image)
+            v_writer.write(image)
             s, im = cap.read()
         return name
 
@@ -203,9 +203,9 @@ def run(r=0):
     # put data in vocal folder
     csv_data = os.path.join(outfile, "ensemble_statistics.csv")
     with open(csv_data, "w") as file:
-        writer = csvwriter(file, delimiter=",")
+        csv_writer = writer(file, delimiter=",")
         for set in output_data:
-            writer.writerow(
+            csv_writer.writerow(
                 [set[0], set[1], set[2], set[3], set[4], set[5], set[6], set[7], set[8]]
             )
     print("Your video data is stored here: " + outfile)
