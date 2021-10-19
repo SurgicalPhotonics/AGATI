@@ -17,6 +17,7 @@ import dlc_script
 
 class Window(wx.Frame):
     """Base of GUI. Displays AGATI Image. Added functionality coming."""
+
     def __init__(self):
         x, y = wx.GetDisplaySize()
         wx.Frame.__init__(
@@ -88,7 +89,7 @@ def vid_analysis(cfg, path, runnum, output_data, outfile):
         d_path = os.path.join(
             path[: path.rfind("/")], location + data_path[data_path.rfind("/") + 1 :]
         )
-        data = DataReader.read_data(d_path)
+        data = DataReader.read_data(d_path, f_name)
     T = Tracker(data)
     name = path[path.rfind("/") + 1 : path.rfind(".")]
     d_list = T.frame_by(path, runnum, outfile, name)

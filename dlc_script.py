@@ -28,12 +28,10 @@ def new_vid(config: str, path: str):
     return os.path.join(config, location)
 
 
-def analyze(config, path, h5_dir=os.getcwd()+"/output"):
+def analyze(config, path, h5_dir=os.getcwd() + "/output"):
     """Analyzes new video"""
     cfg = os.path.join(config, "config.yaml")
-    name = analyze_videos(cfg, [path], videotype=path[path.rfind("."):], destfolder=h5_dir)
-    location = os.path.basename(os.path.normpath(path))
-    new_vid = os.path.join(config, "videos", location)
+    name = analyze_videos(cfg, [path], videotype=path[path.rfind(".") :], destfolder=h5_dir)
     h5 = h5_dir + "/" + name + ".h5"
     return h5, name
 
