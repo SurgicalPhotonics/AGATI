@@ -24,14 +24,14 @@ def new_vid(config: str, path: str):
     videotype = path[path.rfind(".") :]
     print("test? " + str(test))
     print("videotype " + videotype)
-    analyze_videos(cfg, [test], videotype=videotype, TFGPUinference=False)
+    analyze_videos(cfg, [test], videotype=videotype, TFGPUinference=False, save_as_csv=True)
     return os.path.join(config, location)
 
 
 def analyze(config, path, h5_dir=os.getcwd() + "/output"):
     """Analyzes new video"""
     cfg = os.path.join(config, "config.yaml")
-    name = analyze_videos(cfg, [path], videotype=path[path.rfind(".") :], destfolder=h5_dir)
+    name = analyze_videos(cfg, [path], videotype=path[path.rfind(".") :], destfolder=h5_dir, save_as_csv=True)
     h5 = h5_dir + "/" + name + ".h5"
     return h5, name
 

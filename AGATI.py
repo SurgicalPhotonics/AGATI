@@ -85,14 +85,13 @@ def vid_analysis(cfg, path, runnum, output_data, outfile):
     except FileNotFoundError:
         location = os.path.split(os.path.split(data_path)[0])[1]
         print("path = " + path + " location = " + location + " data_path = " + data_path)
-
         d_path = os.path.join(
-            path[: path.rfind("/")], location + data_path[data_path.rfind("/") + 1 :]
+            path[: path.rfind("/")], location + "/"+ data_path[data_path.rfind("/") + 1 :]
         )
         data = DataReader.read_data(d_path, f_name)
-    T = Tracker(data)
+    tracker = Tracker(data)
     name = path[path.rfind("/") + 1 : path.rfind(".")]
-    d_list = T.frame_by(path, runnum, outfile, name)
+    d_list = tracker.frame_by(path, runnum, outfile, name)
     output_data.append(
         (
             path[path.rfind("\\") + 1 :],

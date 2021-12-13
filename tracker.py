@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from draw import draw
 from scipy import stats
 from TrackingObjects import Line
-from math import atan, pi, radians, degrees
+from math import atan, pi, degrees
 from DataReader import read_data
 
 
@@ -195,7 +195,7 @@ class Tracker:
         ret_list.append(percentile(acc_arr, 97))
         ret_list.append(percentile(acc_arr, 3))
         pn = name + "graph.png"
-        dn = name + "data.csv"
+        dn = name + "_data.csv"
         out = ospath.join(of, pn)
         plt.savefig(out)
         csvout = ospath.join(of, dn)
