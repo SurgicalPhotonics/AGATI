@@ -1,12 +1,14 @@
-# Project definitions (do not edit)
+    # Project definitions (do not edit)
 Task: vocal_fold
 scorer: Nat
 date: Aug7
+multianimalproject:
+identity:
 
-# Project path (change when moving around)
-project_path: D:\Python Workspace\Projects\VCTrack\vocal_fold-Nat-2019-08-07
+    # Project path (change when moving around)
+project_path: /Users/louisadamian/git/AGATI/vocal_fold-Nat-2019-08-07
 
-# Annotation data set configuration (and individual video cropping parameters)
+    # Annotation data set configuration (and individual video cropping parameters)
 video_sets:
   C:\Users\NA659\Desktop\test_vids\vocal.mp4:
     crop: 0, 480, 0, 360
@@ -89,14 +91,20 @@ video_sets:
     crop: 0, 640, 0, 360
   C:\Users\NA659\Documents\test_vids\uvfp9.mp4:
     crop: 0, 640, 0, 360
+  D:\MovedDownload\output\nop10with_lines.mp4:
+    crop: 0, 640, 0, 480
   D:\MovedDownload\test_vids\nop10.mp4:
     crop: 0, 640, 0, 480
   D:\MovedDownload\test_vids\nop3.mp4:
     crop: 0, 640, 0, 480
   D:\MovedDownload\test_vids\uvfp7.mp4:
     crop: 0, 640, 0, 480
-  D:\MovedDownload\output\nop10with_lines.mp4:
-    crop: 0, 640, 0, 480
+  /Users/louisadamian/Desktop/AGATI/nop19_resized.mp4:
+    crop: 0, 640, 0, 360
+  /Users/louisadamian/Desktop/AGATI/002B_resized.mp4:
+    crop: 0, 640, 0, 360
+  /Users/louisadamian/Desktop/aemotrics/CompleteFlaccid1_trimmed_cropped_resized.mp4:
+    crop: 0, 300, 0, 360
 bodyparts:
 - AC
 - LC1
@@ -115,7 +123,7 @@ start: 0
 stop: 1
 numframes2pick: 20
 
-# Plotting configuration
+    # Plotting configuration
 skeleton: []
 skeleton_color: black
 pcutoff: 0.1
@@ -123,24 +131,26 @@ dotsize: 4
 alphavalue: 0.7
 colormap: jet
 
-# Training,Evaluation and Analysis configuration
+    # Training,Evaluation and Analysis configuration
 TrainingFraction:
 - 0.95
 iteration: 2
-resnet: 50
+default_net_type:
+default_augmenter:
 snapshotindex: -1
 batch_size: 4
 
-# Cropping Parameters (for analysis and outlier frame detection)
+    # Cropping Parameters (for analysis and outlier frame detection)
 cropping: false
-#if cropping is true for analysis, then set the values here:
+    #if cropping is true for analysis, then set the values here:
 x1: 0
 x2: 640
 y1: 277
 y2: 624
 
-# Refinement configuration (parameters from annotation dataset configuration also relevant in this stage)
+    # Refinement configuration (parameters from annotation dataset configuration also relevant in this stage)
 corner2move2:
 - 50
 - 50
 move2corner: true
+resnet: 50

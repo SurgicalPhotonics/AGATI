@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from draw import draw
 from scipy import stats
 from TrackingObjects import Line
-from math import atan, pi, radians, degrees
+from math import atan, pi, degrees
 from DataReader import read_data
 
 
@@ -37,10 +37,24 @@ class Tracker:
             if item is not None:
                 i += 1
         print(i)
-        LC = [ac1, self.data[1], self.data[2], self.data[3], self.data[4],
-              self.data[5], self.data[6]]
-        RC = [ac1, self.data[7], self.data[8], self.data[9], self.data[10],
-              self.data[11], self.data[12]]
+        LC = [
+            ac1,
+            self.data[1],
+            self.data[2],
+            self.data[3],
+            self.data[4],
+            self.data[5],
+            self.data[6],
+        ]
+        RC = [
+            ac1,
+            self.data[7],
+            self.data[8],
+            self.data[9],
+            self.data[10],
+            self.data[11],
+            self.data[12],
+        ]
         graph = []
         for i in range(len(self.data[1])):
             LC_now = []
@@ -122,10 +136,10 @@ class Tracker:
         vels = [0]  # change in angle in degrees / sec
         dif = 1
         for i in range(1, len(dgraph)):
-            if dgraph[i] is None or dgraph[i-dif] is None:
+            if dgraph[i] is None or dgraph[i - dif] is None:
                 vels.append(None)
             elif dgraph[i][0] is not None and dgraph[i - dif][0] is not None:
-                vels.append((dgraph[i][0] - dgraph[i-dif][0]) * frames / dif)
+                vels.append((dgraph[i][0] - dgraph[i - dif][0]) * frames / dif)
                 dif = 1
             elif dgraph[i - dif][0] is None:
                 i += 1
@@ -138,7 +152,7 @@ class Tracker:
         dif = 1
         for i in range(1, len(vels)):
             if vels[i] is not None and vels[i - dif] is not None:
-                accs.append((vels[i] - vels[i-dif]) * frames / dif)
+                accs.append((vels[i] - vels[i - dif]) * frames / dif)
                 dif = 1
             elif vels[i - dif] is None:
                 i += 1
@@ -146,14 +160,14 @@ class Tracker:
                 i += 1
                 dif += 1
         plt.figure()
-        plt.title('Glottic Angle')
+        plt.title("Glottic Angle")
         plt.plot(display_graph)
-        plt.xlabel('Frames')
-        plt.ylabel('Angle Between Cords')
+        plt.xlabel("Frames")
+        plt.ylabel("Angle Between Cords")
         print(len(dgraph))
-        vidtype = path[path.rfind('.'):]
+        vidtype = path[path.rfind(".") :]
         video_path = draw(path, (self.left, self.right), dgraph, outfile, videotype=vidtype)
-        print('Video made')
+        print("Video made")
         ret_list = []
         new_vel = []
         for vel in vels:
@@ -180,20 +194,27 @@ class Tracker:
         ret_list.append(percentile(vel_arr, 3))
         ret_list.append(percentile(acc_arr, 97))
         ret_list.append(percentile(acc_arr, 3))
-        pn = name + 'graph.png'
-        dn = name + 'data.csv'
+        pn = name + "graph.png"
+        dn = name + "_data.csv"
         out = ospath.join(of, pn)
         plt.savefig(out)
         csvout = ospath.join(of, dn)
-        with open(csvout, 'w') as file:
-            writer = csvwriter(file, delimiter=',')
-            #Right line and left line flipped in videos
-            writer.writerow(['Frame Number', 'Anterior Glottic Angle', 'Angle of Left Cord', 'Angle of Right Cord'])
+        with open(csvout, "w") as file:
+            writer = csvwriter(file, delimiter=",")
+            # Right line and left line flipped in videos
+            writer.writerow(
+                [
+                    "Frame Number",
+                    "Anterior Glottic Angle",
+                    "Angle of Left Cord",
+                    "Angle of Right Cord",
+                ]
+            )
             for i in range(len(dgraph)):
                 if dgraph[i] is not None:
                     writer.writerow([i + 1, dgraph[i][0], dgraph[i][1], dgraph[i][2]])
                 else:
-                    writer.writerow([i+1, dgraph[i]])
+                    writer.writerow([i + 1, dgraph[i]])
         return ret_list
 
     def angle_of_opening(self, left_cord, right_cord, comm):
@@ -215,8 +236,7 @@ class Tracker:
             return 0
         if crossy > left_cord[0][1] + 20 or crossy > right_cord[0][1] + 20:
             return 0"""
-        tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope *
-                                                          right_line.slope))
+        tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope * right_line.slope))
         return atan(tan)
 
     def alt_angle(self, left_cord, right_cord, comm):
@@ -232,8 +252,7 @@ class Tracker:
         right_line.set_ends(right_cord)
         if right_line.slope < 0 < left_line.slope:
             return 0, left_line.slope, right_line.slope
-        tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope *
-                                                          right_line.slope))
+        tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope * right_line.slope))
 
         # Angles of cords from vertical midline
         ladj = left_line.end2[0] - left_line.end1[0]
@@ -265,7 +284,7 @@ def calc_reg_line(pt_lst, comm):
     pfc = outlier_del(pfx, pfy, comm, pf)
     if abs(pfc[2]) > abs(pf[2]):
         pf = pfc
-    if pf[2] ** 2 < .8:
+    if pf[2] ** 2 < 0.8:
         return None
     slope = pf[0]
     yint = pf[1]
@@ -274,7 +293,7 @@ def calc_reg_line(pt_lst, comm):
 
 def calc_muscular_line(pt_list, comm):
     """Calculates angle of opening by drawing straight line from anterior
-     commisure if availible and most distal point on cord."""
+    commisure if availible and most distal point on cord."""
     if pt_list[0] is not None:
         far_ind = 0
         for i in range(len(pt_list)):
@@ -307,9 +326,9 @@ def outlier_del(pfx, pfy, comm, pf):
     return pf
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # data = read_data('nop10DeepCut_resnet50_vocalJun10shuffle1_1030000.h5')
-    data = read_data('nop10DeepCut_resnet50_vocal_foldAug7shuffle1_1030000.h5')
+    data = read_data("nop10DeepCut_resnet50_vocal_foldAug7shuffle1_1030000.h5")
     t = Tracker(data)
     # t.frame_by('nop10DeepCut_resnet50_vocalJun10shuffle1_1030000_labeled.mp4')
-    t.frame_by('nop10.mp4', 0)
+    t.frame_by("nop10.mp4", 0)

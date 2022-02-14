@@ -10,28 +10,30 @@ class Line:
     yint: float
         y intercept of line
     """
-    def __init__(self, e1, e2):
-        if isinstance(e1, tuple):
-            if e1[0] > e2[0]:
-                self.end1 = e2
-                self.end2 = e1
+
+    def __init__(self, end1=None, end2=None, slope: float = None, intercept: float = None):
+        if end1 is not None and end2 is not None :
+            if end1[0] > end2[0]:
+                self.end1 = end2
+                self.end2 = end2
             else:
-                self.end1 = e1
-                self.end2 = e2
+                self.end1 = end1
+                self.end2 = end2
             if not self.end2[0] == self.end1[0]:
-                slope = (self.end2[1] - self.end1[1])/(self.end2[0] - self.end1
-                [0])
+                slope = (self.end2[1] - self.end1[1]) / (self.end2[0] - self.end1[0])
             else:
                 slope = 999999999999999
             self.slope = slope
-            yint = e1[1] - slope * e1[0]
-            self.yint = yint
-        else:
+            intercept = e1[1] - slope * e1[0]
+            self.yint = intercept
+        elif slope is not None and intercept is not None:
             # If slope and yint passed directly
-            self.slope = e1
-            self.yint = e2
+            self.slope = slope
+            self.yint = intercept
             self.end1 = (0, self.yint)
             self.end2 = (1, int(self.yint + self.slope))
+        else:
+            raise ValueError("either end1 and end2 or slope and intercept must not be none")
 
     def set_ends(self, cord):
         """Allows a new end2 point to be passed from outside."""
@@ -49,4 +51,3 @@ class Line:
             self.end1 = (int((y - self.yint) / self.slope), int(y))
         else:
             self.end1 = (1, int(y))
-# Potential add parabolic approximation later.
