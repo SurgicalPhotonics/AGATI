@@ -1,8 +1,15 @@
+import os
+
+try:
+    os.add_dll_directory(os.path.join(os.environ.get("CUDA_PATH_V11_2"), "bin"))
+except AttributeError:
+    print("cuda not loaded")
 import dlc_generic_analysis as dga
 from dlc_generic_analysis import gui_utils
 from qtpy import QtWidgets, QtCore
 import sys
 import analysis
+
 try:
     from agati._version import version
 except ImportError:
@@ -26,7 +33,7 @@ class MainWidget(dga.MainWidget):
         super(MainWidget, self).on_click_trim()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     name = "agati"
     app = QtWidgets.QApplication.instance()
     if not app:
