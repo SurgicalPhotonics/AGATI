@@ -25,6 +25,7 @@ class MainWidget(dga.MainWidget):
         files = gui_utils.open_files(self, "select videos to analyze")
         if len(files) > 0:
             analysis.analyze(files, model_dir=self.model_dir)
+        print("Done.")
 
     def on_click_view(self):
         pass

@@ -25,7 +25,7 @@ def draw(
     :param video_type:
     :return:
     """
-    print("Printing Lines on Videos")
+    print("\nPrinting Lines on Videos")
     raw_video = cv2.VideoCapture(video_path)
     frame_rate = raw_video.get(cv2.CAP_PROP_FPS)
     width = int(raw_video.get(cv2.CAP_PROP_FRAME_WIDTH))

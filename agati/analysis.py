@@ -34,7 +34,7 @@ def _set_ends(line: Line, cord: np.ndarray):
 
 def analyze(video_paths: [str], model_dir: str):
     h5s, dlc_scorer = dga.dlc_analyze(model_dir, video_paths)
-    h5s = dga.filter.threshold_confidence(h5s, .85)
+    h5s = dga.filter.threshold_confidence(h5s, 0.85)
     for i in range(len(h5s)):
         analysis = Analysis(h5s[i], dlc_scorer, video_paths[i])
         analysis.write_csv()
@@ -51,12 +51,14 @@ def calc_glottic_angle(
     :param left_cord: the points the left vocal cord
     :param right_cord: the points onn the right vocal cord
     :param comm_there: # if there is a comm in the left_cord and right_cord lists
-    :return: (angle, lret, left, right)
+    :return: (angle, left_angle, left, right)
         angle: the angle between the 2 cords in degrees
-        left_angle: # ask Nat
-        left: the left cord line
-        right: the right cord line
+        left_angle: the angle of the left chord
+        left_line: the line representing the edge of the left chord
+        right_line: the line representing the edge of the right chord
     """
+    left_cord = left_cord[np.logical_not(np.isnan(left_cord)).any(axis=1)]
+    right_cord = right_cord[np.logical_not(np.isnan(right_cord)).any(axis=1)]
     left_line = calc_reg_line(left_cord, comm_there)
     right_line = calc_reg_line(right_cord, comm_there)
     left = left_line
@@ -68,17 +70,20 @@ def calc_glottic_angle(
     if (1 + left_line.slope * right_line.slope) == 0:
         angle = np.nan
     else:
-        angle = np.degrees(np.arctan(abs((left_line.slope - right_line.slope) / (1 + left_line.slope * right_line.slope))))
+        angle = np.arctan(
+            abs((left_line.slope - right_line.slope) / (1 + left_line.slope * right_line.slope))
+        )
     # Angles of cords from vertical midline
-    ladj = left_line.end2[0] - left_line.end1[0]
-    lop = abs(left_line.end2[1] - left_line.end1[1])
-    if ladj == 0:
-        ladj = 0.00001
-    angle_l = np.degrees(np.arctan(lop / ladj))
+    left_mid_x = left_line.end2[0] - left_line.end1[0]
+    left_mid_y = abs(left_line.end2[1] - left_line.end1[1])
+    if left_mid_x == 0:
+        left_mid_x = 0.00001
+    angle_l = np.degrees(np.arctan(left_mid_y / left_mid_x))
     if left_line.slope < 0:
         left_angle = 90 - angle_l
     else:
         left_angle = -angle_l - 90
+    # print(f"angle: {angle}, left angle: {left_angle}")
     return angle, left_angle, left, right
 
 
@@ -118,16 +123,17 @@ def __calc_angle_helper(
     # if either coordinate in the point is nan
     for i in range(comm.shape[0]):
         cords_there = True
-        rps = np.logical_not(np.isnan(right_points[:, i]).any(axis=1))
-        if np.logical_not(np.isnan(right_points[:, i]).any(axis=1)).shape[0] >= 3:
-            # checks if there are
+        if right_points[np.logical_not(np.isnan(right_points[:, i]).any(axis=1)), i].shape[0] < 3:
+            # checks if there are less than 3 points in right_points[:, i] with no nan coordinate
             cords_there = False
-        if np.logical_not(np.isnan(right_points[:, i]).any(axis=1)).shape[0] >= 3:
+        if left_points[np.logical_not(np.isnan(left_points[:, i]).any(axis=1)), i].shape[0] < 3:
+            # checks if there are less than 3 points in left_points[:, i] with no nan coordinate
             cords_there = False
         if cords_there:
             angles[i], angles_l[i], curr_line_l, curr_line_r = calc_glottic_angle(
                 left_points[:, i], right_points[:, i], comm_there[i]
             )
+
             line_l.append(curr_line_l)
             line_r.append(curr_line_r)
             if not np.isnan(angles_l[i]):
@@ -142,6 +148,9 @@ def __calc_angle_helper(
             angles_r[i] = np.nan
             line_l[i] = None
             line_r[i] = None
+        print(
+            f"angle {round(angles[i], 3)}, left angle {round(angles_l[i],3)}, right angle {round(angles_r[i],3)}\n"
+        )
     angles_filered = angles[np.logical_not(np.isnan(angles))]
     return angles_filered, angles, angles_l, angles_r, line_l, line_r
 
