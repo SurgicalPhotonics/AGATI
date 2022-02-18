@@ -49,7 +49,7 @@ def draw(path, lines, angles, outfile, videotype='.mp4'):
         count += 1
     cap.release()
     w.release()
-    destroyAllWindows()
+    # destroyAllWindows()
     return ospath.join(path[:path.rfind('videos')], name)
 
 

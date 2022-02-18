@@ -2,24 +2,13 @@ print("Initializing. This may take a minute.")
 print("Importing wx")
 import wx
 print("Importing utilities")
+import os
 from os import path as ospath
 from os import listdir, remove, unlink
 import DataReader
 from csv import writer as csvwriter
-print("Importing OpenCV")
 from cv2 import CAP_PROP_FPS, CAP_PROP_FRAME_WIDTH, CAP_PROP_FRAME_HEIGHT, VideoCapture, VideoWriter, resize
-print("Filtering warnings")
-from warnings import filterwarnings, simplefilter
-print("Checking system variables")
 import sys
-print("Filtering warnings")
-filterwarnings("ignore", "(?s).*MATPLOTLIBDATA.*", category=UserWarning)
-simplefilter(action='ignore', category=FutureWarning)
-print("Importing Tensorflow")
-import tensorflow as tf
-print("Filtering tensorflow warnings")
-if type(tf.contrib) != type(tf): tf.contrib._warning = None
-print("Importing yaml")
 import yaml
 print("Importing AGATI functions")
 from tracker import Tracker
@@ -101,13 +90,15 @@ def downsample(path):
         ar = width / height
         r_width = int(ar * 360)
         fourcc = VideoWriter.fourcc('m', 'p', '4', 'v')
-        name = path[:path.rfind('.')] + '_resized.mp4'
+        name = os.path.splitext(path)[0] + '_resized.mp4'
         writer = VideoWriter(name, fourcc, frames, (r_width, r_height))
         s, im = cap.read()
         while s:
             image = resize(im, (r_width, r_height))
             writer.write(image)
             s, im = cap.read()
+        writer.release()
+        cap.release()
         return name
 
 
@@ -173,18 +164,6 @@ def run(r=0):
             writer.writerow([set[0], set[1], set[2], set[3], set[4], set[5],
                              set[6], set[7], set[8]])
     print('Your video data is stored here: ' + outfile)
-    #Delete videos added to DLC videos folder
-    vfolder = ospath.join(cfg, 'videos')
-    for filename in listdir(vfolder):
-        filepath = ospath.join(vfolder, filename)
-        if ospath.islink(filepath):
-            unlink(filepath)
-        if ospath.isfile(filepath):
-            remove(filepath)
-    for filename in listdir(outfile):
-        filepath = ospath.join(outfile, filename)
-        if filename.endswith('_resized.mp4'):
-            remove(filepath)
 
     dlg = wx.MessageBox('Would you like to analyze more videos?', 'Continue', wx.YES_NO)
     if dlg == wx.YES:
