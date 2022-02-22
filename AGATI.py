@@ -1,18 +1,12 @@
-print("Initializing. This may take a minute.")
-print("Importing wx")
 import wx
-print("Importing utilities")
 import os
-from os import path as ospath
 from os import listdir, remove, unlink
-import DataReader
+import pandas
 from csv import writer as csvwriter
 from cv2 import CAP_PROP_FPS, CAP_PROP_FRAME_WIDTH, CAP_PROP_FRAME_HEIGHT, VideoCapture, VideoWriter, resize
 import sys
 import yaml
-print("Importing AGATI functions")
 from tracker import Tracker
-print("Importing DeepLabCut functions. This step may take longer than others.")
 import dlc_script as scr
 
 
@@ -21,9 +15,9 @@ class Window(wx.Frame):
     def __init__(self):
         x, y = wx.GetDisplaySize()
         wx.Frame.__init__(self, None, id=wx.ID_ANY, title='AGATI', pos=(100, 100), size=(x/2, y/2))
-        impath = ospath.dirname(ospath.realpath(__file__)) #uncomment this if running as python code
+        impath = os.path.dirname(os.path.realpath(__file__)) #uncomment this if running as python code
         #impath = sys._MEIPASS #for pyinstaller compile.
-        start_image = wx.Image(ospath.join(impath, 'Splashscreen.jpg'))
+        start_image = wx.Image(os.path.join(impath, 'Splashscreen.jpg'))
         start_image.Rescale(x/2, y/2, quality=wx.IMAGE_QUALITY_HIGH)
         img = wx.Bitmap(start_image)
         wx.StaticBitmap(self, -1, img, (0, 0), (img.GetWidth(), img.GetHeight()))
@@ -63,12 +57,12 @@ def vid_analysis(cfg, path, runnum, output_data, outfile):
     scr.new_vid(cfg, path)
     data_path = scr.analyze(cfg, path)
     try:
-        data = DataReader.read_data(data_path)
+        df = pandas.read_hdf(data_path)
     except FileNotFoundError:
-        location = ospath.split(ospath.split(data_path)[0])[1]
-        d_path = ospath.join(path[:path.rfind('\\')], location + data_path[data_path.rfind('\\') + 1:])
-        data = DataReader.read_data(d_path)
-    T = Tracker(data)
+        location = os.path.split(os.path.split(data_path)[0])[1]
+        d_path = os.path.join(path[:path.rfind('\\')], location + data_path[data_path.rfind('\\') + 1:])
+        df = pandas.read_hdf(d_path)['DLC_resnet50_vocal_foldAug7shuffle1_1030000']
+    T = Tracker(df)
     name = path[path.rfind('\\') + 1:path.rfind('.')]
     d_list = T.frame_by(path, runnum, outfile, name)
     output_data.append((path[path.rfind('\\') + 1:], d_list[1], d_list[2], d_list[3], d_list[4], d_list[5], d_list[6],
@@ -117,15 +111,15 @@ def run(r=0):
                     '97th percentile negative velocity', '97th percentile positive acceleration',
                     '97th percentile negative acceleration')]
     print("Loading Project Settings")
-    name = ospath.dirname(ospath.abspath(__file__))
-    cfg = ospath.join(name, 'vocal_fold-Nat-2019-08-07')
-    file_name = ospath.join(cfg, 'config.yaml')
+    name = os.path.dirname(os.path.abspath(__file__))
+    cfg = os.path.join(name, 'vocal_fold-Nat-2019-08-07')
+    file_name = os.path.join(cfg, 'config.yaml')
     try:
         stream = open(file_name, 'r')
     except FileNotFoundError:
         name = sys._MEIPASS
-        cfg = ospath.join(name, 'vocal_fold-Nat-2019-08-07')
-        file_name = ospath.join(cfg, 'config.yaml')
+        cfg = os.path.join(name, 'vocal_fold-Nat-2019-08-07')
+        file_name = os.path.join(cfg, 'config.yaml')
         stream = open(file_name, 'r')
     print("Checking File Paths")
     data = yaml.load(stream, Loader=yaml.FullLoader)
@@ -149,7 +143,7 @@ def run(r=0):
         runnum = r * 10
         for filename in listdir(path):
             if filename.endswith('.mp4') or filename.endswith('.avi'):
-                filepath = ospath.join(path, filename)
+                filepath = os.path.join(path, filename)
                 filepath = downsample(filepath)
                 vid_analysis(cfg, filepath, runnum, output_data, outfile)
                 runnum += 1
@@ -157,7 +151,7 @@ def run(r=0):
         path = downsample(path)
         vid_analysis(cfg, path, 0, output_data, outfile)
     #put data in vocal folder
-    csv_data = ospath.join(outfile, 'ensemble_statistics.csv')
+    csv_data = os.path.join(outfile, 'ensemble_statistics.csv')
     with open(csv_data, 'w') as file:
         writer = csvwriter(file, delimiter=',')
         for set in output_data:

@@ -1,15 +1,25 @@
 from csv import writer as csvwriter
-from numpy import percentile, max as npmax, min as npmin, array as nparray
+import numpy as np
 from cv2 import CAP_PROP_FPS, VideoCapture
-from os import path as ospath
+import os
 import matplotlib.pyplot as plt
 from draw import draw
 from scipy import stats
 from TrackingObjects import Line
 from math import atan, pi, radians, degrees
-from DataReader import read_data
+import pandas
+from typing import List
+from tqdm import tqdm
 
+def point_array(data_frame: pandas.DataFrame, points: List[str]):
+    nd_arrays = list()
+    for point in points:
+        nd_arrays.append(data_frame[point][["x", "y"]])
+    return np.stack(nd_arrays, axis=0)[:, :]
 
+COMMISURE_NAME = "AC"
+RIGHT_PT_NAMES = [COMMISURE_NAME, 'LC1', 'LC2', 'LC3', 'LC4', 'LC5', 'LVP']
+LEFT_PT_NAMES = [COMMISURE_NAME, 'RC1', 'RC2', 'RC3', 'RC4', 'RC5', 'RVP']
 class Tracker:
     """Creates a tracker object that takes a dataset and can perform various
     calculations on it.
@@ -18,64 +28,32 @@ class Tracker:
     contains marked parts and their corresponding points at each frame.
     """
 
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, df):
+        self.left_points = point_array(df, LEFT_PT_NAMES)
+        self.right_points = point_array(df, RIGHT_PT_NAMES)
         self.left = []
         self.right = []
 
-    def frame_by(self, path, run, outfile, name):
+
+    def frame_by(self, path, _, outfile, name):
         """Goes through each frame worth of data. Analyses and graphs opening
         angle of vocal cords. Prints summary statistics."""
         print("Analyzing Video Data")
-
-        # Organizing and sorting through points
         of = outfile
-        ac1 = self.data[0]
         # frames dropped
-        i = 0
-        for item in self.data[1]:
-            if item is not None:
-                i += 1
-        print(i)
-        LC = [ac1, self.data[1], self.data[2], self.data[3], self.data[4],
-              self.data[5], self.data[6]]
-        RC = [ac1, self.data[7], self.data[8], self.data[9], self.data[10],
-              self.data[11], self.data[12]]
+        LC = self.left_pointss
+        RC = self.right_points
         graph = []
-        for i in range(len(self.data[1])):
-            LC_now = []
-            RC_now = []
+        for i in tqdm(range(LC.shape[1])):
+            comm = np.logical_not(np.isnan(RC[:,i]).any())
+            LC_now = LC[np.logical_not(np.isnan(LC[:, i]).any(axis=1)), i]
+            RC_now = RC[np.logical_not(np.isnan(RC[:, i]).any(axis=1)), i]
             cords_there = False
-            comm = False
-            for j in range(len(LC)):
-                if LC[j][i] is not None:
-                    LC_now.append(LC[j][i])
-                    if j == 0:
-                        comm = True
-                    cords_there = True
-                else:
-                    LC_now.append(None)
-            for j in range(len(RC)):
-                if RC[j][i] is not None:
-                    RC_now.append(RC[j][i])
-                    cords_there = True
-                else:
-                    RC_now.append(None)
-            num_pts = 0  # number of legitimate points on a cord
-
             # Checking Point Validity
-            for item in LC_now:
-                if item is not None:
-                    num_pts += 1
-            if num_pts < 3 and LC_now[0] is None:
-                cords_there = False
-            num_pts = 0
-            for item in RC_now:
-                if item is not None:
-                    num_pts += 1
-            if num_pts < 3 and RC_now[0] is None:
-                cords_there = False
-
+            if LC_now.shape[0]>= 3:
+                cords_there = True
+            if RC_now.shape[0]>= 3:
+                cords_there = True
             # Performing angle calculations
             if cords_there:
                 angle, lang = self.alt_angle(LC_now, RC_now, comm)
@@ -88,7 +66,6 @@ class Tracker:
                 self.left.append(None)
                 self.right.append(None)
                 graph.append(None)
-            last_ac = self.data[0][i]
         dgraph = []  # keep none to show blank space in graph.
         sgraph = []  # remove none to perform statistical analysis.
         for item in graph:
@@ -99,7 +76,7 @@ class Tracker:
                 sgraph.append(item[0] * 180 / pi)
             else:
                 dgraph.append(None)
-        arr = nparray(sgraph)
+        arr = np.array(sgraph)
         display_graph = []
         count = 0
         for i in range(len(dgraph)):
@@ -109,7 +86,7 @@ class Tracker:
                 display_graph.append(None)
             elif count >= len(arr):
                 display_graph.append(None)
-            elif arr[count] > percentile(arr, 97):
+            elif arr[count] > np.percentile(arr, 97):
                 display_graph.append(0)
                 count += 1
             else:
@@ -159,8 +136,8 @@ class Tracker:
         for vel in vels:
             if vel is not None:
                 new_vel.append(vel)
-        vel_arr = nparray(new_vel)
-        acc_arr = nparray(accs)
+        vel_arr = np.array(new_vel)
+        acc_arr = np.array(accs)
         """list indecies doc: 
         0: video_path
         1: min angle
@@ -172,19 +149,19 @@ class Tracker:
         7: 97th percentile pos acceleration
         8: 97th percentile neg acceleration"""
         ret_list.append(video_path)
-        ret_list.append(npmin(arr))
-        ret_list.append(percentile(arr, 3))
-        ret_list.append(percentile(arr, 97))
-        ret_list.append(npmax(arr))
-        ret_list.append(percentile(vel_arr, 97))
-        ret_list.append(percentile(vel_arr, 3))
-        ret_list.append(percentile(acc_arr, 97))
-        ret_list.append(percentile(acc_arr, 3))
+        ret_list.append(np.min(arr))
+        ret_list.append(np.percentile(arr, 3))
+        ret_list.append(np.percentile(arr, 97))
+        ret_list.append(np.max(arr))
+        ret_list.append(np.percentile(vel_arr, 97))
+        ret_list.append(np.percentile(vel_arr, 3))
+        ret_list.append(np.percentile(acc_arr, 97))
+        ret_list.append(np.percentile(acc_arr, 3))
         pn = name + 'graph.png'
         dn = name + 'data.csv'
-        out = ospath.join(of, pn)
+        out = os.path.join(of, pn)
         plt.savefig(out)
-        csvout = ospath.join(of, dn)
+        csvout = os.path.join(of, dn)
         with open(csvout, 'w') as file:
             writer = csvwriter(file, delimiter=',')
             #Right line and left line flipped in videos
@@ -195,29 +172,6 @@ class Tracker:
                 else:
                     writer.writerow([i+1, dgraph[i]])
         return ret_list
-
-    def angle_of_opening(self, left_cord, right_cord, comm):
-        """Calculates angle of opening between left and right cord."""
-        left_line = calc_reg_line(left_cord, comm)
-        right_line = calc_reg_line(right_cord, comm)
-        self.left.append(left_line)
-        self.right.append(right_line)
-        if left_line is None or right_line is None:
-            return None
-        left_line.set_ends(left_cord)
-        right_line.set_ends(right_cord)
-        if right_line.slope < 0 < left_line.slope:
-            return 0
-        """cross = intersect(left_line, right_line)
-        if cross is not None:
-            crossy = cross[1]
-        else:
-            return 0
-        if crossy > left_cord[0][1] + 20 or crossy > right_cord[0][1] + 20:
-            return 0"""
-        tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope *
-                                                          right_line.slope))
-        return atan(tan)
 
     def alt_angle(self, left_cord, right_cord, comm):
         """Alternative angle of opening calculation."""
@@ -231,7 +185,7 @@ class Tracker:
         left_line.set_ends(left_cord)
         right_line.set_ends(right_cord)
         if right_line.slope < 0 < left_line.slope:
-            return 0, left_line.slope, right_line.slope
+            return None, None
         tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope *
                                                           right_line.slope))
 
@@ -272,19 +226,6 @@ def calc_reg_line(pt_lst, comm):
     return Line(slope, yint)
 
 
-def calc_muscular_line(pt_list, comm):
-    """Calculates angle of opening by drawing straight line from anterior
-     commisure if availible and most distal point on cord."""
-    if pt_list[0] is not None:
-        far_ind = 0
-        for i in range(len(pt_list)):
-            if pt_list[i] is not None:
-                far_ind = i
-        return Line(pt_list[0], pt_list[far_ind])
-    else:
-        return calc_reg_line(pt_list, comm)
-
-
 def outlier_del(pfx, pfy, comm, pf):
     """Deletes outliers from sufficiently large cord lists."""
     if comm:
@@ -305,11 +246,3 @@ def outlier_del(pfx, pfy, comm, pf):
             if newline[2] > pf[2]:
                 pf = newline
     return pf
-
-
-if __name__ == '__main__':
-    # data = read_data('nop10DeepCut_resnet50_vocalJun10shuffle1_1030000.h5')
-    data = read_data('nop10DeepCut_resnet50_vocal_foldAug7shuffle1_1030000.h5')
-    t = Tracker(data)
-    # t.frame_by('nop10DeepCut_resnet50_vocalJun10shuffle1_1030000_labeled.mp4')
-    t.frame_by('nop10.mp4', 0)

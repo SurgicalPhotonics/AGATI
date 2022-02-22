@@ -1,14 +1,16 @@
+import cv2
 from cv2 import VideoCapture, CAP_PROP_FPS, CAP_PROP_FRAME_WIDTH, CAP_PROP_FRAME_HEIGHT, VideoWriter, line, putText, destroyAllWindows, FONT_HERSHEY_SIMPLEX, LINE_AA
 from os import path as ospath
 from numpy import cross as npcross, vstack, hstack, ones
-
+from tqdm import tqdm
 
 def draw(path, lines, angles, outfile, videotype='.mp4'):
     """Takes each frame from video and stitches it back into new video with
     line drawn on."""
     print("Printing Lines on Videos")
     cap = VideoCapture(path)
-    frames = cap.get(CAP_PROP_FPS)
+    frame_rate = cap.get(CAP_PROP_FPS)
+    frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     width = int(cap.get(CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(CAP_PROP_FRAME_HEIGHT))
     s, im = cap.read()
@@ -21,11 +23,9 @@ def draw(path, lines, angles, outfile, videotype='.mp4'):
     else:
         fourcc = 0
     out = ospath.join(outfile, name + videotype)
-    w = VideoWriter(out, fourcc, frames, (width, height))
+    w = VideoWriter(out, fourcc, frame_rate, (width, height))
     print('Printing lines on your video.')
-    while s:
-        if count % 5 == 0:
-            print(str(round(count / len(angles) * 100)) + '%')
+    for count in tqdm(range(frames)):
         left_line = lines[0][count]
         right_line = lines[1][count]
         if left_line is not None and right_line is not None:
@@ -46,7 +46,8 @@ def draw(path, lines, angles, outfile, videotype='.mp4'):
             putText(im, str(round(angles[count][0], 2)), (10, 20), FONT_HERSHEY_SIMPLEX, 1,  (1, 1, 198), 2, LINE_AA)
         w.write(im)
         s, im = cap.read()
-        count += 1
+        if not s:
+            break
     cap.release()
     w.release()
     # destroyAllWindows()
