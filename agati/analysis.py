@@ -7,15 +7,13 @@ import numpy as np
 from scipy import stats
 from draw import draw
 from dlc_generic_analysis.geometries import Line
-from numba import njit
-from numba.typed import List
-import numpy.typing as npt
 from matplotlib import pyplot as plt
+from tqdm import tqdm
+from typing import List
 
 COMMISSURE_NAME = ["AC"]
 LEFT_NAMES = ["LC1", "LC2", "LC3", "LC4", "LC5", "LVP"]
 RIGHT_NAMES = ["RC1", "RC2", "RC3", "RC4", "RC5", "RVP"]
-NDArrayF64 = npt.NDArray[np.float64]
 
 
 def _set_ends(line: Line, cord: np.ndarray):
@@ -42,7 +40,6 @@ def analyze(video_paths: [str], model_dir: str):
         analysis.plot()
 
 
-# @njit()
 def calc_glottic_angle(
     left_cord, right_cord, comm_there
 ) -> typing.Tuple[np.float64, np.float64, Line, Line]:
@@ -61,18 +58,15 @@ def calc_glottic_angle(
     right_cord = right_cord[np.logical_not(np.isnan(right_cord)).any(axis=1)]
     left_line = calc_reg_line(left_cord, comm_there)
     right_line = calc_reg_line(right_cord, comm_there)
-    left = left_line
-    right = right_line
     if left_line is None or right_line is None:
-        return np.nan, np.nan, left, right
+        return np.nan, np.nan, left_line, right_line
     left_line = _set_ends(left_line, left_cord)
     right_line = _set_ends(right_line, right_cord)
-    if (1 + left_line.slope * right_line.slope) == 0:
-        angle = np.nan
-    else:
-        angle = np.arctan(
-            abs((left_line.slope - right_line.slope) / (1 + left_line.slope * right_line.slope))
-        )
+    if right_line.slope < 0 < left_line.slope:
+        return np.nan, np.nan, None, None
+    angle = np.arctan(
+        abs((left_line.slope - right_line.slope) / (1 + left_line.slope * right_line.slope))
+    )
     # Angles of cords from vertical midline
     left_mid_x = left_line.end2[0] - left_line.end1[0]
     left_mid_y = abs(left_line.end2[1] - left_line.end1[1])
@@ -83,15 +77,14 @@ def calc_glottic_angle(
         left_angle = 90 - angle_l
     else:
         left_angle = -angle_l - 90
-    # print(f"angle: {angle}, left angle: {left_angle}")
-    return angle, left_angle, left, right
+    return angle, left_angle, left_line, right_line
 
 
 def _calc_lines_angles(
     comm: np.ndarray, right_points: np.ndarray, left_points: np.ndarray
 ) -> ("np.ndarray", "np.ndarray", "np.ndarray", "np.ndarray", List[Line], List[Line]):
     """
-
+    creates linear regression lines on a series of points and computes angles btween the 2 lines
     :param comm:
     :param right_points:
     :param left_points:
@@ -103,15 +96,10 @@ def _calc_lines_angles(
         line_l: the line of the left cord edge
         line_r: the line of the right cord edge.
     """
-    return __calc_angle_helper(comm, right_points, left_points)
-
-
-# @njit()
-def __calc_angle_helper(
-    comm: np.ndarray,
-    right_points: np.ndarray,
-    left_points: np.ndarray,
-):
+    print(right_points.shape)
+    comm_3d = comm.reshape((1, comm.shape[0], comm.shape[1]))
+    right_points = np.concatenate((comm_3d, right_points), axis=0)
+    left_points = np.concatenate((comm_3d, left_points), axis=0)
     angles = np.zeros(shape=comm.shape[0], dtype=np.float_)
     angles_l = angles
     angles_r = angles
@@ -149,7 +137,7 @@ def __calc_angle_helper(
             line_l[i] = None
             line_r[i] = None
         print(
-            f"angle {round(angles[i], 3)}, left angle {round(angles_l[i],3)}, right angle {round(angles_r[i],3)}\n"
+            f"angle {round(angles[i], 3)}, left angle {round(angles_l[i], 3)}, right angle {round(angles_r[i], 3)}\n"
         )
     angles_filered = angles[np.logical_not(np.isnan(angles))]
     return angles_filered, angles, angles_l, angles_r, line_l, line_r
@@ -197,7 +185,8 @@ class Analysis(dga.Analysis):
         # compute cord velocities in degrees / second
         self.velocities = np.zeros(shape=self.angles_transformed.shape[0])
         self.velocities[0] = np.nan
-        for i in range(1, self.angles_transformed.shape[0] - 1):
+        print("computing velocities")
+        for i in tqdm(range(1, self.angles_transformed.shape[0] - 1)):
             if not np.isnan(self.angles_transformed[i]) and np.isnan(
                 self.angles_transformed[i + 1]
             ):
@@ -209,7 +198,8 @@ class Analysis(dga.Analysis):
         # compute accelerations in degrees / second^2
         self.accelerations = np.zeros(shape=self.angles_transformed.shape[0])
         self.accelerations[0] = np.nan
-        for i in range(self.velocities.shape[0]):
+        print("computing accelerations")
+        for i in tqdm(range(1, self.velocities.shape[0])):
             if not np.isnan(self.velocities[i]) and not np.isnan(self.velocities[i - 1]):
                 self.accelerations[i] = self.velocities[i] - self.velocities[i - 1]
 
@@ -248,23 +238,7 @@ class Analysis(dga.Analysis):
         plt.ylabel("Angle Between Cords")
         plt.savefig(file_path)
 
-    # def angle_of_opening(self, left_cord, right_cord, comm):
-    #     """Calculates angle of opening between left and right cord."""
-    #     left_line = calc_reg_line(left_cord, comm)
-    #     right_line = calc_reg_line(right_cord, comm)
-    #     self.left.append(left_line)
-    #     self.right.append(right_line)
-    #     if left_line is None or right_line is None:
-    #         return np.nan
-    #     _set_ends(left_line, left_cord)
-    #     _set_ends(right_line, right_cord)
-    #     if right_line.slope < 0 < left_line.slope:
-    #         return 0
-    #     tan = abs((left_line.slope - right_line.slope) / (1 + left_line.slope * right_line.slope))
-    #     return np.arctan(tan)
 
-
-# @njit()
 def calc_reg_line(points, comm) -> (Line, None):
     """
     Given a list corresponding to points plotted on a vocal cord. Calculates

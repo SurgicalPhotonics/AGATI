@@ -1,12 +1,26 @@
+from qtpy import QtWidgets, QtCore, QtGui
+import sys
+if not QtWidgets.QApplication.instance():
+    app = QtWidgets.QApplication(sys.argv)
+else:
+    app = QtWidgets.QApplication.instance()
+splash_img = QtGui.QPixmap("../splashscreen.jpg")
+screen = app.desktop().screenGeometry()
+wd_fix = (int(screen.width()/3), int(screen.width()/3*0.795333333))
+ht_fix = (int(screen.height()/3*1.25733445), int(screen.height()/3))
+if wd_fix[0] > ht_fix[0]:
+    splash_img = splash_img.scaled(wd_fix[0], wd_fix[1])
+else:
+    splash_img = splash_img.scaled(ht_fix[0], ht_fix[1])
+splash = QtWidgets.QSplashScreen(splash_img)
+splash.show()
 import os
-
 try:
     os.add_dll_directory(os.path.join(os.environ.get("CUDA_PATH_V11_2"), "bin"))
 except AttributeError:
     print("cuda not loaded")
 import dlc_generic_analysis as dga
 from dlc_generic_analysis import gui_utils
-from qtpy import QtWidgets, QtCore
 import sys
 import analysis
 
@@ -36,14 +50,6 @@ class MainWidget(dga.MainWidget):
 
 if __name__ == "__main__":
     name = "agati"
-    app = QtWidgets.QApplication.instance()
-    if not app:
-        if hasattr(QtCore.Qt, "AA_EnableHighDpiScaling"):
-            QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
-
-        if hasattr(QtCore.Qt, "AA_UseHighDpiPixmaps"):
-            QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
-        app = QtWidgets.QApplication(sys.argv[1:])
     QtCore.QCoreApplication.setApplicationName(name)
     app.setApplicationName(name)
     app.setApplicationDisplayName(name)
@@ -52,5 +58,6 @@ if __name__ == "__main__":
     window = QtWidgets.QMainWindow()
     window.setCentralWidget(widget)
     window.raise_()
+    splash.finish(window)
     window.show()
     sys.exit(app.exec_())
