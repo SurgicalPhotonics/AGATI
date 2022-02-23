@@ -10,15 +10,11 @@ from math import atan, pi, degrees
 import pandas
 from typing import List
 from tqdm import tqdm
-from multiprocessing import Pool
 
 
 def set_ends(line, cord):
-    c = []
-    for point in cord:
-        if point is not None:
-            c.append(point)
-    y = c[len(c) - 1][1]
+    c = cord[np.logical_not(np.isnan(cord).any(axis=1))]
+    y = c[len(c) - 1, 1]
     if line.slope != 0:
         line.end2 = (int((y - line.intercept) / line.slope), int(y))
     else:
@@ -43,7 +39,8 @@ LEFT_PT_NAMES = [COMMISURE_NAME, "RC1", "RC2", "RC3", "RC4", "RC5", "RVP"]
 
 
 class Tracker:
-    """Creates a tracker object that takes a dataset and can perform various
+    """
+    Creates a tracker object that takes a dataset and can perform various
     calculations on it.
     data: lst[lst[float]]
     output: lst[tuple(float, float)]
@@ -151,7 +148,7 @@ class Tracker:
         plt.xlabel("Frames")
         plt.ylabel("Angle Between Cords")
         print(len(dgraph))
-        vidtype = path[path.rfind(".") :]
+        vidtype = path[path.rfind("."):]
         video_path = draw(
             path, left, right, dgraph, outfile, videotype=vidtype
         )
@@ -241,14 +238,14 @@ def calc_reg_line(points, comm):
         pfc = stats.linregress(pfx[1:], pfy[1:])
         if abs(pfc[2]) > abs(pf[2]):
             pf = pfc
-    # pfc = outlier_del(pfx, pfy, comm, pf)
-    # if abs(pfc[2]) > abs(pf[2]):
-    #     pf = pfc
-    if pf[2] ** 2 < 0.8:
+    # print(f" r^2 = {pf.rvalue ** 2}")
+    if pf.rvalue ** 2 < .9:
+        pfc = outlier_del(pfx, pfy, comm, pf)
+        if abs(pfc.rvalue) > abs(pf.rvalue):
+            pf = pfc
+    if pf.rvalue ** 2 < 0.8:
         return None
-    slope = pf[0]
-    intercept = pf[1]
-    return Line(slope=slope, intercept=intercept)
+    return Line(slope=pf.slope, intercept=pf.intercept)
 
 
 def outlier_del(pfx, pfy, comm, pf):
@@ -258,13 +255,8 @@ def outlier_del(pfx, pfy, comm, pf):
         pfy = pfy[1:]
     if len(pfx) > 3:
         for i in range(len(pfx) - 1):
-            newx = []
-            newy = []
-            for j in range(len(pfx)):
-                newx.append(pfx[j])
-                newy.append(pfy[j])
-            newx.pop(i)
-            newy.pop(i)
+            newx = pfx[:-1]
+            newy = pfy[:-1]
             newline = stats.linregress(newx, newy)
             if len(newx) > 3:
                 newline = outlier_del(newx, newy, False, newline)

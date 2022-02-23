@@ -11,12 +11,14 @@ from cv2 import (
     FONT_HERSHEY_SIMPLEX,
     LINE_AA,
 )
+import numpy as np
 from os import path as ospath
 from numpy import cross as npcross, vstack, hstack, ones
 from tqdm import tqdm
+import os
 
 
-def draw(path, left, right, angles, outfile, videotype=".mp4"):
+def draw(path, left, right, angles, outfile: str = None, videotype="mp4"):
     """Takes each frame from video and stitches it back into new video with
     line drawn on."""
     print("Printing Lines on Videos")
@@ -26,20 +28,23 @@ def draw(path, left, right, angles, outfile, videotype=".mp4"):
     width = int(cap.get(CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(CAP_PROP_FRAME_HEIGHT))
     s, im = cap.read()
-    count = 0
-    name = path[path.rfind("\\") + 1 : path.rfind(".")] + "with_lines"
-    if videotype == ".mp4":
+    if outfile is None:
+        name = os.path.splitext(path)[0] + "_with_lines"
+    out = ospath.join(name + videotype)
+    print(f"writing video to {out}")
+    if videotype.startswith("."):
+        videotype = videotype[1:]
+    if videotype == "mp4":
         fourcc = VideoWriter.fourcc("m", "p", "4", "v")
-    elif videotype == ".avi":
+    elif videotype == "avi":
         fourcc = VideoWriter.fourcc("x", "v", "i", "d")
     else:
         fourcc = 0
-    out = ospath.join(outfile, name + videotype)
     w = VideoWriter(out, fourcc, frame_rate, (width, height))
     print("Printing lines on your video.")
-    for count in tqdm(range(frames)):
-        left_line = left[count]
-        right_line = right[count]
+    for i in tqdm(range(frames)):
+        left_line = left[i]
+        right_line = right[i]
         if left_line is not None and right_line is not None:
             cross = intersect(left_line, right_line)
         else:
@@ -62,10 +67,10 @@ def draw(path, left, right, angles, outfile, videotype=".mp4"):
             else:
                 line(im, cross, left_line.end2, (255, 0, 0), 2)
                 line(im, cross, right_line.end2, (255, 0, 0), 2)
-        if angles[count] is not None:
+        if not np.isnan(angles[i]):
             putText(
                 im,
-                str(round(angles[count][0], 2)),
+                str(round(angles[i][0], 2)),
                 (10, 20),
                 FONT_HERSHEY_SIMPLEX,
                 1,
@@ -79,7 +84,6 @@ def draw(path, left, right, angles, outfile, videotype=".mp4"):
             break
     cap.release()
     w.release()
-    # destroyAllWindows()
     return ospath.join(path[: path.rfind("videos")], name)
 
 
