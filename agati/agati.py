@@ -15,6 +15,7 @@ else:
 splash = QtWidgets.QSplashScreen(splash_img)
 splash.show()
 import os
+
 try:
     os.add_dll_directory(os.path.join(os.environ.get("CUDA_PATH_V11_2"), "bin"))
 except AttributeError:
@@ -50,6 +51,14 @@ class MainWidget(dga.MainWidget):
 
 if __name__ == "__main__":
     name = "agati"
+    app = QtWidgets.QApplication.instance()
+    if not app:
+        if hasattr(QtCore.Qt, "AA_EnableHighDpiScaling"):
+            QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+
+        if hasattr(QtCore.Qt, "AA_UseHighDpiPixmaps"):
+            QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+        app = QtWidgets.QApplication(sys.argv[1:])
     QtCore.QCoreApplication.setApplicationName(name)
     app.setApplicationName(name)
     app.setApplicationDisplayName(name)
