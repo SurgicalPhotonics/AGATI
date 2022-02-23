@@ -10,6 +10,8 @@ from dlc_generic_analysis.geometries import Line
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 from typing import List
+from math import degrees, atan
+import pandas
 
 COMMISSURE_NAME = ["AC"]
 LEFT_NAMES = ["LC1", "LC2", "LC3", "LC4", "LC5", "LVP"]
@@ -17,12 +19,13 @@ RIGHT_NAMES = ["RC1", "RC2", "RC3", "RC4", "RC5", "RVP"]
 
 
 def _set_ends(line: Line, cord: np.ndarray):
-    y = cord[len(cord) - 1, 1]
+    c = cord[np.logical_not(np.isnan(cord).any(axis=1))]
+    y = c[len(c) - 1, 1]
     if line.slope != 0:
         line.end2 = (int((y - line.intercept) / line.slope), int(y))
     else:
         line.end2 = (1, int(y))
-    y = cord[0, 1]
+    y = c[0][1]
     if line.slope != 0:
         line.end1 = (int((y - line.intercept) / line.slope), int(y))
     else:
@@ -41,12 +44,12 @@ def analyze(video_paths: [str], model_dir: str):
 
 
 def calc_glottic_angle(
-    left_cord, right_cord, comm_there
+    left_cord_points, right_cord_points, comm_there
 ) -> typing.Tuple[np.float64, np.float64, Line, Line]:
     """
     Alternative anterior glottic angle of opening calculation.
-    :param left_cord: the points the left vocal cord
-    :param right_cord: the points onn the right vocal cord
+    :param left_cord_points: the points the left vocal cord
+    :param right_cord_points: the points onn the right vocal cord
     :param comm_there: # if there is a comm in the left_cord and right_cord lists
     :return: (angle, left_angle, left, right)
         angle: the angle between the 2 cords in degrees
@@ -54,30 +57,29 @@ def calc_glottic_angle(
         left_line: the line representing the edge of the left chord
         right_line: the line representing the edge of the right chord
     """
-    left_cord = left_cord[np.logical_not(np.isnan(left_cord)).any(axis=1)]
-    right_cord = right_cord[np.logical_not(np.isnan(right_cord)).any(axis=1)]
-    left_line = calc_reg_line(left_cord, comm_there)
-    right_line = calc_reg_line(right_cord, comm_there)
+    left_line = calc_reg_line(left_cord_points, comm_there)
+    right_line = calc_reg_line(right_cord_points, comm_there)
     if left_line is None or right_line is None:
-        return np.nan, np.nan, left_line, right_line
-    left_line = _set_ends(left_line, left_cord)
-    right_line = _set_ends(right_line, right_cord)
+        return np.nan, np.nan, None, None
+    _set_ends(left_line, left_cord_points)
+    _set_ends(right_line, right_cord_points)
     if right_line.slope < 0 < left_line.slope:
         return np.nan, np.nan, None, None
-    angle = np.arctan(
-        abs((left_line.slope - right_line.slope) / (1 + left_line.slope * right_line.slope))
-    )
+    angle = np.degrees(np.arctan(abs(
+        (left_line.slope - right_line.slope)
+        / (1 + left_line.slope * right_line.slope)
+    )))
     # Angles of cords from vertical midline
-    left_mid_x = left_line.end2[0] - left_line.end1[0]
-    left_mid_y = abs(left_line.end2[1] - left_line.end1[1])
-    if left_mid_x == 0:
-        left_mid_x = 0.00001
-    angle_l = np.degrees(np.arctan(left_mid_y / left_mid_x))
+    left_adjacent = left_line.end2[0] - left_line.end1[0]
+    l_opposite = abs(left_line.end2[1] - left_line.end1[1])
+    if left_adjacent == 0:
+        left_adjacent = 0.00001
+    lang = degrees(atan(l_opposite / left_adjacent))
     if left_line.slope < 0:
-        left_angle = 90 - angle_l
+        angle_l = 90 - lang
     else:
-        left_angle = -angle_l - 90
-    return angle, left_angle, left_line, right_line
+        angle_l = -lang - 90
+    return angle, angle_l, left_line, right_line
 
 
 def _calc_lines_angles(
@@ -96,32 +98,32 @@ def _calc_lines_angles(
         line_l: the line of the left cord edge
         line_r: the line of the right cord edge.
     """
-    print(right_points.shape)
     comm_3d = comm.reshape((1, comm.shape[0], comm.shape[1]))
     right_points = np.concatenate((comm_3d, right_points), axis=0)
     left_points = np.concatenate((comm_3d, left_points), axis=0)
     angles = np.zeros(shape=comm.shape[0], dtype=np.float_)
-    angles_l = angles
-    angles_r = angles
+    angles_l = np.zeros(shape=comm.shape[0], dtype=np.float_)
+    angles_r = np.zeros(shape=comm.shape[0], dtype=np.float_)
     line_l = []
     line_r = []
     comm_there = np.logical_not(
         np.isnan(comm).any(axis=1)
     )  # a list of booleans for each commisure point that is true
     # if either coordinate in the point is nan
-    for i in range(comm.shape[0]):
-        cords_there = True
-        if right_points[np.logical_not(np.isnan(right_points[:, i]).any(axis=1)), i].shape[0] < 3:
-            # checks if there are less than 3 points in right_points[:, i] with no nan coordinate
-            cords_there = False
-        if left_points[np.logical_not(np.isnan(left_points[:, i]).any(axis=1)), i].shape[0] < 3:
-            # checks if there are less than 3 points in left_points[:, i] with no nan coordinate
-            cords_there = False
-        if cords_there:
-            angles[i], angles_l[i], curr_line_l, curr_line_r = calc_glottic_angle(
-                left_points[:, i], right_points[:, i], comm_there[i]
+    for i in tqdm(range(comm.shape[0])):
+        # checks if there are less than 3 points in left_points[:,i] and left_points[:, i] with no nan coordinate
+        left_points_f = left_points[np.logical_not(np.isnan(left_points[:, i]).any(axis=1)), i]
+        right_points_f = right_points[np.logical_not(np.isnan(right_points[:, i]).any(axis=1)), i]
+        if (
+            left_points_f.shape[0] >= 3
+            and right_points_f.shape[0]
+            >= 3
+        ):
+            angle, angle_l, curr_line_l, curr_line_r = calc_glottic_angle(
+                left_points_f, right_points_f, comm_there[i]
             )
-
+            angles[i] = angle
+            angles_l[i] = angle_l
             line_l.append(curr_line_l)
             line_r.append(curr_line_r)
             if not np.isnan(angles_l[i]):
@@ -136,9 +138,6 @@ def _calc_lines_angles(
             angles_r[i] = np.nan
             line_l[i] = None
             line_r[i] = None
-        print(
-            f"angle {round(angles[i], 3)}, left angle {round(angles_l[i], 3)}, right angle {round(angles_r[i], 3)}\n"
-        )
     angles_filered = angles[np.logical_not(np.isnan(angles))]
     return angles_filered, angles, angles_l, angles_r, line_l, line_r
 
@@ -252,8 +251,29 @@ def calc_reg_line(points, comm) -> (Line, None):
     pf = stats.linregress(pfx, pfy)
     if comm and len(pfx) > 3:
         pfc = stats.linregress(pfx[1:], pfy[1:])
+        if abs(pfc[2]) > abs(pf[2]):
+            pf = pfc
+    if pf.rvalue ** 2 < 0.9:
+        pfc = outlier_del(pfx, pfy, comm, pf)
         if abs(pfc.rvalue) > abs(pf.rvalue):
             pf = pfc
-    if pf.rvalue**2 < 0.8:
-        return None
+    if pf.rvalue ** 2 < 0.8:
+        return
     return Line(slope=pf.slope, intercept=pf.intercept)
+
+
+def outlier_del(pfx, pfy, comm, pf):
+    """Deletes outliers from sufficiently large cord lists."""
+    if comm:
+        pfx = pfx[1:]
+        pfy = pfy[1:]
+    if len(pfx) > 3:
+        for i in range(len(pfx) - 1):
+            newx = pfx[:-1]
+            newy = pfy[:-1]
+            newline = stats.linregress(newx, newy)
+            if len(newx) > 3:
+                newline = outlier_del(newx, newy, False, newline)
+            if newline[2] > pf[2]:
+                pf = newline
+    return pf

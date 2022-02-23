@@ -1,13 +1,14 @@
 from qtpy import QtWidgets, QtCore, QtGui
 import sys
+
 if not QtWidgets.QApplication.instance():
     app = QtWidgets.QApplication(sys.argv)
 else:
     app = QtWidgets.QApplication.instance()
 splash_img = QtGui.QPixmap("../splashscreen.jpg")
 screen = app.desktop().screenGeometry()
-wd_fix = (int(screen.width()/3), int(screen.width()/3*0.795333333))
-ht_fix = (int(screen.height()/3*1.25733445), int(screen.height()/3))
+wd_fix = (int(screen.width() / 3), int(screen.width() / 3 * 0.795333333))
+ht_fix = (int(screen.height() / 3 * 1.25733445), int(screen.height() / 3))
 if wd_fix[0] > ht_fix[0]:
     splash_img = splash_img.scaled(wd_fix[0], wd_fix[1])
 else:
@@ -67,6 +68,6 @@ if __name__ == "__main__":
     window = QtWidgets.QMainWindow()
     window.setCentralWidget(widget)
     window.raise_()
-    splash.finish(window)
     window.show()
+    splash.finish(window)
     sys.exit(app.exec_())
