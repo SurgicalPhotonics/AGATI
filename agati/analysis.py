@@ -11,7 +11,6 @@ from matplotlib import pyplot as plt
 from tqdm import tqdm
 from typing import List
 from math import degrees, atan
-import pandas
 
 COMMISSURE_NAME = ["AC"]
 LEFT_NAMES = ["LC1", "LC2", "LC3", "LC4", "LC5", "LVP"]
@@ -65,10 +64,11 @@ def calc_glottic_angle(
     _set_ends(right_line, right_cord_points)
     if right_line.slope < 0 < left_line.slope:
         return np.nan, np.nan, None, None
-    angle = np.degrees(np.arctan(abs(
-        (left_line.slope - right_line.slope)
-        / (1 + left_line.slope * right_line.slope)
-    )))
+    angle = np.degrees(
+        np.arctan(
+            abs((left_line.slope - right_line.slope) / (1 + left_line.slope * right_line.slope))
+        )
+    )
     # Angles of cords from vertical midline
     left_adjacent = left_line.end2[0] - left_line.end1[0]
     l_opposite = abs(left_line.end2[1] - left_line.end1[1])
@@ -114,11 +114,7 @@ def _calc_lines_angles(
         # checks if there are less than 3 points in left_points[:,i] and left_points[:, i] with no nan coordinate
         left_points_f = left_points[np.logical_not(np.isnan(left_points[:, i]).any(axis=1)), i]
         right_points_f = right_points[np.logical_not(np.isnan(right_points[:, i]).any(axis=1)), i]
-        if (
-            left_points_f.shape[0] >= 3
-            and right_points_f.shape[0]
-            >= 3
-        ):
+        if left_points_f.shape[0] >= 3 and right_points_f.shape[0] >= 3:
             angle, angle_l, curr_line_l, curr_line_r = calc_glottic_angle(
                 left_points_f, right_points_f, comm_there[i]
             )
