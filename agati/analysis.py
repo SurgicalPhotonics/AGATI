@@ -10,11 +10,23 @@ from dlc_generic_analysis.geometries import Line
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 from typing import List
-from math import degrees, atan
+from collections import namedtuple
+from scipy.spacial import euclidean
+from numba import njit
 
-COMMISSURE_NAME = ["AC"]
-LEFT_NAMES = ["LC1", "LC2", "LC3", "LC4", "LC5", "LVP"]
-RIGHT_NAMES = ["RC1", "RC2", "RC3", "RC4", "RC5", "RVP"]
+PET_NAME = ["PET"]
+ANTERIOR_COMMISSURE_NAME = ["AC"]
+LEFT_TRUE_CORD_NAMES = ["LC" + str(i) for i in range(1, 6)]
+RIGHT_TRUE_CORD_NAMES = ["RC" + str(i) for i in range(1, 6)]
+LEFT_FALSE_CORD_NAMES = ["LFC" + str(i) for i in range(1, 6)]
+RIGHT_FALSE_CORD_NAMES = ["RFC" + str(i) for i in range(1, 6)]
+MIDLINE_NAMES = ["ML" + str(i) for i in range(1, 3)]
+RIGHT_ARYEPIGLOTTIS_NAMES = ["RAE" + str(i) for i in range(1, 3)]
+LEFT_ARYEPIGLOTTIS_NAMES = ["LAE" + str(i) for i in range(1, 3)]
+AnglesReturn = namedtuple(
+    "AnglesReturn",
+    ["true_angles", "true_angles_l", "true_angles_r", "midlines", "lines_r", "lines_r"],
+)
 
 
 def _set_ends(line: Line, cord: np.ndarray):
@@ -42,100 +54,73 @@ def analyze(video_paths: [str], model_dir: str):
         analysis.plot()
 
 
-def calc_glottic_angle(
-    left_cord_points, right_cord_points, comm_there
-) -> typing.Tuple[np.float64, np.float64, Line, Line]:
-    """
-    Alternative anterior glottic angle of opening calculation.
-    :param left_cord_points: the points the left vocal cord
-    :param right_cord_points: the points onn the right vocal cord
-    :param comm_there: # if there is a comm in the left_cord and right_cord lists
-    :return: (angle, left_angle, left, right)
-        angle: the angle between the 2 cords in degrees
-        left_angle: the angle of the left chord
-        left_line: the line representing the edge of the left chord
-        right_line: the line representing the edge of the right chord
-    """
-    left_line = calc_reg_line(left_cord_points, comm_there)
-    right_line = calc_reg_line(right_cord_points, comm_there)
-    if left_line is None or right_line is None:
-        return np.nan, np.nan, None, None
-    _set_ends(left_line, left_cord_points)
-    _set_ends(right_line, right_cord_points)
-    if right_line.slope < 0 < left_line.slope:
-        return np.nan, np.nan, None, None
-    angle = np.degrees(
-        np.arctan(
-            abs((left_line.slope - right_line.slope) / (1 + left_line.slope * right_line.slope))
-        )
-    )
-    # Angles of cords from vertical midline
-    left_adjacent = left_line.end2[0] - left_line.end1[0]
-    l_opposite = abs(left_line.end2[1] - left_line.end1[1])
-    if left_adjacent == 0:
-        left_adjacent = 0.00001
-    lang = degrees(atan(l_opposite / left_adjacent))
-    if left_line.slope < 0:
-        angle_l = 90 - lang
-    else:
-        angle_l = -lang - 90
-    return angle, angle_l, left_line, right_line
+@njit()
+def angle_between_lines(slope0: np.float_, slope1: np.float_):
+    return np.degrees(np.arctan(slope0.slope - slope1.slope) / (1 + slope0.slope * slope1.slope))
 
 
 def _calc_lines_angles(
-    comm: np.ndarray, right_points: np.ndarray, left_points: np.ndarray
+    midline_points: np.ndarray,
+    comm: np.ndarray,
+    true_points_l: np.ndarray,
+    true_points_r: np.ndarray,
+    false_points_l: np.ndarray,
+    false_points_r: np.ndarray,
+    aryepiglottis_points_r: np.ndarray,
+    aryepiglottis_points_l: np.ndarray,
 ) -> ("np.ndarray", "np.ndarray", "np.ndarray", "np.ndarray", List[Line], List[Line]):
     """
-    creates linear regression lines on a series of points and computes angles btween the 2 lines
+    creates linear regression lines on a series of points and computes true_angles btween the 2 lines
     :param comm:
-    :param right_points:
-    :param left_points:
-    :return: (angles_filtered, angels, angles_l, angle_r, line_l, line_r)
-        angles_filtered np.ndarray: anterior glottic angle with nan vales removed
-        angles np.ndarray:: The anterior glottic angle for each frame in degrees.
-        angles_l np.ndarray: the angle of the line_l cord for each frame in degrees.
-        angle_r np.ndarray: the angle of the line_r cord for each frame in degrees.
-        line_l: the line of the left cord edge
-        line_r: the line of the right cord edge.
+    :param true_points_r:
+    :param true_points_l:
+    :return: (angles_filtered, angels, true_angles_l, angle_r, lines_l, lines_r)
+        true_angles np.ndarray:: The anterior glottic angle for each frame in degrees.
+        true_angles_l np.ndarray: the angle of the lines_l cord for each frame in degrees.
+        angle_r np.ndarray: the angle of the lines_r cord for each frame in degrees.
+        lines_l: the line of the left cord edge
+        lines_r: the line of the right cord edge.
     """
     comm_3d = comm.reshape((1, comm.shape[0], comm.shape[1]))
-    right_points = np.concatenate((comm_3d, right_points), axis=0)
-    left_points = np.concatenate((comm_3d, left_points), axis=0)
-    angles = np.zeros(shape=comm.shape[0], dtype=np.float_)
-    angles_l = np.zeros(shape=comm.shape[0], dtype=np.float_)
-    angles_r = np.zeros(shape=comm.shape[0], dtype=np.float_)
-    line_l = []
-    line_r = []
-    comm_there = np.logical_not(
-        np.isnan(comm).any(axis=1)
-    )  # a list of booleans for each commisure point that is true
-    # if either coordinate in the point is nan
-    for i in tqdm(range(comm.shape[0])):
+    midline_points = np.concatenate((comm_3d, midline_points), axis=0)
+    true_points_r = np.concatenate((comm_3d, true_points_r), axis=0)
+    true_points_l = np.concatenate((comm_3d, true_points_l), axis=0)
+    true_angles = np.empty(shape=comm.shape[0], dtype=np.float_)
+    true_angles_l = np.empty(shape=comm.shape[0], dtype=np.float_)
+    true_angles_r = np.empty(shape=comm.shape[0], dtype=np.float_)
+    true_angles[:] = np.nan
+    true_angles_l[:] = np.nan
+    true_angles_r[:] = np.nan
+    lines_l = [None] * comm.shape[0]
+    lines_r = [None] * comm.shape[0]
+    midlines = [None] * comm.shape[0]
+    comms_there = np.logical_not(np.isnan(comm).any(axis=1))
+    # a list of booleans for each commisure point that is true if either coordinate in the point is nan
+    for i in range(comm.shape[0]):
         # checks if there are less than 3 points in left_points[:,i] and left_points[:, i] with no nan coordinate
-        left_points_f = left_points[np.logical_not(np.isnan(left_points[:, i]).any(axis=1)), i]
-        right_points_f = right_points[np.logical_not(np.isnan(right_points[:, i]).any(axis=1)), i]
+        midline_points_f = midline_points[
+            np.logical_not(np.isnan(midline_points[:, i]).any(axis=2)), i
+        ]
+        if midline_points.shape[0] > 3:
+            midlines[i] = regression_line(midline_points_f)
+        left_points_f = true_points_l[np.logical_not(np.isnan(true_points_l[:, i]).any(axis=1)), i]
+        right_points_f = true_points_r[np.logical_not(np.isnan(true_points_r[:, i]).any(axis=1)), i]
         if left_points_f.shape[0] >= 3 and right_points_f.shape[0] >= 3:
-            angle, angle_l, curr_line_l, curr_line_r = calc_glottic_angle(
-                left_points_f, right_points_f, comm_there[i]
-            )
-            angles[i] = angle
-            angles_l[i] = angle_l
-            line_l.append(curr_line_l)
-            line_r.append(curr_line_r)
-            if not np.isnan(angles_l[i]):
-                angles_r[i] = -(angles[i] - angles_l[i])
-            else:
-                angles_r[i] = np.nan
-        else:
-            line_l.append(None)
-            line_r.append(None)
-            angles[i] = np.nan
-            angles_l[i] = np.nan
-            angles_r[i] = np.nan
-            line_l[i] = None
-            line_r[i] = None
-    angles_filered = angles[np.logical_not(np.isnan(angles))]
-    return angles_filered, angles, angles_l, angles_r, line_l, line_r
+            lines_l[i] = cord_line(left_points_f, comms_there[i])
+            lines_r[i] = cord_line(right_points_f, comms_there[i])
+            if lines_l[i] is None or lines_r[i] is None:
+                return np.nan, np.nan, None, None
+            _set_ends(lines_l[i], left_points_f)
+            _set_ends(lines_r[i], right_points_f)
+            if lines_r[i].slope < 0 < lines_l[i].slope:
+                return np.nan, np.nan, None, None
+            true_angles[i] = angle_between_lines(lines_l[i].slope, lines_r[i].slope)
+            if not midlines[i] is None:
+                # calculate left and right angles
+                true_angles_l[i] = angle_between_lines(lines_l[i].slope, midlines[i].slope)
+                true_angles_r = true_angles[i] - true_angles_l[i]
+                true_angles_r[i] = -(true_angles[i] - true_angles_l[i])
+    return true_angles, true_angles_l, true_angles_r, lines_l, lines_r, midlines
 
 
 class Analysis(dga.Analysis):
@@ -146,10 +131,16 @@ class Analysis(dga.Analysis):
         dga.Analysis.__init__(self, h5_path, dlc_scorer)
         self.video_path = video_path
         self.out_file = None
-        right_points = np.squeeze(dga.utils.point_array(self.df, RIGHT_NAMES))
-        left_points = np.squeeze(dga.utils.point_array(self.df, LEFT_NAMES))
-        commissure = np.squeeze(dga.utils.point_array(self.df, COMMISSURE_NAME))
-        # for i in range(right_points.shape[0]):
+        midline_points = np.squeeze(dga.utils.point_array(self.df, MIDLINE_NAMES))
+        right_true_points = np.squeeze(dga.utils.point_array(self.df, RIGHT_TRUE_CORD_NAMES))
+        left_true_points = np.squeeze(dga.utils.point_array(self.df, LEFT_TRUE_CORD_NAMES))
+        right_false_points = np.squeeze(dga.utils.point_array(self.df, RIGHT_FALSE_CORD_NAMES))
+        left_false_points = np.squeeze(dga.utils.point_array(self.df, LEFT_FALSE_CORD_NAMES))
+        right_aeglottis_points = np.squeeze(
+            dga.utils.point_array(self.df, RIGHT_ARYEPIGLOTTIS_NAMES)
+        )
+        left_aeglottis_points = np.squeeze(dga.utils.point_array(self.df, LEFT_ARYEPIGLOTTIS_NAMES))
+        commissure = np.squeeze(dga.utils.point_array(self.df, ANTERIOR_COMMISSURE_NAME))
         (
             self.angles_filtered,
             self.angles,
@@ -157,7 +148,7 @@ class Analysis(dga.Analysis):
             self.angles_r,
             self.left,
             self.right,
-        ) = _calc_lines_angles(commissure, right_points, left_points)
+        ) = _calc_lines_angles(commissure, right_true_points, left_true_points)
         # WTF is this doing
         display_angles = []
         count = 0
@@ -234,7 +225,7 @@ class Analysis(dga.Analysis):
         plt.savefig(file_path)
 
 
-def calc_reg_line(points, comm) -> (Line, None):
+def cord_line(points, comm) -> (Line, None):
     """
     Given a list corresponding to points plotted on a vocal cord. Calculates
     a regression line from those points which is used to represent the cord.
@@ -247,7 +238,7 @@ def calc_reg_line(points, comm) -> (Line, None):
     pf = stats.linregress(pfx, pfy)
     if comm and len(pfx) > 3:
         pfc = stats.linregress(pfx[1:], pfy[1:])
-        if abs(pfc[2]) > abs(pf[2]):
+        if abs(pfc.rvalue) > abs(pf.rvalue):
             pf = pfc
     if pf.rvalue ** 2 < 0.9:
         pfc = outlier_del(pfx, pfy, comm, pf)
@@ -256,6 +247,12 @@ def calc_reg_line(points, comm) -> (Line, None):
     if pf.rvalue ** 2 < 0.8:
         return
     return Line(slope=pf.slope, intercept=pf.intercept)
+
+
+def regression_line(points: np.ndarray, min_r2=0.9) -> Line:
+    linreg = stats.linregress(points)
+    if linreg.rvalue ** 2 > min_r2:
+        return Line(slope=linreg.slope, intercept=linreg.intercept)
 
 
 def outlier_del(pfx, pfy, comm, pf):
