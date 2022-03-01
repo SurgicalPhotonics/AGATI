@@ -1,21 +1,16 @@
-import qtpy
 from qtpy import QtWidgets, QtCore, QtGui
 import sys
 
-if hasattr(QtCore.Qt, "AA_EnableHighDpiScaling"):
-    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
-
-if hasattr(QtCore.Qt, "AA_UseHighDpiPixmaps"):
-    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 if not QtWidgets.QApplication.instance():
+    if hasattr(QtCore.Qt, "AA_EnableHighDpiScaling"):
+        QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+    if hasattr(QtCore.Qt, "AA_UseHighDpiPixmaps"):
+        QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
     app = QtWidgets.QApplication(sys.argv)
 else:
     app = QtWidgets.QApplication.instance()
 splash_img = QtGui.QPixmap("../splashscreen.jpg")
-if qtpy.QT6:
-    screen = QtGui.QGuiApplication.primaryScreen().availableGeometry()
-else:
-    screen = app.desktop().screenGeometry()
+screen = QtGui.QGuiApplication.primaryScreen().availableGeometry()
 wd_fix = (int(screen.width() / 3), int(screen.width() / 3 * 0.795333333))
 ht_fix = (int(screen.height() / 3 * 1.25733445), int(screen.height() / 3))
 if wd_fix[0] > ht_fix[0]:
@@ -25,15 +20,15 @@ else:
 splash = QtWidgets.QSplashScreen(splash_img)
 splash.show()
 import os
-
-try:
-    os.add_dll_directory(os.path.join(os.environ.get("CUDA_PATH_V11_2"), "bin"))
-except AttributeError:
-    print("cuda not loaded")
+if sys.platform == 'win32':
+    try:
+        os.add_dll_directory(os.path.join(os.environ.get("CUDA_PATH_V11_2"), "bin"))
+    except AttributeError:
+        print("cuda not loaded")
 import dlc_generic_analysis as dga
 from dlc_generic_analysis import gui_utils
-import sys
 import analysis
+import tensorflow as tf
 
 try:
     from agati._version import version
@@ -49,8 +44,8 @@ class MainWidget(dga.MainWidget):
     def on_click_analyze(self):
         files = gui_utils.open_files(self, "select videos to analyze")
         if len(files) > 0:
-            analysis.analyze(files, model_dir=self.model_dir)
-        print("Done.")
+            analysis.analyze(self.model_dir, files)
+            print("Done.")
 
     def on_click_view(self):
         pass
@@ -60,11 +55,13 @@ class MainWidget(dga.MainWidget):
 
 
 if __name__ == "__main__":
+    print(f"Found {len(tf.config.list_physical_devices('GPU'))} GPUs")
+    print(f"Found {len(tf.config.list_logical_devices('TPU'))} TPUs")
     name = "agati"
     app.setApplicationName(name)
     app.setApplicationDisplayName(name)
     app.setApplicationVersion(version)
-    widget = MainWidget(model_dir=r"C:\Users\la538\git\AGATI\vocal_fold-Nat-2019-08-07")
+    widget = MainWidget(model_dir="AGATIv2-Matt-2020-06-10")
     window = QtWidgets.QMainWindow()
     window.setCentralWidget(widget)
     window.raise_()
