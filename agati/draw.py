@@ -48,7 +48,7 @@ def draw(
     frames = int(raw_video.get(cv2.CAP_PROP_FRAME_COUNT))
     if outfile is None:
         file, ext = os.path.splitext(video_path)
-        outfile = file + "_prnt" + ext
+        outfile = file + "_analyzed" + ext
     s, im = raw_video.read()
     if video_type is None:
         video_type = os.path.splitext(video_path)[1]
@@ -86,8 +86,8 @@ def draw(
             cv2.line(im, point0(false_lines_l[i]), point1(false_lines_l[i]), (0, 0, 255), 2)
             cv2.line(im, point0(false_lines_r[i]), point1(false_lines_r[i]), (0, 255, 0), 2)
         if not np.isnan(aeg_line_l).any and not np.isnan(aeg_line_l).any():
-            cv2.line(im, point0(aeg_line_l[i]), point1(aeg_line_l[i]),  (0, 0, 255), 2)
-            cv2.line(im, point0(aeg_line_r[i]), point1(aeg_line_r[i]),  (0, 255, 0), 2)
+            cv2.line(im, point0(aeg_line_l[i]), point1(aeg_line_l[i]), (0, 0, 255), 2)
+            cv2.line(im, point0(aeg_line_r[i]), point1(aeg_line_r[i]), (0, 255, 0), 2)
 
         if not np.isnan(angles[i]).any():
             cv2.putText(

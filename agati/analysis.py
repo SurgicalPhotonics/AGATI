@@ -3,6 +3,7 @@ import os
 import cv2
 import dlc_generic_analysis as dga
 import numpy as np
+import pandas as pd
 from scipy import stats
 from draw import draw
 from matplotlib import pyplot as plt
@@ -28,12 +29,13 @@ RIGHT_ARYEPIGLOTTIS_NAMES = ["RAE" + str(i) for i in range(1, 6)]
 LEFT_ARYEPIGLOTTIS_NAMES = ["LAE" + str(i) for i in range(1, 6)]
 
 
-def slope_line(slope: np.float_, intercept: np.float_):
+@njit()
+def _slope_line(slope: np.float_, intercept: np.float_):
     return np.array([slope, intercept, 0, intercept, 1, int(intercept + slope)], dtype=np.float_)
 
 
 @njit()
-def points_line(end0, end1):
+def _points_line(end0, end1):
     if not end1[0] == end0[0]:
         slope = (end1[1] - end0[1]) / (end1[0] - end0[0])
     else:
@@ -89,7 +91,7 @@ def _angle_between_lines(slope0: np.float_, slope1: np.float_):
     return np.degrees(np.arctan(slope0 - slope1) / (1 + slope0 * slope1))
 
 
-def create_lines(
+def _create_lines(
     midline_points: np.ndarray,
     commissure: np.ndarray,
     true_points_l: np.ndarray,
@@ -134,8 +136,6 @@ def create_lines(
     false_lines_r = aeglottis_lines_l.copy()
     "creating lines"
     for i in tqdm(range(frames)):
-        if i == 168:
-            print(i)
         (
             midlines[i],
             true_lines_l[i],
@@ -170,14 +170,14 @@ def filter_nan_points(points: np.ndarray):
 
 
 def create_lines_func(
-        midline_points: "np.ndarray",
-        comm_there: "np.ndarray",
-        true_points_l: "np.ndarray",
-        true_points_r: "np.ndarray",
-        false_points_l: "np.ndarray",
-        false_points_r: "np.ndarray",
-        aeglottis_points_l: "np.ndarray",
-        aeglottis_points_r: "np.ndarray",
+    midline_points: "np.ndarray",
+    comm_there: "np.ndarray",
+    true_points_l: "np.ndarray",
+    true_points_r: "np.ndarray",
+    false_points_l: "np.ndarray",
+    false_points_r: "np.ndarray",
+    aeglottis_points_l: "np.ndarray",
+    aeglottis_points_r: "np.ndarray",
 ) -> ("np.ndarray" * 7):
     """
     Creates Linear regression lines for the midline, left and right true and false cords from the depelabcut points
@@ -187,6 +187,8 @@ def create_lines_func(
     :param true_points_r:
     :param false_points_l:
     :param false_points_r:
+    :param aeglottis_points_l:
+    :param aeglottis_points_r:
     :return:
     """
     # filters out nan values from point arrays
@@ -199,12 +201,12 @@ def create_lines_func(
     aeglottis_points_r_f = filter_nan_points(aeglottis_points_r)
     # checks if there are less than 3 points in left_points[:,i] and left_points[:, i] with no nan coordinate
     if midline_points_f.shape[0] >= 3:
-        midline = regression_line(midline_points_f)
+        midline = _regression_line(midline_points_f)
     else:
         midline = nan_line()
     if true_points_l_f.shape[0] >= 3 and true_points_r_f.shape[0] >= 3:
-        true_line_l = cord_line(true_points_l_f, comm_there)
-        true_line_r = cord_line(true_points_r_f, comm_there)
+        true_line_l = _cord_line(true_points_l_f, comm_there)
+        true_line_r = _cord_line(true_points_r_f, comm_there)
         if not np.isnan(true_line_l[0]) and not np.isnan(true_line_r[0]):
             if true_line_r[0] < 0 < true_line_l[0]:
                 true_line_r = nan_line()
@@ -213,8 +215,8 @@ def create_lines_func(
         true_line_l = nan_line()
         true_line_r = nan_line()
     if false_points_l_f.shape[0] >= 3 and false_points_r_f.shape[0] >= 3:
-        false_line_l = regression_line(false_points_l_f)
-        false_line_r = regression_line(false_points_r_f)
+        false_line_l = _regression_line(false_points_l_f)
+        false_line_r = _regression_line(false_points_r_f)
         if not np.isnan(false_line_l[0]) and not np.isnan(false_line_r[0]):
             if false_line_r[0] < 0 < false_line_l[0]:
                 false_line_l = nan_line()
@@ -223,8 +225,8 @@ def create_lines_func(
         false_line_l = nan_line()
         false_line_r = nan_line()
     if aeglottis_points_l_f.shape[0] >= 3 and aeglottis_points_r_f.shape[0] >= 3:
-        aeglottis_line_l = regression_line(aeglottis_points_l_f)
-        aeglottis_line_r = regression_line(aeglottis_points_r_f)
+        aeglottis_line_l = _regression_line(aeglottis_points_l_f)
+        aeglottis_line_r = _regression_line(aeglottis_points_r_f)
     else:
         aeglottis_line_l = nan_line()
         aeglottis_line_r = nan_line()
@@ -249,18 +251,22 @@ def dist(point0: np.ndarray, point1: np.ndarray):
     :param point1: the second x,y coordinate
     :return:
     """
-    return np.sqrt(np.abs(point1[0] - point0[0]) ** 2 + np.abs((point1[1] - point0[1]) ** 2))
+    return np.sqrt(np.power(np.abs(point1[:, 0] - point0[:, 0]),  2) + np.power(np.abs(point1[:,1] - point0[:,1]), 2))
 
 
-@njit()
-def calc_angles_lengths(
-        midlines,
-        true_lines_l,
-        true_lines_r,
-        false_lines_l,
-        false_lines_r,
-        aryepiglottis_lines_l,
-        aryepiglottis_lines_r,
+# @njit()
+def _calc_angles_lengths(
+    midlines,
+    true_lines_l,
+    true_lines_r,
+    false_lines_l,
+    false_lines_r,
+    aryepiglottis_lines_l,
+    aryepiglottis_lines_r,
+    true_points_l,
+    true_points_r,
+    false_points_l,
+    false_points_r,
 ) -> ("np.ndarray" * 10):
     """
 
@@ -272,6 +278,18 @@ def calc_angles_lengths(
     :param aryepiglottis_lines_l:
     :param aryepiglottis_lines_r:
     :return:
+        true_angles: the anterior glottic angle
+        true_angles_l: the angle between the left true cord and the midline
+        true_angles_r: the angle between the right true cord and the midline
+        false_angles: the angle between the false cords
+        false_angles_l: the angle between the left false cord and the midline
+        false_angles_r: the angle between the right false cord and the midline
+        aeg_tvc_l: the angle between the left aeryepiglottic fold and the left true vocal fold
+        aeg_tvc_r: the angle between the right aeryepiglottic fold and the right true vocal fold
+        true_lengths_l: the distance between anterior commisure and the end of the left vocal fold
+        true_lengths_r: the distance between anterior commisure and the end of the right vocal fold
+        false_lengths_l: the distance between first and last point on the left false cord
+        false_lengths_r: the distance between first and last point on the left right cord
     """
     true_angles = _angle_between_lines(true_lines_l[:, 0], true_lines_r[:, 0])
     true_angles_l = _angle_between_lines(true_lines_l[:, 0], midlines[:, 0])
@@ -279,11 +297,12 @@ def calc_angles_lengths(
     false_angles = _angle_between_lines(false_lines_l[:, 0], false_lines_r[:, 0])
     false_angles_l = _angle_between_lines(false_lines_l[:, 0], midlines[:, 0])
     false_angles_r = false_angles - false_angles_l
-    true_lengths_l = dist(true_lines_l[:, 2:4], true_lines_l[:, 4:6])
-    true_lengths_r = dist(true_lines_r[:, 2:4], true_lines_r[:, 4:6])
-    length_false_l = dist(false_lines_l[:, 2:4], false_lines_l[:, 4:6])
-    length_false_r = dist(false_lines_r[:, 2:4], false_lines_r[:, 4:6])
-
+    true_lengths_l = dist(true_points_l[0], true_points_l[-1])
+    true_lengths_r = dist(true_points_r[0], true_points_r[-1])
+    false_lengths_l = dist(false_points_l[0], false_points_l[-1])
+    false_lengths_r = dist(false_points_r[0], false_points_r[-1])
+    aeg_tvc_l = _angle_between_lines(aryepiglottis_lines_l[:, 0], true_lines_l[:, 0])
+    aeg_tvc_r = _angle_between_lines(aryepiglottis_lines_r[:, 0], true_lines_r[:, 0])
     return (
         true_angles,
         true_angles_l,
@@ -291,40 +310,48 @@ def calc_angles_lengths(
         false_angles,
         false_angles_l,
         false_angles_r,
+        aeg_tvc_l,
+        aeg_tvc_r,
         true_lengths_l,
         true_lengths_r,
-        length_false_l,
-        length_false_r,
+        false_lengths_l,
+        false_lengths_r,
     )
 
 
-@njit()
-def calc_cord_widths(
-        left_true_points: "np.array",
-        right_true_points: "np.array",
-        left_false_points: "np.array",
-        right_false_points: "np.array",
-) -> ("np.ndarray" * 4):
-    """
-    calculates the width of each cord for each frame
-    calculates width using the distance between the true and false points and computes an average for all non nan
-    distances per cord, per frame.
-    :param left_true_points:
-    :param right_true_points:
-    :param left_false_points:
-    :param right_false_points:
-    :return: average_width_l, average_width_r, width_l, width_r
-
-    """
-    width_l = dist(left_true_points, left_false_points)
-    width_r = dist(right_true_points, right_false_points)
-    average_width_l = np.nanmean(width_l, axis=1)
-    average_width_r = np.nanmean(width_r, axis=1)
-    return average_width_l, average_width_r, width_l, width_r
+def _calc_cord_widths(
+    true_points_l: "np.array",
+    true_points_r: "np.array",
+    false_points_l: "np.array",
+    false_points_r: "np.array",
+) -> ("np.ndarray" * 2):
+    average_widths_l = np.zeros(shape=true_points_l.shape[1])
+    average_widths_r = average_widths_l.copy()
+    for i in range(true_points_l.shape[1]):
+        if (
+            true_points_l[np.logical_not(np.isnan(true_points_l[:, i]).any(axis=1)), i].shape[0] >= 3
+            and false_points_l[np.logical_not(np.isnan(false_points_l[:, i]).any(axis=1)), i].shape[0] >= 3
+        ):
+            width_l = dist(true_points_l[:, i], false_points_l[:, i])
+            average_widths_l[i] = np.nanmean(width_l, axis=0)
+        else:
+            average_widths_l[i] = np.nan
+        if (
+            true_points_r[np.logical_not(np.isnan(true_points_r[:, i]).any(axis=1)), i].shape[0] >= 3
+            and false_points_r[np.logical_not(np.isnan(false_points_r[:, i]).any(axis=1)), i].shape[0] >= 3
+        ):
+            width_r = dist(true_points_r[:, i], false_points_r[:, i])
+            average_widths_r[i] = np.nanmean(width_r, axis=0)
+        else:
+            average_widths_r[i] = np.nan
+    return average_widths_l, average_widths_r
 
 
 class Analysis(dga.Analysis):
-    def __init__(self, h5_path: str, dlc_scorer: str, video_path: str):
+    def write_csv(self):
+        pass
+
+    def __init__(self, h5_path: str, dlc_scorer: str, video_path: str, export="metrics", filetype=".h5"):
         h5_path = os.path.abspath(h5_path)
         if not os.path.isfile(h5_path):
             raise FileNotFoundError(h5_path)
@@ -332,14 +359,12 @@ class Analysis(dga.Analysis):
         self.video_path = video_path
         self.out_file = None
         midline_points = np.squeeze(dga.utils.point_array(self.df, MIDLINE_NAMES))
-        right_true_points = np.squeeze(dga.utils.point_array(self.df, RIGHT_TRUE_CORD_NAMES))
-        left_true_points = np.squeeze(dga.utils.point_array(self.df, LEFT_TRUE_CORD_NAMES))
-        right_false_points = np.squeeze(dga.utils.point_array(self.df, RIGHT_FALSE_CORD_NAMES))
-        left_false_points = np.squeeze(dga.utils.point_array(self.df, LEFT_FALSE_CORD_NAMES))
-        right_aeglottis_points = np.squeeze(
-            dga.utils.point_array(self.df, RIGHT_ARYEPIGLOTTIS_NAMES)
-        )
-        left_aeglottis_points = np.squeeze(dga.utils.point_array(self.df, LEFT_ARYEPIGLOTTIS_NAMES))
+        true_points_r = np.squeeze(dga.utils.point_array(self.df, RIGHT_TRUE_CORD_NAMES))
+        true_points_l = np.squeeze(dga.utils.point_array(self.df, LEFT_TRUE_CORD_NAMES))
+        false_points_r = np.squeeze(dga.utils.point_array(self.df, RIGHT_FALSE_CORD_NAMES))
+        false_points_l = np.squeeze(dga.utils.point_array(self.df, LEFT_FALSE_CORD_NAMES))
+        aeglottis_points_r = np.squeeze(dga.utils.point_array(self.df, RIGHT_ARYEPIGLOTTIS_NAMES))
+        aeglottis_points_l = np.squeeze(dga.utils.point_array(self.df, LEFT_ARYEPIGLOTTIS_NAMES))
         commissure = np.squeeze(dga.utils.point_array(self.df, ANTERIOR_COMMISSURE_NAME))
         (
             midlines,
@@ -349,15 +374,15 @@ class Analysis(dga.Analysis):
             false_lines_r,
             aryepiglottis_lines_l,
             aryepiglottis_lines_r,
-        ) = create_lines(
+        ) = _create_lines(
             midline_points,
             commissure,
-            left_true_points,
-            right_true_points,
-            left_false_points,
-            right_false_points,
-            left_aeglottis_points,
-            right_aeglottis_points,
+            true_points_l,
+            true_points_r,
+            false_points_l,
+            false_points_r,
+            aeglottis_points_l,
+            aeglottis_points_r,
         )
         (
             true_angles,
@@ -366,11 +391,13 @@ class Analysis(dga.Analysis):
             false_angles,
             false_angles_l,
             false_angles_r,
+            aeg_true_l,
+            aeg_true_r,
             true_lengths_l,
             true_lengths_r,
-            length_false_l,
-            length_false_r,
-        ) = calc_angles_lengths(
+            false_lengths_l,
+            false_lengths_r,
+        ) = _calc_angles_lengths(
             midlines,
             true_lines_l,
             true_lines_r,
@@ -378,6 +405,10 @@ class Analysis(dga.Analysis):
             false_lines_r,
             aryepiglottis_lines_l,
             aryepiglottis_lines_r,
+            true_points_l,
+            true_points_r,
+            false_points_l,
+            false_points_r,
         )
         percentile_97 = np.nanpercentile(true_angles, 97)
         true_angles_filtered = true_angles[np.logical_not(np.isnan(true_angles))]
@@ -401,7 +432,7 @@ class Analysis(dga.Analysis):
         for i in tqdm(range(1, self.velocities.shape[0])):
             if not np.isnan(self.velocities[i]) and not np.isnan(self.velocities[i - 1]):
                 self.accelerations[i] = self.velocities[i] - self.velocities[i - 1]
-
+        cord_widths_l, cord_widths_r = _calc_cord_widths(true_points_l, true_points_r, false_points_l, false_points_r)
         self.true_angles = true_angles
         self.true_angles_l = true_angles_l
         self.true_angles_r = true_angles_r
@@ -414,13 +445,81 @@ class Analysis(dga.Analysis):
 
         self.midlines = midlines
 
+        self.aeg_true_l = aeg_true_l
+        self.aeg_true_r = aeg_true_r
+
         self.true_lines_l = true_lines_l
         self.true_lines_r = true_lines_r
-
+        self.aeg_true_l = aeg_true_l
+        self.aeg_true_r = aeg_true_r
         self.false_lines_l = false_lines_l
         self.false_lines_r = false_lines_r
         self.aryepiglottis_lines_l = aryepiglottis_lines_l
         self.aryepiglottis_lines_r = aryepiglottis_lines_r
+        self.cord_widths_l = cord_widths_l
+        self.cord_widths_r = cord_widths_r
+        if export.lower() == "metrics" or export.lower() == "all":
+            true = pd.DataFrame(
+                {
+                    "angles": self.true_angles,
+                    "angles_l": self.true_angles_l,
+                    "angles_r": self.true_angles_r,
+                    "lengths_l": self.true_lengths_l,
+                    "lengths_r": self.true_lengths_r,
+                }
+            )
+            false = pd.DataFrame(
+                {
+                    "angles": self.false_angles,
+                    "angles_l": self.false_angles_l,
+                    "angles_r": self.false_angles_r,
+                }
+            )
+            aeg_true = pd.DataFrame(
+                {
+                    "angle_l": self.aeg_true_l,
+                    "angle_r": self.aeg_true_r,
+                }
+            )
+            key = os.path.split(os.path.splitext(video_path)[0])[1]+"_analyzed"
+            if export is None:
+                pass
+            elif export == "metrics":
+                df = pd.concat([true, false, aeg_true], keys=["true", "false,", "aeg_true"], axis=1)
+                df = pd.concat([df], keys=[key], names=["File"], axis=1)
+            elif export is "all":
+                midlines = _df_line(self.midlines)
+                true_lines_l = _df_line(self.true_lines_l)
+                true_lines_r = _df_line(self.true_lines_r)
+                false_lines_l = _df_line(self.false_lines_l)
+                false_lines_r = _df_line(self.false_lines_r)
+                aryepiglottis_lines_l = _df_line(self.aryepiglottis_lines_l)
+                aryepiglottis_lines_r = _df_line(self.aryepiglottis_lines_r)
+                lines = pd.concat(
+                    [
+                        midlines,
+                        true_lines_l,
+                        true_lines_r,
+                        false_lines_l,
+                        false_lines_r,
+                        aryepiglottis_lines_l,
+                        aryepiglottis_lines_r,
+                    ],
+                    keys=[
+                        "midlines",
+                        "true_lines_l",
+                        "true_lines_r",
+                        "false_lines_l",
+                        "false_lines_r",
+                        "aryepiglottis_lines_l",
+                        "aryepiglottis_lines_r",
+                    ],
+                )
+                df = pd.concat([true, false, aeg_true, lines], keys=["true", "false,", "aeg_true", "lines"], axis=1)
+                df = pd.concat([df], keys=[key], names=["File"], axis=1)
+                data_path = os.path.splitext(video_path)[0]+"_analyzed"
+                if filetype == ".h5" or filetype == "h5":
+                    df.to_hdf(data_path+".h5", key=key)
 
     def draw(self, outfile: str = None):
         self.out_file = draw(
@@ -436,24 +535,13 @@ class Analysis(dga.Analysis):
             outfile,
         )
 
-    def write_csv(self, file_path: str = None):
+    def write_file(self, file_path: str = None):
+
         if file_path is None:
             if self.out_file is not None:
                 file_path = os.path.splitext(self.out_file)[0] + ".csv"
             else:
                 file_path = os.path.splitext(self.video_path)[0] + "_analyzed.csv"
-            with open(file_path, "w") as file:
-                writer = csv.writer(file, delimiter=",")
-                writer.writerow(
-                    [
-                        "Frame Number",
-                        "Anterior Glottic Angle",
-                        "Angle of Left Cord",
-                        "Angle of Right Cord",
-                    ]
-                )
-                for i in range(len(self.angles)):
-                    writer.writerow([i + 1, self.true_angles[i], self.true_angles_l[i], self.true_angles_r[i]])
 
     def plot(self, file_path=None):
         if file_path is None:
@@ -469,7 +557,29 @@ class Analysis(dga.Analysis):
         plt.savefig(file_path)
 
 
-def cord_line(points, comm) -> "np.ndarray":
+def _df_line(array: np.ndarray):
+    return _df_line_nparray(array[:, 0], array[:, 1], array[:, 2:4], array[:, 4:6])
+
+
+def _df_line_nparray(
+    slope: "np.ndarray", intercept: "np.ndarray", end0: "np.ndarray", end1: "np.ndarray"
+) -> pd.DataFrame:
+    """
+    creates a dataframe line from numpy arrays
+    :param slope: the line slope values
+    :param intercept: the line intercept values
+    :param end0: The point coordinates for the 0th end of the line
+    :param end1: The point coordinates for the first end of the line
+    :return:
+    """
+    mx_b = pd.DataFrame({"slope": slope, "intercept": intercept})
+    end0 = pd.DataFrame({"x": end0[0], "y": end0[1]})
+    end1 = pd.DataFrame({"x": end1[0], "y": end1[1]})
+    ends = pd.concat([end0, end1], keys=["end0", "end1"], axis=1)
+    return pd.concat([mx_b, ends], axis=1)
+
+
+def _cord_line(points, comm) -> "np.ndarray":
     """
     Given a list corresponding to points plotted on a vocal cord. Calculates
     a regression line from those points which is used to represent the cord.
@@ -484,28 +594,28 @@ def cord_line(points, comm) -> "np.ndarray":
         pfc = stats.linregress(pfx[1:], pfy[1:])
         if abs(pfc.rvalue) > abs(linreg.rvalue):
             linreg = pfc
-    if linreg.rvalue ** 2 < 0.9:
-        pfc = outlier_del(pfx, pfy, comm, linreg)
+    if linreg.rvalue**2 < 0.9:
+        pfc = _outlier_del(pfx, pfy, comm, linreg)
         if abs(pfc.rvalue) > abs(linreg.rvalue):
             linreg = pfc
-    if linreg.rvalue ** 2 < 0.8:
+    if linreg.rvalue**2 < 0.8:
         return nan_line()
     if linreg is not None:
-        line = slope_line(slope=linreg.slope, intercept=linreg.intercept)
+        line = _slope_line(slope=linreg.slope, intercept=linreg.intercept)
         line = _set_ends(line, points)
         return line
 
 
-def regression_line(points: np.ndarray, min_r2=0.9) -> "np.ndarray":
+def _regression_line(points: np.ndarray, min_r2=0.9) -> "np.ndarray":
     linreg = stats.linregress(points)
-    if linreg.rvalue ** 2 > min_r2:
-        line = slope_line(linreg.slope, linreg.intercept)
+    if linreg.rvalue**2 > min_r2:
+        line = _slope_line(linreg.slope, linreg.intercept)
         line = _set_ends(line, points)
         return line
     return nan_line()
 
 
-def outlier_del(points_x: np.ndarray, point_y: np.ndarray, comm: bool, linreg):
+def _outlier_del(points_x: np.ndarray, point_y: np.ndarray, comm: bool, linreg):
     """
     Deletes outliers from sufficiently large cord lists.
     :param points_x: x point values
@@ -523,7 +633,7 @@ def outlier_del(points_x: np.ndarray, point_y: np.ndarray, comm: bool, linreg):
             newy = point_y[:-1]
             newline = stats.linregress(newx, newy)
             if len(newx) > 3:
-                newline = outlier_del(newx, newy, False, newline)
+                newline = _outlier_del(newx, newy, False, newline)
             if newline.rvalue > linreg.rvalue:
                 linreg = newline
     return linreg

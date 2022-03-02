@@ -19,12 +19,17 @@ else:
     splash_img = splash_img.scaled(ht_fix[0], ht_fix[1])
 splash = QtWidgets.QSplashScreen(splash_img)
 splash.show()
+# add cuda dll directory path
 import os
-if sys.platform == 'win32':
+
+if sys.platform == "win32":
     try:
         os.add_dll_directory(os.path.join(os.environ.get("CUDA_PATH_V11_2"), "bin"))
     except AttributeError:
-        print("cuda not loaded")
+        try:
+            os.add_dll_directory(os.path.join(os.environ.get("CUDA_PATH"), "bin"))
+        except AttributeError:
+            print("cuda not loaded")
 import dlc_generic_analysis as dga
 from dlc_generic_analysis import gui_utils
 import analysis
