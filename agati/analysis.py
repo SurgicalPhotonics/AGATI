@@ -251,7 +251,10 @@ def dist(point0: np.ndarray, point1: np.ndarray):
     :param point1: the second x,y coordinate
     :return:
     """
-    return np.sqrt(np.power(np.abs(point1[:, 0] - point0[:, 0]),  2) + np.power(np.abs(point1[:,1] - point0[:,1]), 2))
+    return np.sqrt(
+        np.power(np.abs(point1[:, 0] - point0[:, 0]), 2)
+        + np.power(np.abs(point1[:, 1] - point0[:, 1]), 2)
+    )
 
 
 # @njit()
@@ -329,16 +332,24 @@ def _calc_cord_widths(
     average_widths_r = average_widths_l.copy()
     for i in range(true_points_l.shape[1]):
         if (
-            true_points_l[np.logical_not(np.isnan(true_points_l[:, i]).any(axis=1)), i].shape[0] >= 3
-            and false_points_l[np.logical_not(np.isnan(false_points_l[:, i]).any(axis=1)), i].shape[0] >= 3
+            true_points_l[np.logical_not(np.isnan(true_points_l[:, i]).any(axis=1)), i].shape[0]
+            >= 3
+            and false_points_l[np.logical_not(np.isnan(false_points_l[:, i]).any(axis=1)), i].shape[
+                0
+            ]
+            >= 3
         ):
             width_l = dist(true_points_l[:, i], false_points_l[:, i])
             average_widths_l[i] = np.nanmean(width_l, axis=0)
         else:
             average_widths_l[i] = np.nan
         if (
-            true_points_r[np.logical_not(np.isnan(true_points_r[:, i]).any(axis=1)), i].shape[0] >= 3
-            and false_points_r[np.logical_not(np.isnan(false_points_r[:, i]).any(axis=1)), i].shape[0] >= 3
+            true_points_r[np.logical_not(np.isnan(true_points_r[:, i]).any(axis=1)), i].shape[0]
+            >= 3
+            and false_points_r[np.logical_not(np.isnan(false_points_r[:, i]).any(axis=1)), i].shape[
+                0
+            ]
+            >= 3
         ):
             width_r = dist(true_points_r[:, i], false_points_r[:, i])
             average_widths_r[i] = np.nanmean(width_r, axis=0)
@@ -351,7 +362,9 @@ class Analysis(dga.Analysis):
     def write_csv(self):
         pass
 
-    def __init__(self, h5_path: str, dlc_scorer: str, video_path: str, export="metrics", filetype=".h5"):
+    def __init__(
+        self, h5_path: str, dlc_scorer: str, video_path: str, export="metrics", filetype=".h5"
+    ):
         h5_path = os.path.abspath(h5_path)
         if not os.path.isfile(h5_path):
             raise FileNotFoundError(h5_path)
@@ -432,7 +445,9 @@ class Analysis(dga.Analysis):
         for i in tqdm(range(1, self.velocities.shape[0])):
             if not np.isnan(self.velocities[i]) and not np.isnan(self.velocities[i - 1]):
                 self.accelerations[i] = self.velocities[i] - self.velocities[i - 1]
-        cord_widths_l, cord_widths_r = _calc_cord_widths(true_points_l, true_points_r, false_points_l, false_points_r)
+        cord_widths_l, cord_widths_r = _calc_cord_widths(
+            true_points_l, true_points_r, false_points_l, false_points_r
+        )
         self.true_angles = true_angles
         self.true_angles_l = true_angles_l
         self.true_angles_r = true_angles_r
@@ -464,8 +479,6 @@ class Analysis(dga.Analysis):
                     "angles": self.true_angles,
                     "angles_l": self.true_angles_l,
                     "angles_r": self.true_angles_r,
-                    "lengths_l": self.true_lengths_l,
-                    "lengths_r": self.true_lengths_r,
                 }
             )
             false = pd.DataFrame(
@@ -481,13 +494,19 @@ class Analysis(dga.Analysis):
                     "angle_r": self.aeg_true_r,
                 }
             )
-            key = os.path.split(os.path.splitext(video_path)[0])[1]+"_analyzed"
+            cord_widths = pd.DataFrame(
+                {
+                    "l": self.cord_widths_l,
+                    "r": self.cord_widths_r,
+                }
+            )
+            key = os.path.split(os.path.splitext(video_path)[0])[1] + "_analyzed"
             if export is None:
                 pass
             elif export == "metrics":
-                df = pd.concat([true, false, aeg_true], keys=["true", "false,", "aeg_true"], axis=1)
+                df = pd.concat([true, false, aeg_true, cord_widths], keys=["true", "false", "aeg_true", "cord_widths"], axis=1)
                 df = pd.concat([df], keys=[key], names=["File"], axis=1)
-            elif export is "all":
+            elif export == "all":
                 midlines = _df_line(self.midlines)
                 true_lines_l = _df_line(self.true_lines_l)
                 true_lines_r = _df_line(self.true_lines_r)
@@ -515,11 +534,19 @@ class Analysis(dga.Analysis):
                         "aryepiglottis_lines_r",
                     ],
                 )
-                df = pd.concat([true, false, aeg_true, lines], keys=["true", "false,", "aeg_true", "lines"], axis=1)
+                df = pd.concat(
+                    [true, false, aeg_true, cord_widths,  lines],
+                    keys=["true", "false", "aeg_true", "cord_widths", "lines"],
+                    axis=1,
+                )
                 df = pd.concat([df], keys=[key], names=["File"], axis=1)
-                data_path = os.path.splitext(video_path)[0]+"_analyzed"
-                if filetype == ".h5" or filetype == "h5":
-                    df.to_hdf(data_path+".h5", key=key)
+            else:
+                raise AttributeError
+            data_path = os.path.splitext(video_path)[0] + "_analyzed"
+            if filetype == ".h5" or filetype == "h5":
+                data_path = data_path + ".h5"
+                df.to_hdf(data_path, key=key)
+            print(f"Saving analysis data to {data_path}.")
 
     def draw(self, outfile: str = None):
         self.out_file = draw(

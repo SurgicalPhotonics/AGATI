@@ -34,6 +34,7 @@ import dlc_generic_analysis as dga
 from dlc_generic_analysis import gui_utils
 import analysis
 import tensorflow as tf
+from viewer import ViewWidget
 
 try:
     from agati._version import version
@@ -53,7 +54,10 @@ class MainWidget(dga.MainWidget):
             print("Done.")
 
     def on_click_view(self):
-        pass
+        video_paths = dga.gui_utils.open_files(self, "Analyzed video")
+        if len(video_paths) > 0:
+            viewer = ViewWidget(video_paths[0])
+            viewer.show()
 
     def on_click_trim(self):
         super(MainWidget, self).on_click_trim()
