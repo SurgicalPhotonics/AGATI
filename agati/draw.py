@@ -14,14 +14,14 @@ def point1(line: "np.ndarray"):
 
 def draw(
     video_path: str,
-    midlines: "np.ndarray",
-    true_lines_l: "np.ndarray",
-    true_lines_r: "np.ndarray",
+    midlines: np.ndarray,
+    true_lines_l: np.ndarray,
+    true_lines_r: np.ndarray,
     false_lines_l: np.ndarray,
     false_lines_r: np.ndarray,
-    aeg_line_l,
-    aeg_line_r,
-    angles: "np.ndarray",
+    aeg_line_l: np.ndarray,
+    aeg_line_r: np.ndarray,
+    angles: np.ndarray,
     outfile: str = None,
     video_type: str = ".mp4",
 ):
@@ -85,10 +85,9 @@ def draw(
         if not np.isnan(false_lines_l[i]).any() and not np.isnan(false_lines_r[i]).any():
             cv2.line(im, point0(false_lines_l[i]), point1(false_lines_l[i]), (0, 0, 255), 2)
             cv2.line(im, point0(false_lines_r[i]), point1(false_lines_r[i]), (0, 255, 0), 2)
-        if not np.isnan(aeg_line_l).any and not np.isnan(aeg_line_l).any():
+        if not np.isnan(aeg_line_l[i]).any() and not np.isnan(aeg_line_r[i]).any():
             cv2.line(im, point0(aeg_line_l[i]), point1(aeg_line_l[i]), (0, 0, 255), 2)
             cv2.line(im, point0(aeg_line_r[i]), point1(aeg_line_r[i]), (0, 255, 0), 2)
-
         if not np.isnan(angles[i]).any():
             cv2.putText(
                 im,
