@@ -68,6 +68,6 @@ class ViewWidget(dga.ViewerWidget):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    viewer = ViewWidget(r"C:\Users\la538\Desktop\AGATI validation\2_analyzed.mp4")
+    viewer = ViewWidget(r"C:\Users\NA659\AGATI_validation_frames\videos_for_Nate\1_analyzed.mp4")
     viewer.show()
     app.exec_()
