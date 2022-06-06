@@ -83,6 +83,7 @@ def analyze(model_config: str, video_paths: [str]):
         analysis = Analysis(h5s[i], dlc_scorer, video_paths[i])
         analysis.write_csv()
         analysis.draw()
+        analysis.write_csv()
         analysis.plot()
 
 
@@ -360,12 +361,12 @@ def _calc_cord_widths(
 
 class Analysis(dga.Analysis):
     def write_csv(self):
-        path = self.video_path[os.path.dirname(self.video_path): self.video_path.find(".")] + "_data.csv"
+        path = self.video_path[: self.video_path.find(".")] + "_data.csv"
         with open(path, 'w', newline='') as file:
             writer = csv.writer(file, delimiter=',')
             writer.writerow(['R AEF Angle', 'R FVC ANGLE', 'R TVC ANGLE', 'Midline Angle', 'L TVC ANGLE', 'L FVC ANGLE', 'L AEF ANGLE'])
-            for i in range(len(self.midlines)):
-                writer.writerow(self.aeg_true_r, self.false_angles_r, self.true_angles_r, self.true_angles)
+            for i in range(len(self.true_angles)):
+                writer.writerow([i, self.aeg_true_r[i], self.false_angles_r[i], self.true_angles_r[i], self.true_angles[i], self.true_angles_l[i], self.false_angles_l[i], self.aeg_true_l[i]])
 
     def __init__(
         self, h5_path: str, dlc_scorer: str, video_path: str, export="metrics", filetype=".h5"
