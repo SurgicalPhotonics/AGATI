@@ -360,7 +360,12 @@ def _calc_cord_widths(
 
 class Analysis(dga.Analysis):
     def write_csv(self):
-        pass
+        path = self.video_path[os.path.dirname(self.video_path): self.video_path.find(".")] + "_data.csv"
+        with open(path, 'w', newline='') as file:
+            writer = csv.writer(file, delimiter=',')
+            writer.writerow(['R AEF Angle', 'R FVC ANGLE', 'R TVC ANGLE', 'Midline Angle', 'L TVC ANGLE', 'L FVC ANGLE', 'L AEF ANGLE'])
+            for i in range(len(self.midlines)):
+                writer.writerow(self.aeg_true_r, self.false_angles_r, self.true_angles_r, self.true_angles)
 
     def __init__(
         self, h5_path: str, dlc_scorer: str, video_path: str, export="metrics", filetype=".h5"
